@@ -1,3 +1,6 @@
+# Maven
+target/
+
 # Compiled class file
 *.class
 
@@ -6,6 +9,13 @@
 
 # BlueJ files
 *.ctxt
+
+# Idea
+.idea/
+.idea_modules/
+
+# Spring
+*.iml
 
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/

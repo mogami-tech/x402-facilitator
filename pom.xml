@@ -1,0 +1,361 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- =========================================================================================================== -->
+    <!-- Project information -->
+    <groupId>tech.mogami.facilitator</groupId>
+    <artifactId>mogami-x402-facilitator</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <packaging>jar</packaging>
+    <name>Mogami Java x402 client - Retrieve payment information and pay</name>
+    <description>Mogami Java x402 client - Retrieve payment information and pay</description>
+    <url>https://github.com/mogami-tech/x402-facilitator</url>
+    <licenses>
+        <license>
+            <name>GNU Affero General Public License v3.0</name>
+            <url>https://github.com/mogami-tech/x402-facilitator/blob/development/LICENSE</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    <!-- =========================================================================================================== -->
+
+    <!-- =========================================================================================================== -->
+    <!-- Developers -->
+    <developers>
+        <developer>
+            <id>straumat</id>
+            <email>mogami.unsheathe942@passmail.net</email>
+            <name>Stéphane Traumat</name>
+            <url>https://github.com/straumat</url>
+        </developer>
+    </developers>
+    <!-- =========================================================================================================== -->
+
+    <!-- =========================================================================================================== -->
+    <!-- Source Code Management -->
+    <scm>
+        <url>https://github.com/mogami-tech/x402-facilitator</url>
+        <connection>scm:git:git://github.com/mogami-tech/x402-facilitator.git</connection>
+        <developerConnection>scm:git:git@github.com:mogami-tech/x402-facilitator.git</developerConnection>
+    </scm>
+    <!-- =========================================================================================================== -->
+
+    <!-- =========================================================================================================== -->
+    <!-- Issue management -->
+    <issueManagement>
+        <system>GitHub Issues</system>
+        <url>https://github.com/mogami-tech/x402-facilitator/issues</url>
+    </issueManagement>
+    <!-- =========================================================================================================== -->
+
+    <!-- =========================================================================================================== -->
+    <!-- Project configuration -->
+    <properties>
+        <!-- ======================================================================================================= -->
+        <!-- Java build configuration -->
+
+        <java.version>21</java.version>
+        <maven.compiler.target>21</maven.compiler.target>
+        <maven.compiler.source>21</maven.compiler.source>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+        <!-- ======================================================================================================= -->
+        <!-- Libraries releases -->
+        <spring-boot.version>3.4.5</spring-boot.version>
+        <caffeine.version>3.2.0</caffeine.version>
+        <lombok.version>1.18.38</lombok.version>
+
+        <!-- Crypto libraries -->
+        <web3j.crypto.version>4.14.0</web3j.crypto.version>
+        <web3j.utils.version>4.14.0</web3j.utils.version>
+
+        <!-- Tests -->
+        <junit-jupiter-engine.version>5.13.0</junit-jupiter-engine.version>
+        <assertj.version>3.27.3</assertj.version>
+
+        <!-- Maven -->
+        <maven.checkstyle.plugin.version>3.6.0</maven.checkstyle.plugin.version>
+        <maven.puppycrawl.checkstyle.version>10.25.0</maven.puppycrawl.checkstyle.version>
+        <maven.source.plugin.version>3.3.1</maven.source.plugin.version>
+        <maven.resources.plugin.version>3.3.1</maven.resources.plugin.version>
+        <maven.compiler.plugin.version>3.14.0</maven.compiler.plugin.version>
+        <maven.javadoc.plugin.version>3.11.2</maven.javadoc.plugin.version>
+        <maven.jar.plugin.version>3.4.2</maven.jar.plugin.version>
+        <maven.archetype-packaging.version>3.2.1</maven.archetype-packaging.version>
+        <maven.surefire.plugin.version>3.5.3</maven.surefire.plugin.version>
+        <maven.surefire-junit5-tree-reporter.version>1.4.0</maven.surefire-junit5-tree-reporter.version>
+        <maven.maven-gpg-plugin>3.2.7</maven.maven-gpg-plugin>
+        <maven.maven-deploy-plugin>3.1.4</maven.maven-deploy-plugin>
+        <maven.gitflow-maven-plugin>1.21.0</maven.gitflow-maven-plugin>
+        <maven.central-publishing-maven-plugin>0.7.0</maven.central-publishing-maven-plugin>
+    </properties>
+    <!-- =========================================================================================================== -->
+
+    <!-- =========================================================================================================== -->
+    <!-- Dependencies -->
+    <dependencies>
+        <!-- Spring -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+            <version>${spring-boot.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-cache</artifactId>
+            <version>${spring-boot.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.ben-manes.caffeine</groupId>
+            <artifactId>caffeine</artifactId>
+            <version>${caffeine.version}</version>
+        </dependency>
+
+        <!-- Mogami -->
+        <dependency>
+            <groupId>tech.mogami.commons</groupId>
+            <artifactId>mogami-x402-commons</artifactId>
+            <version>0.0.5-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.web3j</groupId>
+            <artifactId>crypto</artifactId>
+            <version>${web3j.crypto.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.web3j</groupId>
+            <artifactId>utils</artifactId>
+            <version>${web3j.utils.version}</version>
+        </dependency>
+
+        <!-- Test dependencies -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+            <version>${spring-boot.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.junit.vintage</groupId>
+                    <artifactId>junit-vintage-engine</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <version>${assertj.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <!-- =========================================================================================================== -->
+    <!-- Build configuration -->
+    <build>
+        <!-- Plugins -->
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>${maven.checkstyle.plugin.version}</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.puppycrawl.tools</groupId>
+                        <artifactId>checkstyle</artifactId>
+                        <version>${maven.puppycrawl.checkstyle.version}</version>
+                    </dependency>
+                </dependencies>
+                <executions>
+                    <execution>
+                        <phase>process-sources</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <consoleOutput>true</consoleOutput>
+                    <configLocation>https://mogami.tech/shared/checkstyle.xml</configLocation>
+                    <failOnViolation>true</failOnViolation>
+                    <violationSeverity>warning</violationSeverity>
+                </configuration>
+            </plugin>
+            <!-- Tests -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${maven.surefire.plugin.version}</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>me.fabriciorby</groupId>
+                        <artifactId>maven-surefire-junit5-tree-reporter</artifactId>
+                        <version>${maven.surefire-junit5-tree-reporter.version}</version>
+                    </dependency>
+                </dependencies>
+                <configuration>
+                    <reportFormat>plain</reportFormat>
+                    <consoleOutputReporter>
+                        <disable>true</disable>
+                    </consoleOutputReporter>
+                    <statelessTestsetInfoReporter
+                            implementation="org.apache.maven.plugin.surefire.extensions.junit5.JUnit5StatelessTestsetInfoTreeReporter">
+                    </statelessTestsetInfoReporter>
+                </configuration>
+            </plugin>
+            <!-- Jar (classes, sources and documentation)-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>${maven.jar.plugin.version}</version>
+                <configuration>
+                    <archive>
+                        <manifestEntries>
+                            <Implementation-Version>${project.version}</Implementation-Version>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>${maven.source.plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>${maven.javadoc.plugin.version}</version>
+                <configuration>
+                    <detectOfflineLinks>false</detectOfflineLinks>
+                    <javadocExecutable>${java.home}/bin/javadoc</javadocExecutable>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${spring-boot.version}</version>
+            </plugin>
+            <!-- =========================================================================================================== -->
+            <!-- Release -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>${maven.maven-deploy-plugin}</version>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.amashchenko.maven.plugin</groupId>
+                <artifactId>gitflow-maven-plugin</artifactId>
+                <version>${maven.gitflow-maven-plugin}</version>
+                <configuration>
+                    <skipTestProject>true</skipTestProject>
+                    <gitFlowConfig>
+                        <productionBranch>production</productionBranch>
+                        <developmentBranch>development</developmentBranch>
+                    </gitFlowConfig>
+                    <commitMessages>
+                        <featureStartMessage>Update versions for feature branch</featureStartMessage>
+                        <featureFinishMessage>Update versions for development branch</featureFinishMessage>
+                        <hotfixStartMessage>Update versions for hotfix</hotfixStartMessage>
+                        <hotfixFinishMessage>Update for next development version</hotfixFinishMessage>
+                        <releaseStartMessage>Update versions for release</releaseStartMessage>
+                        <releaseFinishMessage>Update for next development version</releaseFinishMessage>
+                        <tagHotfixMessage>Tag hotfix</tagHotfixMessage>
+                        <tagReleaseMessage>Tag release</tagReleaseMessage>
+                    </commitMessages>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    <!-- =========================================================================================================== -->
+
+    <!-- =========================================================================================================== -->
+    <!-- Profiles -->
+    <profiles>
+        <profile>
+            <id>release</id>
+            <properties>
+                <gpg.keyname>E0DD5818315C8CF0DD4B20532DEEE03FA733B1CE</gpg.keyname>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>${maven.maven-gpg-plugin}</version>
+                        <executions>
+                            <execution>
+                                <id>sign-release</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                                <configuration>
+                                    <!-- Prevent `gpg` from using pinentry programs -->
+                                    <gpgArguments>
+                                        <arg>--pinentry-mode</arg>
+                                        <arg>loopback</arg>
+                                    </gpgArguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.sonatype.central</groupId>
+                        <artifactId>central-publishing-maven-plugin</artifactId>
+                        <version>${maven.central-publishing-maven-plugin}</version>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <publishingServerId>central</publishingServerId>
+                            <autoPublish>true</autoPublish>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+    <!-- =========================================================================================================== -->
+
+    <!-- =========================================================================================================== -->
+    <distributionManagement>
+        <repository>
+            <id>central</id>
+            <url>https://central.sonatype.com/</url>
+        </repository>
+        <snapshotRepository>
+            <id>central</id>
+            <url>https://central.sonatype.com/repository/maven-snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
+    <!-- =========================================================================================================== -->
+
+</project>

@@ -1,0 +1,26 @@
+name: Deploy release to Maven Central
+
+on:
+  push:
+    tags: [ '*' ]
+
+jobs:
+
+  release:
+    name: Deploy release to Maven Central
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: write
+    steps:
+
+      - name: Retrieve the sources
+        uses: actions/checkout@v4
+
+      - name: Set up environment
+        uses: ./.github/actions/setup
+
+      # TODO Add docker build and push steps.
+      - name: Deploy release
+        run: |
+          just run_install
