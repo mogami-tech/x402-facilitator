@@ -71,7 +71,7 @@
 
         <!-- Crypto libraries -->
         <web3j.crypto.version>4.14.0</web3j.crypto.version>
-        <web3j.utils.version>4.14.0</web3j.utils.version>
+        <web3j.utils.version>5.0.0</web3j.utils.version>
 
         <!-- Tests -->
         <junit-jupiter-engine.version>5.13.0</junit-jupiter-engine.version>
