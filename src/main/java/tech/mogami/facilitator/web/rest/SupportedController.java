@@ -12,13 +12,13 @@ import static tech.mogami.commons.constant.networks.Networks.BASE_SEPOLIA;
 import static tech.mogami.commons.header.payment.schemes.ExactSchemeConstants.EXACT_SCHEME_NAME;
 
 /**
- * /supported endpoint.
+ * /supported endpoint - Get supported payment schemes and networks.
  */
 @RestController
 public class SupportedController {
 
     /**
-     * Returns a response indicating what is supported.
+     * Returns supported payment schemes and networks.
      *
      * @return SupportedResponse
      */
