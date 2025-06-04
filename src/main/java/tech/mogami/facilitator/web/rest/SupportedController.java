@@ -9,7 +9,7 @@ import tech.mogami.commons.api.facilitator.supported.SupportedResponse.Supported
 import static tech.mogami.commons.api.facilitator.FacilitatorRoutes.SUPPORTED_URL;
 import static tech.mogami.commons.constant.X402Constants.X402_SUPPORTED_VERSION;
 import static tech.mogami.commons.constant.networks.Networks.BASE_SEPOLIA;
-import static tech.mogami.commons.header.payment.schemes.ExactSchemeConstants.EXACT_SCHEME_NAME;
+import static tech.mogami.commons.header.payment.schemes.Schemes.EXACT_SCHEME;
 
 /**
  * /supported endpoint - Get supported payment schemes and networks.
@@ -29,7 +29,7 @@ public class SupportedController {
                 // Base networks =======================================================================================
                 .kind(SupportedKind.builder()
                         .x402Version(X402_SUPPORTED_VERSION)
-                        .scheme(EXACT_SCHEME_NAME)
+                        .scheme(EXACT_SCHEME.name())
                         .network(BASE_SEPOLIA.name())
                         .build())
                 .build();

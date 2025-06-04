@@ -25,6 +25,12 @@ public class RequestNotEmptyVerifier implements Verifier {
         if (verifyRequest == null) {
             return VerificationResult.fail(UNDEFINED, "The request object received is null");
         }
+        if (verifyRequest.paymentPayload() == null) {
+            return VerificationResult.fail(UNDEFINED, "The payment payload in the request is null");
+        }
+        if (verifyRequest.paymentRequirements() == null) {
+            return VerificationResult.fail(UNDEFINED, "The payment requirements in the request is null");
+        }
         return VerificationResult.ok();
     }
 

@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 /**
  * Verification errors.
+ * TODO Maybe move this to commons.
  */
 @RequiredArgsConstructor
 public enum VerificationError {
@@ -13,7 +14,7 @@ public enum VerificationError {
     UNDEFINED("undefined"),
 
     /** Unsupported x402 scheme. */
-    UNSUPPORTED_X402_SCHEME("unsupported_scheme");
+    UNSUPPORTED_SCHEME("unsupported_scheme");
 
     /** Error code. */
     @Getter

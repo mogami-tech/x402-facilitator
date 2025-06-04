@@ -5,10 +5,10 @@ package tech.mogami.facilitator.verifier;
  */
 public enum VerificationStep {
 
-    /** Request is not empty. */
+    /** Verify that the request is not empty. */
     REQUEST_NOT_EMPTY,
 
-    /** Verify scheme. */
-    SCHEME
+    /** Verify the scheme. */
+    SCHEME_EXISTS
 
 }
