@@ -32,7 +32,7 @@ public class SchemeVerifierTest {
                 .satisfies(result -> {
                     assertThat(result.isValid()).isFalse();
                     assertThat(result.verificationError()).isEqualTo(UNSUPPORTED_SCHEME);
-                    assertThat(result.errorMessage()).isEqualTo("Payload scheme is not set");
+                    assertThat(result.errorMessage()).isEqualTo("Scheme in payment payload is required");
                 });
 
         assertThat(schemeVerifier.verify(
@@ -44,7 +44,7 @@ public class SchemeVerifierTest {
                 .satisfies(result -> {
                     assertThat(result.isValid()).isFalse();
                     assertThat(result.verificationError()).isEqualTo(UNSUPPORTED_SCHEME);
-                    assertThat(result.errorMessage()).isEqualTo("Payment scheme is not set");
+                    assertThat(result.errorMessage()).isEqualTo("Scheme in payment requirements is required");
                 });
     }
 
@@ -60,7 +60,7 @@ public class SchemeVerifierTest {
                 .satisfies(result -> {
                     assertThat(result.isValid()).isFalse();
                     assertThat(result.verificationError()).isEqualTo(UNSUPPORTED_SCHEME);
-                    assertThat(result.errorMessage()).isEqualTo("Payload scheme is invalid: INVALID_PAYLOAD_SCHEME");
+                    assertThat(result.errorMessage()).isEqualTo("Scheme in payment payload is invalid (Your value: INVALID_PAYLOAD_SCHEME)");
                 });
 
         assertThat(schemeVerifier.verify(
@@ -72,7 +72,7 @@ public class SchemeVerifierTest {
                 .satisfies(result -> {
                     assertThat(result.isValid()).isFalse();
                     assertThat(result.verificationError()).isEqualTo(UNSUPPORTED_SCHEME);
-                    assertThat(result.errorMessage()).isEqualTo("Payment scheme is invalid: INVALID_PAYMENT_SCHEME");
+                    assertThat(result.errorMessage()).isEqualTo("Scheme in payment requirements is invalid (Your value: INVALID_PAYMENT_SCHEME)");
                 });
     }
 

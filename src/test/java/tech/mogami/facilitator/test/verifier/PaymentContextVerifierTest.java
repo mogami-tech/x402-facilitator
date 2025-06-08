@@ -11,7 +11,7 @@ import tech.mogami.commons.header.payment.schemes.ExactSchemePayload;
 import tech.mogami.facilitator.verifier.exact.PaymentContextVerifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static tech.mogami.commons.constant.networks.Networks.BASE_SEPOLIA;
+import static tech.mogami.commons.constant.network.Networks.BASE_SEPOLIA;
 import static tech.mogami.commons.header.payment.schemes.ExactSchemeConstants.EXACT_SCHEME_PARAMETER_NAME;
 import static tech.mogami.commons.header.payment.schemes.Schemes.EXACT_SCHEME;
 import static tech.mogami.facilitator.verifier.VerificationError.INVALID_NETWORK;
@@ -115,6 +115,48 @@ public class PaymentContextVerifierTest {
                     assertThat(result.isValid()).isFalse();
                     assertThat(result.verificationError()).isEqualTo(INVALID_NETWORK);
                     assertThat(result.errorMessage()).isEqualTo("Stablecoin name is invalid: INVALID_STABLECOIN_NAME");
+                });
+    }
+
+    @Test
+    @DisplayName("Valid exact scheme version")
+    public void testValidExactSchemeVersion() {
+        assertThat(paymentContextVerifier.verify(
+                VerifyRequest.builder()
+                        .paymentPayload(PaymentPayload.builder()
+                                .scheme(EXACT_SCHEME.name())
+                                .network(BASE_SEPOLIA.name())
+                                .payload(ExactSchemePayload.builder().build())
+                                .build())
+                        .paymentRequirements(PaymentRequirements.builder()
+                                .scheme(EXACT_SCHEME.name())
+                                .extra(EXACT_SCHEME_PARAMETER_NAME, "USDC")
+                                .build())
+                        .build()))
+                .isNotNull()
+                .satisfies(result -> {
+                    assertThat(result.isValid()).isFalse();
+                    assertThat(result.verificationError()).isEqualTo(INVALID_NETWORK);
+                    assertThat(result.errorMessage()).isEqualTo("Exact scheme version is not provided in the payment requirements");
+                });
+
+        assertThat(paymentContextVerifier.verify(
+                VerifyRequest.builder()
+                        .paymentPayload(PaymentPayload.builder()
+                                .scheme(EXACT_SCHEME.name())
+                                .network(BASE_SEPOLIA.name())
+                                .payload(ExactSchemePayload.builder().build())
+                                .build())
+                        .paymentRequirements(PaymentRequirements.builder()
+                                .scheme(EXACT_SCHEME.name())
+                                .extra(EXACT_SCHEME_PARAMETER_NAME, "USDC")
+                                .build())
+                        .build()))
+                .isNotNull()
+                .satisfies(result -> {
+                    assertThat(result.isValid()).isFalse();
+                    assertThat(result.verificationError()).isEqualTo(INVALID_NETWORK);
+                    assertThat(result.errorMessage()).isEqualTo("Exact scheme version is not provided in the payment requirements");
                 });
     }
 
