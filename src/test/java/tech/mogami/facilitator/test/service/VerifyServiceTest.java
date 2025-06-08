@@ -59,4 +59,20 @@ public class VerifyServiceTest {
                 });
     }
 
+    @Test
+    @DisplayName("Invalid payment context")
+    public void testInvalidPaymentContext() {
+        assertThat(verifyService.verify(
+                VerifyRequest.builder()
+                        .paymentPayload(PaymentPayload.builder().scheme(EXACT_SCHEME.name()).build())
+                        .paymentRequirements(PaymentRequirements.builder().scheme(EXACT_SCHEME.name()).build())
+                        .build()))
+                .isNotNull()
+                .satisfies(result -> {
+                    assertThat(result.isValid()).isFalse();
+                    assertThat(result.invalidReason()).isEqualTo("invalid_network");
+                    assertThat(result.payer()).isNull();    // TODO Add payer test
+                });
+    }
+
 }

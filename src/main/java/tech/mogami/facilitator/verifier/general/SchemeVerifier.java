@@ -19,7 +19,7 @@ import static tech.mogami.facilitator.verifier.VerificationStep.SCHEME_EXISTS;
 @Order(2)
 @Component
 @RequiredArgsConstructor
-@SuppressWarnings({"checkstyle:DesignForExtension", "unused"})
+@SuppressWarnings({"checkstyle:DesignForExtension", "unused", "checkstyle:MagicNumber"})
 public class SchemeVerifier implements Verifier {
 
     @Override

@@ -1,0 +1,121 @@
+package tech.mogami.facilitator.test.verifier;
+
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import tech.mogami.commons.api.facilitator.verify.VerifyRequest;
+import tech.mogami.commons.header.payment.PaymentPayload;
+import tech.mogami.commons.header.payment.PaymentRequirements;
+import tech.mogami.commons.header.payment.schemes.ExactSchemePayload;
+import tech.mogami.facilitator.verifier.exact.PaymentContextVerifier;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static tech.mogami.commons.constant.networks.Networks.BASE_SEPOLIA;
+import static tech.mogami.commons.header.payment.schemes.ExactSchemeConstants.EXACT_SCHEME_PARAMETER_NAME;
+import static tech.mogami.commons.header.payment.schemes.Schemes.EXACT_SCHEME;
+import static tech.mogami.facilitator.verifier.VerificationError.INVALID_NETWORK;
+
+@SpringBootTest
+@DisplayName("Payment context Verifier Tests")
+public class PaymentContextVerifierTest {
+
+    @Autowired
+    private PaymentContextVerifier paymentContextVerifier;
+
+    @Test
+    @DisplayName("Invalid network")
+    public void testInvalidNetwork() {
+        assertThat(paymentContextVerifier.verify(
+                VerifyRequest.builder()
+                        .paymentPayload(PaymentPayload.builder()
+                                .scheme(EXACT_SCHEME.name())
+                                .payload(ExactSchemePayload.builder().build()).build())
+                        .paymentRequirements(PaymentRequirements.builder().scheme(EXACT_SCHEME.name()).build())
+                        .build()))
+                .isNotNull()
+                .satisfies(result -> {
+                    assertThat(result.isValid()).isFalse();
+                    assertThat(result.verificationError()).isEqualTo(INVALID_NETWORK);
+                    assertThat(result.errorMessage()).isEqualTo("Network 'null' not supported");
+                });
+
+        assertThat(paymentContextVerifier.verify(
+                VerifyRequest.builder()
+                        .paymentPayload(PaymentPayload.builder()
+                                .scheme(EXACT_SCHEME.name())
+                                .network("INVALID_NETWORK")
+                                .payload(ExactSchemePayload.builder().build())
+                                .build())
+                        .paymentRequirements(PaymentRequirements.builder().scheme(EXACT_SCHEME.name()).build())
+                        .build()))
+                .isNotNull()
+                .satisfies(result -> {
+                    assertThat(result.isValid()).isFalse();
+                    assertThat(result.verificationError()).isEqualTo(INVALID_NETWORK);
+                    assertThat(result.errorMessage()).isEqualTo("Network 'INVALID_NETWORK' not supported");
+                });
+    }
+
+    @Test
+    @DisplayName("Invalid payload")
+    public void testInvalidPayload() {
+        assertThat(paymentContextVerifier.verify(
+                VerifyRequest.builder()
+                        .paymentPayload(PaymentPayload.builder()
+                                .scheme(EXACT_SCHEME.name())
+                                .network(BASE_SEPOLIA.name())
+                                .payload("Invalid Payload")
+                                .build())
+                        .paymentRequirements(PaymentRequirements.builder().scheme(EXACT_SCHEME.name()).build())
+                        .build()))
+                .isNotNull()
+                .satisfies(result -> {
+                    assertThat(result.isValid()).isFalse();
+                    assertThat(result.verificationError()).isEqualTo(INVALID_NETWORK);
+                    assertThat(result.errorMessage()).isEqualTo("Payment payload is not valid");
+                });
+    }
+
+    @Test
+    @DisplayName("Valid stablecoin name")
+    public void testValidStablecoinName() {
+        assertThat(paymentContextVerifier.verify(
+                VerifyRequest.builder()
+                        .paymentPayload(PaymentPayload.builder()
+                                .scheme(EXACT_SCHEME.name())
+                                .network(BASE_SEPOLIA.name())
+                                .payload(ExactSchemePayload.builder().build())
+                                .build())
+                        .paymentRequirements(PaymentRequirements.builder()
+                                .scheme(EXACT_SCHEME.name())
+                                .build())
+                        .build()))
+                .isNotNull()
+                .satisfies(result -> {
+                    assertThat(result.isValid()).isFalse();
+                    assertThat(result.verificationError()).isEqualTo(INVALID_NETWORK);
+                    assertThat(result.errorMessage()).isEqualTo("Stablecoin name is not provided in the payment requirements");
+                });
+
+        assertThat(paymentContextVerifier.verify(
+                VerifyRequest.builder()
+                        .paymentPayload(PaymentPayload.builder()
+                                .scheme(EXACT_SCHEME.name())
+                                .network(BASE_SEPOLIA.name())
+                                .payload(ExactSchemePayload.builder().build())
+                                .build())
+                        .paymentRequirements(PaymentRequirements.builder()
+                                .scheme(EXACT_SCHEME.name())
+                                .extra(EXACT_SCHEME_PARAMETER_NAME, "INVALID_STABLECOIN_NAME")
+                                .build())
+                        .build()))
+                .isNotNull()
+                .satisfies(result -> {
+                    assertThat(result.isValid()).isFalse();
+                    assertThat(result.verificationError()).isEqualTo(INVALID_NETWORK);
+                    assertThat(result.errorMessage()).isEqualTo("Stablecoin name is invalid: INVALID_STABLECOIN_NAME");
+                });
+    }
+
+}

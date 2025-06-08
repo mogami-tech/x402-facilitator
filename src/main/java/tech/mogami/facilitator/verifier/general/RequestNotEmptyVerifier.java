@@ -17,7 +17,7 @@ import static tech.mogami.facilitator.verifier.VerificationStep.REQUEST_NOT_EMPT
 @Order(1)
 @Component
 @RequiredArgsConstructor
-@SuppressWarnings({"checkstyle:DesignForExtension", "unused"})
+@SuppressWarnings({"checkstyle:DesignForExtension", "unused", "checkstyle:MagicNumber"})
 public class RequestNotEmptyVerifier implements Verifier {
 
     @Override

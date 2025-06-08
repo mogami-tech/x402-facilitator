@@ -9,6 +9,9 @@ public enum VerificationStep {
     REQUEST_NOT_EMPTY,
 
     /** Verify the scheme. */
-    SCHEME_EXISTS
+    SCHEME_EXISTS,
+
+    /** Payment context verification step for the exact scheme. */
+    PAYMENT_CONTEXT_FOR_EXACT_SCHEME
 
 }

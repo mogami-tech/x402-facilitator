@@ -13,8 +13,11 @@ public enum VerificationError {
     /** Undefined error. */
     UNDEFINED("undefined"),
 
-    /** Unsupported x402 scheme. */
-    UNSUPPORTED_SCHEME("unsupported_scheme");
+    /** Unsupported scheme. */
+    UNSUPPORTED_SCHEME("unsupported_scheme"),
+
+    /** Invalid network. */
+    INVALID_NETWORK("invalid_network");
 
     /** Error code. */
     @Getter
