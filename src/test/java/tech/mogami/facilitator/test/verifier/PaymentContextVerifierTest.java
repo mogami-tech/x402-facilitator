@@ -13,6 +13,7 @@ import tech.mogami.facilitator.verifier.exact.PaymentContextVerifier;
 import static org.assertj.core.api.Assertions.assertThat;
 import static tech.mogami.commons.constant.network.Networks.BASE_SEPOLIA;
 import static tech.mogami.commons.header.payment.schemes.ExactSchemeConstants.EXACT_SCHEME_PARAMETER_NAME;
+import static tech.mogami.commons.header.payment.schemes.ExactSchemeConstants.EXACT_SCHEME_PARAMETER_VERSION;
 import static tech.mogami.commons.header.payment.schemes.Schemes.EXACT_SCHEME;
 import static tech.mogami.facilitator.verifier.VerificationError.INVALID_NETWORK;
 
@@ -26,18 +27,21 @@ public class PaymentContextVerifierTest {
     @Test
     @DisplayName("Invalid network")
     public void testInvalidNetwork() {
+        // On payment payload.
         assertThat(paymentContextVerifier.verify(
                 VerifyRequest.builder()
                         .paymentPayload(PaymentPayload.builder()
                                 .scheme(EXACT_SCHEME.name())
                                 .payload(ExactSchemePayload.builder().build()).build())
-                        .paymentRequirements(PaymentRequirements.builder().scheme(EXACT_SCHEME.name()).build())
+                        .paymentRequirements(PaymentRequirements
+                                .builder()
+                                .scheme(EXACT_SCHEME.name()).build())
                         .build()))
                 .isNotNull()
                 .satisfies(result -> {
                     assertThat(result.isValid()).isFalse();
                     assertThat(result.verificationError()).isEqualTo(INVALID_NETWORK);
-                    assertThat(result.errorMessage()).isEqualTo("Network 'null' not supported");
+                    assertThat(result.errorMessage()).isEqualTo("Network in payment payload is required");
                 });
 
         assertThat(paymentContextVerifier.verify(
@@ -53,7 +57,43 @@ public class PaymentContextVerifierTest {
                 .satisfies(result -> {
                     assertThat(result.isValid()).isFalse();
                     assertThat(result.verificationError()).isEqualTo(INVALID_NETWORK);
-                    assertThat(result.errorMessage()).isEqualTo("Network 'INVALID_NETWORK' not supported");
+                    assertThat(result.errorMessage()).isEqualTo("Network in payment payload is invalid (Your value: INVALID_NETWORK)");
+                });
+
+        // On payment requirements.
+        assertThat(paymentContextVerifier.verify(
+                VerifyRequest.builder()
+                        .paymentPayload(PaymentPayload.builder()
+                                .scheme(EXACT_SCHEME.name())
+                                .network(BASE_SEPOLIA.name())
+                                .payload(ExactSchemePayload.builder().build())
+                                .build())
+                        .paymentRequirements(PaymentRequirements.builder().scheme(EXACT_SCHEME.name()).build())
+                        .build()))
+                .isNotNull()
+                .satisfies(result -> {
+                    assertThat(result.isValid()).isFalse();
+                    assertThat(result.verificationError()).isEqualTo(INVALID_NETWORK);
+                    assertThat(result.errorMessage()).isEqualTo("Network in payment requirements is required");
+                });
+
+        assertThat(paymentContextVerifier.verify(
+                VerifyRequest.builder()
+                        .paymentPayload(PaymentPayload.builder()
+                                .scheme(EXACT_SCHEME.name())
+                                .network(BASE_SEPOLIA.name())
+                                .payload(ExactSchemePayload.builder().build())
+                                .build())
+                        .paymentRequirements(PaymentRequirements.builder()
+                                .scheme(EXACT_SCHEME.name())
+                                .network("INVALID_NETWORK")
+                                .build())
+                        .build()))
+                .isNotNull()
+                .satisfies(result -> {
+                    assertThat(result.isValid()).isFalse();
+                    assertThat(result.verificationError()).isEqualTo(INVALID_NETWORK);
+                    assertThat(result.errorMessage()).isEqualTo("Network in payment requirements is invalid (Your value: INVALID_NETWORK)");
                 });
     }
 
@@ -67,13 +107,16 @@ public class PaymentContextVerifierTest {
                                 .network(BASE_SEPOLIA.name())
                                 .payload("Invalid Payload")
                                 .build())
-                        .paymentRequirements(PaymentRequirements.builder().scheme(EXACT_SCHEME.name()).build())
+                        .paymentRequirements(PaymentRequirements.builder()
+                                .scheme(EXACT_SCHEME.name())
+                                .network(BASE_SEPOLIA.name())
+                                .build())
                         .build()))
                 .isNotNull()
                 .satisfies(result -> {
                     assertThat(result.isValid()).isFalse();
                     assertThat(result.verificationError()).isEqualTo(INVALID_NETWORK);
-                    assertThat(result.errorMessage()).isEqualTo("Payment payload is not valid");
+                    assertThat(result.errorMessage()).isEqualTo("Payment payload is not valid (Not an ExactSchemePayload)");
                 });
     }
 
@@ -89,6 +132,7 @@ public class PaymentContextVerifierTest {
                                 .build())
                         .paymentRequirements(PaymentRequirements.builder()
                                 .scheme(EXACT_SCHEME.name())
+                                .network(BASE_SEPOLIA.name())
                                 .build())
                         .build()))
                 .isNotNull()
@@ -107,6 +151,7 @@ public class PaymentContextVerifierTest {
                                 .build())
                         .paymentRequirements(PaymentRequirements.builder()
                                 .scheme(EXACT_SCHEME.name())
+                                .network(BASE_SEPOLIA.name())
                                 .extra(EXACT_SCHEME_PARAMETER_NAME, "INVALID_STABLECOIN_NAME")
                                 .build())
                         .build()))
@@ -130,6 +175,7 @@ public class PaymentContextVerifierTest {
                                 .build())
                         .paymentRequirements(PaymentRequirements.builder()
                                 .scheme(EXACT_SCHEME.name())
+                                .network(BASE_SEPOLIA.name())
                                 .extra(EXACT_SCHEME_PARAMETER_NAME, "USDC")
                                 .build())
                         .build()))
@@ -149,6 +195,7 @@ public class PaymentContextVerifierTest {
                                 .build())
                         .paymentRequirements(PaymentRequirements.builder()
                                 .scheme(EXACT_SCHEME.name())
+                                .network(BASE_SEPOLIA.name())
                                 .extra(EXACT_SCHEME_PARAMETER_NAME, "USDC")
                                 .build())
                         .build()))
@@ -157,6 +204,77 @@ public class PaymentContextVerifierTest {
                     assertThat(result.isValid()).isFalse();
                     assertThat(result.verificationError()).isEqualTo(INVALID_NETWORK);
                     assertThat(result.errorMessage()).isEqualTo("Exact scheme version is not provided in the payment requirements");
+                });
+    }
+
+    @Test
+    @DisplayName("Valid asset contract address")
+    public void testValidAssetContractAddress() {
+        assertThat(paymentContextVerifier.verify(
+                VerifyRequest.builder()
+                        .paymentPayload(PaymentPayload.builder()
+                                .scheme(EXACT_SCHEME.name())
+                                .network(BASE_SEPOLIA.name())
+                                .payload(ExactSchemePayload.builder().build())
+                                .build())
+                        .paymentRequirements(PaymentRequirements.builder()
+                                .scheme(EXACT_SCHEME.name())
+                                .network(BASE_SEPOLIA.name())
+                                .extra(EXACT_SCHEME_PARAMETER_NAME, "USDC")
+                                .extra(EXACT_SCHEME_PARAMETER_VERSION, "2")
+                                .build())
+                        .build()))
+                .isNotNull()
+                .satisfies(result -> {
+                    assertThat(result.isValid()).isFalse();
+                    assertThat(result.verificationError()).isEqualTo(INVALID_NETWORK);
+                    assertThat(result.errorMessage()).isEqualTo("Asset in payment requirements is required");
+                });
+
+        assertThat(paymentContextVerifier.verify(
+                VerifyRequest.builder()
+                        .paymentPayload(PaymentPayload.builder()
+                                .scheme(EXACT_SCHEME.name())
+                                .network(BASE_SEPOLIA.name())
+                                .payload(ExactSchemePayload.builder().build())
+                                .build())
+                        .paymentRequirements(PaymentRequirements.builder()
+                                .scheme(EXACT_SCHEME.name())
+                                .network(BASE_SEPOLIA.name())
+                                .asset("0x12345678902345678")
+                                .extra(EXACT_SCHEME_PARAMETER_NAME, "USDC")
+                                .extra(EXACT_SCHEME_PARAMETER_VERSION, "2")
+                                .build())
+                        .build()))
+                .isNotNull()
+                .satisfies(result -> {
+                    assertThat(result.isValid()).isFalse();
+                    assertThat(result.verificationError()).isEqualTo(INVALID_NETWORK);
+                    assertThat(result.errorMessage()).isEqualTo("Asset in payment requirements is invalid (Your value: 0x12345678902345678)");
+                });
+    }
+
+    @Test
+    @DisplayName("Valid schemes")
+    public void testValidSchemes() {
+        assertThat(paymentContextVerifier.verify(
+                VerifyRequest.builder()
+                        .paymentPayload(PaymentPayload.builder()
+                                .scheme(EXACT_SCHEME.name())
+                                .network(BASE_SEPOLIA.name())
+                                .payload(ExactSchemePayload.builder().build())
+                                .build())
+                        .paymentRequirements(PaymentRequirements.builder()
+                                .scheme(EXACT_SCHEME.name())
+                                .network(BASE_SEPOLIA.name())
+                                .asset("0x036CbD53842c5426634e7929541eC2318f3dCF7e")
+                                .extra(EXACT_SCHEME_PARAMETER_NAME, "USDC")
+                                .extra(EXACT_SCHEME_PARAMETER_VERSION, "2")
+                                .build())
+                        .build()))
+                .isNotNull()
+                .satisfies(result -> {
+                    assertThat(result.isValid()).isTrue();
                 });
     }
 

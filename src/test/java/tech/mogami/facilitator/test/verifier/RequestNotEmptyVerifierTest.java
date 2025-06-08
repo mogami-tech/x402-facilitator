@@ -41,7 +41,7 @@ public class RequestNotEmptyVerifierTest {
                 .satisfies(result -> {
                     assertThat(result.isValid()).isFalse();
                     assertThat(result.verificationError()).isEqualTo(UNDEFINED);
-                    assertThat(result.errorMessage()).isEqualTo("The payment payload in the request is null");
+                    assertThat(result.errorMessage()).isEqualTo("Payment payload in verify request is required");
                 });
     }
 
@@ -56,7 +56,7 @@ public class RequestNotEmptyVerifierTest {
                 .satisfies(result -> {
                     assertThat(result.isValid()).isFalse();
                     assertThat(result.verificationError()).isEqualTo(UNDEFINED);
-                    assertThat(result.errorMessage()).isEqualTo("The payment requirements in the request is null");
+                    assertThat(result.errorMessage()).isEqualTo("Payment requirements in verify request are required");
                 });
     }
 
