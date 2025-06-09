@@ -18,6 +18,9 @@ public enum VerificationStep {
     SIGNATURE_FOR_EXACT_SCHEME,
 
     /** Payment made to the correct address. */
-    PAYMENT_ADDRESS_FOR_EXACT_SCHEME;
+    PAYMENT_ADDRESS_FOR_EXACT_SCHEME,
+
+    /** Check deadlines for the exact scheme. */
+    DEADLINES_FOR_EXACT_SCHEME;
 
 }
