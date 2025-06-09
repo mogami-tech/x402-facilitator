@@ -17,7 +17,10 @@ public enum VerificationError {
     UNSUPPORTED_SCHEME("unsupported_scheme"),
 
     /** Invalid network. */
-    INVALID_NETWORK("invalid_network");
+    INVALID_NETWORK("invalid_network"),
+
+    /** Invalid signature. */
+    INVALID_EXACT_SIGNATURE("invalid_exact_evm_payload_signature");
 
     /** Error code. */
     @Getter

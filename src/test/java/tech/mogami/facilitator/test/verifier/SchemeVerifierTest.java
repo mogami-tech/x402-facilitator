@@ -14,7 +14,7 @@ import static tech.mogami.commons.header.payment.schemes.Schemes.EXACT_SCHEME;
 import static tech.mogami.facilitator.verifier.VerificationError.UNSUPPORTED_SCHEME;
 
 @SpringBootTest
-@DisplayName("Scheme Verifier Tests")
+@DisplayName("Scheme verifier tests")
 public class SchemeVerifierTest {
 
     @Autowired

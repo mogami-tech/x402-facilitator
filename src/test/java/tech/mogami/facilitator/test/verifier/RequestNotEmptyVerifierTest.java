@@ -13,7 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static tech.mogami.facilitator.verifier.VerificationError.UNDEFINED;
 
 @SpringBootTest
-@DisplayName("Request not empty Verifier Tests")
+@DisplayName("Request not empty verifier tests")
 public class RequestNotEmptyVerifierTest {
 
     @Autowired

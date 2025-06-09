@@ -18,7 +18,7 @@ import static tech.mogami.commons.header.payment.schemes.Schemes.EXACT_SCHEME;
 import static tech.mogami.facilitator.verifier.VerificationError.INVALID_NETWORK;
 
 @SpringBootTest
-@DisplayName("Payment context Verifier Tests")
+@DisplayName("Payment context verifier tests")
 public class PaymentContextVerifierTest {
 
     @Autowired

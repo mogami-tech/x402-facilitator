@@ -12,6 +12,9 @@ public enum VerificationStep {
     SCHEME_EXISTS,
 
     /** Payment context verification step for the exact scheme. */
-    PAYMENT_CONTEXT_FOR_EXACT_SCHEME
+    PAYMENT_CONTEXT_FOR_EXACT_SCHEME,
+
+    /** Signature verification step for the exact scheme. */
+    SIGNATURE_FOR_EXACT_SCHEME;
 
 }
