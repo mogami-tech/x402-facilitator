@@ -29,7 +29,10 @@ public enum VerificationError {
     INVALID_EXACT_EVM_PAYLOAD_VALID_BEFORE("invalid_exact_evm_payload_authorization_valid_before"),
 
     /** Deadline on permit is in the futur. */
-    INVALID_EXACT_EVM_PAYLOAD_VALID_AFTER("invalid_exact_evm_payload_authorization_valid_after");
+    INVALID_EXACT_EVM_PAYLOAD_VALID_AFTER("invalid_exact_evm_payload_authorization_valid_after"),
+
+    /** Insufficient funds. */
+    INSUFFICIENT_FUNDS("insufficient_funds");
 
     /** Error code. */
     @Getter

@@ -1,5 +1,6 @@
 package tech.mogami.facilitator.test.service;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -213,6 +214,13 @@ public class VerifyServiceTest {
                     assertThat(result.invalidReason()).isEqualTo("invalid_exact_evm_payload_authorization_valid_before");
                     assertThat(result.payer()).isNull();    // TODO Add payer test
                 });
+    }
+
+    @Disabled
+    @Test
+    @DisplayName("Insufficient funds")
+    public void testInsufficientFunds() {
+        // TODO Implement this test.
     }
 
 }
