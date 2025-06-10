@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 /**
  * Verification errors.
- * TODO Maybe move this to commons.
+ * TODO Move this class to x402-commons.
  */
 @RequiredArgsConstructor
 public enum VerificationError {

@@ -1,5 +1,6 @@
 package tech.mogami.facilitator.web.rest;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,6 +16,7 @@ import static tech.mogami.commons.header.payment.schemes.Schemes.EXACT_SCHEME;
  * /supported endpoint - Get supported payment schemes and networks.
  */
 @RestController
+@RequiredArgsConstructor
 public class SupportedController {
 
     /**

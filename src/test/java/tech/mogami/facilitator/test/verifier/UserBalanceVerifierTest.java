@@ -97,9 +97,9 @@ public class UserBalanceVerifierTest {
                                 .validAfter("1748534647")
                                 .validBefore("1748534767")
                                 .nonce("0x9b750f5097972d82c02ac371278b83ecf3ca3be8387db59e664eb38c98f97a3d")
-                                .build()
-                        ).build()
-                ).build();
+                                .build())
+                        .build())
+                .build();
 
         assertThat(userBalanceVerifier.verify(
                 VerifyRequest.builder()

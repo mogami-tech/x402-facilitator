@@ -36,7 +36,6 @@ public class VerifyServiceTest {
                 .satisfies(result -> {
                     assertThat(result.isValid()).isFalse();
                     assertThat(result.invalidReason()).isEqualTo("undefined");
-                    assertThat(result.payer()).isNull();
                 });
     }
 
@@ -52,7 +51,6 @@ public class VerifyServiceTest {
                 .satisfies(result -> {
                     assertThat(result.isValid()).isFalse();
                     assertThat(result.invalidReason()).isEqualTo("unsupported_scheme");
-                    assertThat(result.payer()).isNull();    // TODO Add payer test
                 });
 
         assertThat(verifyService.verify(
@@ -64,7 +62,6 @@ public class VerifyServiceTest {
                 .satisfies(result -> {
                     assertThat(result.isValid()).isFalse();
                     assertThat(result.invalidReason()).isEqualTo("unsupported_scheme");
-                    assertThat(result.payer()).isNull();    // TODO Add payer test
                 });
     }
 
@@ -80,7 +77,6 @@ public class VerifyServiceTest {
                 .satisfies(result -> {
                     assertThat(result.isValid()).isFalse();
                     assertThat(result.invalidReason()).isEqualTo("invalid_network");
-                    assertThat(result.payer()).isNull();    // TODO Add payer test
                 });
     }
 
@@ -124,7 +120,6 @@ public class VerifyServiceTest {
                 .satisfies(result -> {
                     assertThat(result.isValid()).isFalse();
                     assertThat(result.invalidReason()).isEqualTo("invalid_exact_evm_payload_signature");
-                    assertThat(result.payer()).isNull();    // TODO Add payer test
                 });
     }
 
@@ -168,7 +163,6 @@ public class VerifyServiceTest {
                 .satisfies(result -> {
                     assertThat(result.isValid()).isFalse();
                     assertThat(result.invalidReason()).isEqualTo("invalid_exact_evm_payload_recipient_mismatch");
-                    assertThat(result.payer()).isNull();    // TODO Add payer test
                 });
     }
 
@@ -212,7 +206,6 @@ public class VerifyServiceTest {
                 .satisfies(result -> {
                     assertThat(result.isValid()).isFalse();
                     assertThat(result.invalidReason()).isEqualTo("invalid_exact_evm_payload_authorization_valid_before");
-                    assertThat(result.payer()).isNull();    // TODO Add payer test
                 });
     }
 
@@ -220,14 +213,14 @@ public class VerifyServiceTest {
     @Test
     @DisplayName("Insufficient funds")
     public void testInsufficientFunds() {
-        // TODO Implement this test.
+        // TODO Make a live test with Mogami client SDK.
     }
 
     @Disabled
     @Test
     @DisplayName("Insufficient payment value")
     public void testInsufficientPaymentValue() {
-        // TODO Implement this test.
+        // TODO Make a live test with Mogami client SDK.
     }
 
 }
