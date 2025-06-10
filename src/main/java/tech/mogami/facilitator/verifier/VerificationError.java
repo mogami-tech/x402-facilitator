@@ -32,9 +32,12 @@ public enum VerificationError {
     INVALID_EXACT_EVM_PAYLOAD_VALID_AFTER("invalid_exact_evm_payload_authorization_valid_after"),
 
     /** Insufficient funds. */
-    INSUFFICIENT_FUNDS("insufficient_funds");
+    INSUFFICIENT_FUNDS("insufficient_funds"),
 
-    /** Error code. */
+    /** Value in payload is enough to cover paymentRequirements.maxAmountRequired. */
+    INSUFFICIENT_PAYMENT_VALUE("invalid_exact_evm_payload_authorization_value");
+
+    /** Getter for error code. */
     @Getter
     private final String errorCode;
 

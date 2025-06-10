@@ -24,6 +24,9 @@ public enum VerificationStep {
     DEADLINES_FOR_EXACT_SCHEME,
 
     /** Check user balance. */
-    USER_BALANCE_FOR_EXACT_SCHEME;
+    USER_BALANCE_FOR_EXACT_SCHEME,
+
+    /** Verify the payment value for the exact scheme. */
+    PAYMENT_VALUE_FOR_EXACT_SCHEME;
 
 }

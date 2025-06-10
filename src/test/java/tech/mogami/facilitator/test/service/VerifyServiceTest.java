@@ -223,4 +223,11 @@ public class VerifyServiceTest {
         // TODO Implement this test.
     }
 
+    @Disabled
+    @Test
+    @DisplayName("Insufficient payment value")
+    public void testInsufficientPaymentValue() {
+        // TODO Implement this test.
+    }
+
 }

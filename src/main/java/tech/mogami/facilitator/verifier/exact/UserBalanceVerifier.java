@@ -23,7 +23,7 @@ import static tech.mogami.facilitator.verifier.VerificationStep.USER_BALANCE_FOR
  * User balance verifier.
  * This verifier checks if the user has sufficient balance to perform the transaction.
  */
-@Order(13)
+@Order(14)
 @Component
 @RequiredArgsConstructor
 @SuppressWarnings({"checkstyle:DesignForExtension", "unused", "checkstyle:MagicNumber"})
