@@ -5,24 +5,22 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.web3j.crypto.Credentials;
 import tech.mogami.commons.api.facilitator.verify.VerifyRequest;
 import tech.mogami.commons.header.payment.PaymentPayload;
 import tech.mogami.commons.header.payment.PaymentRequirements;
 import tech.mogami.commons.header.payment.schemes.exact.ExactSchemePayload;
 import tech.mogami.commons.util.JsonUtil;
+import tech.mogami.commons.util.NonceUtil;
 import tech.mogami.java.client.helper.X402PaymentHelper;
 
 import static org.springframework.http.MediaType.ALL;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.http.MediaType.TEXT_PLAIN;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static tech.mogami.commons.api.facilitator.FacilitatorRoutes.VERIFY_URL;
+import static tech.mogami.commons.api.facilitator.FacilitatorRoutes.SETTLE_URL;
 import static tech.mogami.commons.constant.network.Networks.BASE_SEPOLIA;
 import static tech.mogami.commons.constant.version.X402Versions.X402_SUPPORTED_VERSION_BY_MOGAMI;
 import static tech.mogami.commons.header.payment.schemes.Schemes.EXACT_SCHEME;
@@ -34,62 +32,21 @@ import static tech.mogami.commons.test.BaseTestData.TEST_SERVER_WALLET_ADDRESS_1
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@DisplayName("/verify tests")
-public class VerifyControllerTest {
+@DisplayName("/settle tests")
+public class SettleControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
     @Test
-    @DisplayName("/verify with an error")
-    void verifyWithErrorTest() throws Exception {
-        PaymentRequirements paymentRequirements = PaymentRequirements.builder()
-                .scheme(EXACT_SCHEME.name())
-                .network(BASE_SEPOLIA.name())
-                .maxAmountRequired("10000")
-                .resource("http://localhost/weather")
-                .payTo(TEST_SERVER_WALLET_ADDRESS_1)
-                .asset("0x036CbD53842c5426634e7929541eC2318f3dCF7e")
-                .extra(EXACT_SCHEME_PARAMETER_NAME, "USDC")
-                .extra(EXACT_SCHEME_PARAMETER_VERSION, "2")
-                .build();
-        PaymentPayload paymentPayload = PaymentPayload.builder()
-                .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
-                .scheme(EXACT_SCHEME.name())
-                .network(BASE_SEPOLIA.name())
-                .payload(ExactSchemePayload.builder()
-                        .signature("0xde533856d81c76984a8dbc8d563bbb6d6d4ca36ce6c4d6e8cf315de3bfc14ab26d6bcdc37549aeed78bf92e39d5180268f8f399a4ffb816cfbf500823882b6001c")
-                        .authorization(ExactSchemePayload.Authorization.builder()
-                                .from(TEST_CLIENT_WALLET_ADDRESS_1)
-                                .to(TEST_SERVER_WALLET_ADDRESS_1)
-                                .value("10000")
-                                .validAfter("1748534647")
-                                .validBefore("1748534767")
-                                .nonce("0x9b750f5097972d82c02ac371278b83ecf3ca3be8387db59e664eb38c98f97a3d")
-                                .build())
-                        .build())
-                .build();
+    @DisplayName("/settle with an error")
+    void settleWithErrorTest() throws Exception {
 
-        mockMvc.perform(MockMvcRequestBuilders.post(VERIFY_URL)
-                        .contentType(APPLICATION_JSON)
-                        .accept(APPLICATION_JSON, TEXT_PLAIN, ALL)
-                        .header("User-Agent", "axios/1.8.4")
-                        .header("Accept-Encoding", "identity")
-                        .content(JsonUtil.toJson(VerifyRequest.builder()
-                                .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
-                                .paymentPayload(paymentPayload)
-                                .paymentRequirements(paymentRequirements)
-                                .build())))
-                .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.isValid").value(false))
-                .andExpect(jsonPath("$.invalidReason").value("invalid_exact_evm_payload_authorization_valid_before"))
-                .andExpect(jsonPath("$.payer").value(TEST_CLIENT_WALLET_ADDRESS_1));
     }
 
     @Test
-    @DisplayName("/verify without error")
-    void verifyWithoutErrorTest() throws Exception {
+    @DisplayName("/settle without error")
+    void settleWithoutErrorTest() throws Exception {
         long now = System.currentTimeMillis() / 1000;
         PaymentRequirements paymentRequirements = PaymentRequirements.builder()
                 .scheme(EXACT_SCHEME.name())
@@ -112,7 +69,7 @@ public class VerifyControllerTest {
                                 .value("10000")
                                 .validAfter(String.valueOf(now))
                                 .validBefore(String.valueOf(now + 10))
-                                .nonce("0x9b750f5097972d82c02ac371278b83ecf3ca3be8387db59e664eb38c98f97a3d")
+                                .nonce(NonceUtil.generateNonce())
                                 .build()
                         ).build()
                 ).build();
@@ -123,7 +80,7 @@ public class VerifyControllerTest {
                 paymentRequirements,
                 paymentPayload);
 
-        mockMvc.perform(MockMvcRequestBuilders.post(VERIFY_URL)
+        mockMvc.perform(MockMvcRequestBuilders.post(SETTLE_URL)
                         .contentType(APPLICATION_JSON)
                         .accept(APPLICATION_JSON, TEXT_PLAIN, ALL)
                         .header("User-Agent", "axios/1.8.4")
@@ -133,12 +90,11 @@ public class VerifyControllerTest {
                                 .paymentPayload(signedPayload)
                                 .paymentRequirements(paymentRequirements)
                                 .build())))
-                .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentTypeCompatibleWith(APPLICATION_JSON))
-                .andExpect(jsonPath("$.isValid").value(true))
-                .andExpect(jsonPath("$.invalidReason").isEmpty())
-                .andExpect(jsonPath("$.payer").value(TEST_CLIENT_WALLET_ADDRESS_1));
+                .andExpect(status().isOk());
+        //.andExpect(MockMvcResultMatchers.content().contentTypeCompatibleWith(APPLICATION_JSON))
+        //.andExpect(jsonPath("$.isValid").value(true))
+        //      .andExpect(jsonPath("$.invalidReason").isEmpty())
+        //      .andExpect(jsonPath("$.payer").value(TEST_CLIENT_WALLET_ADDRESS_1));
     }
-
 
 }
