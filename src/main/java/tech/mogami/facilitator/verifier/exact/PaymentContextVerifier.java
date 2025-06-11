@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 import tech.mogami.commons.api.facilitator.verify.VerifyRequest;
 import tech.mogami.commons.constant.stablecoin.Stablecoins;
 import tech.mogami.commons.header.payment.PaymentRequirements;
-import tech.mogami.commons.header.payment.schemes.ExactSchemePayload;
+import tech.mogami.commons.header.payment.schemes.exact.ExactSchemePayload;
 import tech.mogami.facilitator.verifier.VerificationResult;
 import tech.mogami.facilitator.verifier.VerificationStep;
 import tech.mogami.facilitator.verifier.VerifierForExactScheme;
@@ -17,8 +17,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import static tech.mogami.commons.header.payment.schemes.ExactSchemeConstants.EXACT_SCHEME_PARAMETER_NAME;
-import static tech.mogami.commons.header.payment.schemes.ExactSchemeConstants.EXACT_SCHEME_PARAMETER_VERSION;
+import static tech.mogami.commons.header.payment.schemes.exact.ExactSchemeConstants.EXACT_SCHEME_PARAMETER_NAME;
+import static tech.mogami.commons.header.payment.schemes.exact.ExactSchemeConstants.EXACT_SCHEME_PARAMETER_VERSION;
 import static tech.mogami.facilitator.verifier.VerificationError.INVALID_NETWORK;
 import static tech.mogami.facilitator.verifier.VerificationStep.PAYMENT_CONTEXT_FOR_EXACT_SCHEME;
 

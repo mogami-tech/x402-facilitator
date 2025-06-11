@@ -5,7 +5,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import tech.mogami.commons.api.facilitator.verify.VerifyRequest;
-import tech.mogami.commons.header.payment.schemes.ExactSchemePayload;
+import tech.mogami.commons.header.payment.schemes.exact.ExactSchemePayload;
 import tech.mogami.facilitator.verifier.VerificationResult;
 import tech.mogami.facilitator.verifier.VerificationStep;
 import tech.mogami.facilitator.verifier.VerifierForExactScheme;

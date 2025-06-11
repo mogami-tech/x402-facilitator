@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import tech.mogami.commons.api.facilitator.verify.VerifyRequest;
 import tech.mogami.commons.api.facilitator.verify.VerifyResponse;
-import tech.mogami.commons.header.payment.schemes.ExactSchemePayload;
+import tech.mogami.commons.header.payment.schemes.exact.ExactSchemePayload;
 import tech.mogami.facilitator.verifier.VerificationResult;
 import tech.mogami.facilitator.verifier.Verifier;
 
@@ -61,12 +61,12 @@ public class VerifyServiceImplementation implements VerifyService {
 
     /**
      * Gets the payer from the verification request.
+     * TODO optimize when all fields will be clearly checked.
      *
      * @param verificationRequest the verification request
      * @return the payer address or "PAYER_NOT_FOUND" if not found
      */
     private String getPayerFromVerifyRequest(final VerifyRequest verificationRequest) {
-        // TODO optimize when all fields will be clearly checked.
         if (verificationRequest == null || verificationRequest.paymentPayload() == null) {
             return "PAYER_NOT_FOUND";
         }

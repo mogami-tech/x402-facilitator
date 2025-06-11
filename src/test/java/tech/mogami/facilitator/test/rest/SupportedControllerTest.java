@@ -33,6 +33,8 @@ public class SupportedControllerTest {
     @Test
     @DisplayName("/supported test")
     void supportedTest() throws Exception {
+        verify(supportedService, times(0)).supported();
+
         // First call without cache.
         mockMvc.perform(get(SUPPORTED_URL))
                 .andExpect(status().isOk())
@@ -43,6 +45,7 @@ public class SupportedControllerTest {
                 .andExpect(jsonPath("$.kinds[0].x402Version").value("1"))
                 .andExpect(jsonPath("$.kinds[0].scheme").value("exact"))
                 .andExpect(jsonPath("$.kinds[0].network").value("base-sepolia"));
+        verify(supportedService, times(1)).supported();
 
         // Second call with cache (REST service should only have been called once).
         mockMvc.perform(get(SUPPORTED_URL))

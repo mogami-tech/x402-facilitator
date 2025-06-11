@@ -7,7 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import tech.mogami.commons.api.facilitator.verify.VerifyRequest;
 import tech.mogami.commons.header.payment.PaymentPayload;
 import tech.mogami.commons.header.payment.PaymentRequirements;
-import tech.mogami.commons.header.payment.schemes.ExactSchemePayload;
+import tech.mogami.commons.header.payment.schemes.exact.ExactSchemePayload;
 import tech.mogami.facilitator.verifier.exact.PaymentValueVerifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
