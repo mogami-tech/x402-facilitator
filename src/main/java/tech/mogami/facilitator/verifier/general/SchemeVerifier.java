@@ -13,7 +13,7 @@ import tech.mogami.facilitator.verifier.VerifierUtil;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import static tech.mogami.facilitator.verifier.VerificationError.UNSUPPORTED_SCHEME;
+import static tech.mogami.commons.api.facilitator.VerificationError.UNSUPPORTED_SCHEME;
 import static tech.mogami.facilitator.verifier.VerificationStep.SCHEME_EXISTS;
 
 /**

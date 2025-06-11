@@ -11,10 +11,10 @@ import tech.mogami.commons.header.payment.schemes.exact.ExactSchemePayload;
 import tech.mogami.facilitator.verifier.exact.DeadlineVerifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static tech.mogami.commons.api.facilitator.VerificationError.INVALID_EXACT_EVM_PAYLOAD_VALID_AFTER;
+import static tech.mogami.commons.api.facilitator.VerificationError.INVALID_EXACT_EVM_PAYLOAD_VALID_BEFORE;
 import static tech.mogami.commons.constant.network.Networks.BASE_SEPOLIA;
 import static tech.mogami.commons.header.payment.schemes.Schemes.EXACT_SCHEME;
-import static tech.mogami.facilitator.verifier.VerificationError.INVALID_EXACT_EVM_PAYLOAD_VALID_AFTER;
-import static tech.mogami.facilitator.verifier.VerificationError.INVALID_EXACT_EVM_PAYLOAD_VALID_BEFORE;
 
 @SpringBootTest
 @DisplayName("Deadline verifier tests")

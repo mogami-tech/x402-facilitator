@@ -9,8 +9,8 @@ import tech.mogami.facilitator.verifier.VerificationResult;
 import tech.mogami.facilitator.verifier.VerificationStep;
 import tech.mogami.facilitator.verifier.VerifierForExactScheme;
 
-import static tech.mogami.facilitator.verifier.VerificationError.INVALID_EXACT_EVM_PAYLOAD_VALID_AFTER;
-import static tech.mogami.facilitator.verifier.VerificationError.INVALID_EXACT_EVM_PAYLOAD_VALID_BEFORE;
+import static tech.mogami.commons.api.facilitator.VerificationError.INVALID_EXACT_EVM_PAYLOAD_VALID_AFTER;
+import static tech.mogami.commons.api.facilitator.VerificationError.INVALID_EXACT_EVM_PAYLOAD_VALID_BEFORE;
 import static tech.mogami.facilitator.verifier.VerificationStep.DEADLINES_FOR_EXACT_SCHEME;
 
 /**

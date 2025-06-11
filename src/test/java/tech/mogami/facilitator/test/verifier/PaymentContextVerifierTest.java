@@ -11,11 +11,11 @@ import tech.mogami.commons.header.payment.schemes.exact.ExactSchemePayload;
 import tech.mogami.facilitator.verifier.exact.PaymentContextVerifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static tech.mogami.commons.api.facilitator.VerificationError.INVALID_NETWORK;
 import static tech.mogami.commons.constant.network.Networks.BASE_SEPOLIA;
 import static tech.mogami.commons.header.payment.schemes.Schemes.EXACT_SCHEME;
 import static tech.mogami.commons.header.payment.schemes.exact.ExactSchemeConstants.EXACT_SCHEME_PARAMETER_NAME;
 import static tech.mogami.commons.header.payment.schemes.exact.ExactSchemeConstants.EXACT_SCHEME_PARAMETER_VERSION;
-import static tech.mogami.facilitator.verifier.VerificationError.INVALID_NETWORK;
 
 @SpringBootTest
 @DisplayName("Payment context verifier tests")

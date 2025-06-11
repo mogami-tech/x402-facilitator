@@ -20,7 +20,6 @@ jobs:
       - name: Set up environment
         uses: ./.github/actions/setup
 
-      # TODO Add docker build and push steps.
       - name: Deploy release
         run: |
           just run_install

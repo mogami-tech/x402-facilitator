@@ -16,7 +16,7 @@ import tech.mogami.facilitator.verifier.VerifierForExactScheme;
 
 import java.math.BigInteger;
 
-import static tech.mogami.facilitator.verifier.VerificationError.INSUFFICIENT_FUNDS;
+import static tech.mogami.commons.api.facilitator.VerificationError.INSUFFICIENT_FUNDS;
 import static tech.mogami.facilitator.verifier.VerificationStep.USER_BALANCE_FOR_EXACT_SCHEME;
 
 /**

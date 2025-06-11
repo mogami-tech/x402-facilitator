@@ -1,5 +1,7 @@
 package tech.mogami.facilitator.verifier;
 
+import tech.mogami.commons.api.facilitator.VerificationError;
+
 /**
  * VerificationResult is a placeholder for the result of a verification process.
  *

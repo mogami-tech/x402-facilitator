@@ -9,11 +9,13 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.web3j.crypto.Credentials;
 import tech.mogami.commons.api.facilitator.verify.VerifyRequest;
 import tech.mogami.commons.header.payment.PaymentPayload;
 import tech.mogami.commons.header.payment.PaymentRequirements;
 import tech.mogami.commons.header.payment.schemes.exact.ExactSchemePayload;
 import tech.mogami.commons.util.JsonUtil;
+import tech.mogami.java.client.helper.X402PaymentHelper;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.http.MediaType.TEXT_PLAIN;
@@ -26,6 +28,7 @@ import static tech.mogami.commons.header.payment.schemes.Schemes.EXACT_SCHEME;
 import static tech.mogami.commons.header.payment.schemes.exact.ExactSchemeConstants.EXACT_SCHEME_PARAMETER_NAME;
 import static tech.mogami.commons.header.payment.schemes.exact.ExactSchemeConstants.EXACT_SCHEME_PARAMETER_VERSION;
 import static tech.mogami.commons.test.BaseTestData.TEST_CLIENT_WALLET_ADDRESS_1;
+import static tech.mogami.commons.test.BaseTestData.TEST_CLIENT_WALLET_ADDRESS_1_PRIVATE_KEY;
 import static tech.mogami.commons.test.BaseTestData.TEST_SERVER_WALLET_ADDRESS_1;
 
 @SpringBootTest
@@ -77,7 +80,6 @@ public class VerifyControllerTest {
                                 .paymentRequirements(paymentRequirements)
                                 .build())))
                 .andExpect(status().isOk())
-                .andExpect(status().isOk()) // Ou HttpStatus.BAD_REQUEST si c'est une erreur client
                 .andExpect(MockMvcResultMatchers.content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.isValid").value(false))
                 .andExpect(jsonPath("$.invalidReason").value("invalid_exact_evm_payload_authorization_valid_before"))
@@ -87,7 +89,54 @@ public class VerifyControllerTest {
     @Test
     @DisplayName("/verify without error")
     void verifyWithoutErrorTest() throws Exception {
-        // TODO Make a live test with Mogami client SDK.
+        long now = System.currentTimeMillis() / 1000;
+        PaymentRequirements paymentRequirements = PaymentRequirements.builder()
+                .scheme(EXACT_SCHEME.name())
+                .network(BASE_SEPOLIA.name())
+                .maxAmountRequired("10000")
+                .resource("http://localhost/weather")
+                .payTo(TEST_SERVER_WALLET_ADDRESS_1)
+                .asset("0x036CbD53842c5426634e7929541eC2318f3dCF7e")
+                .extra(EXACT_SCHEME_PARAMETER_NAME, "USDC")
+                .extra(EXACT_SCHEME_PARAMETER_VERSION, "2")
+                .build();
+        PaymentPayload paymentPayload = PaymentPayload.builder()
+                .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
+                .scheme(EXACT_SCHEME.name())
+                .network(BASE_SEPOLIA.name())
+                .payload(ExactSchemePayload.builder()
+                        .authorization(ExactSchemePayload.Authorization.builder()
+                                .from(TEST_CLIENT_WALLET_ADDRESS_1)
+                                .to(TEST_SERVER_WALLET_ADDRESS_1)
+                                .value("10000")
+                                .validAfter(String.valueOf(now))
+                                .validBefore(String.valueOf(now + 10))
+                                .nonce("0x9b750f5097972d82c02ac371278b83ecf3ca3be8387db59e664eb38c98f97a3d")
+                                .build()
+                        ).build()
+                ).build();
+
+        // We use Mogami client SDK to create a payment payload with insufficient funds.
+        var signedPayload = X402PaymentHelper.getSignedPayload(
+                Credentials.create(TEST_CLIENT_WALLET_ADDRESS_1_PRIVATE_KEY),
+                paymentRequirements,
+                paymentPayload);
+
+        mockMvc.perform(MockMvcRequestBuilders.post(VERIFY_URL)
+                        .contentType(APPLICATION_JSON)
+                        .accept(APPLICATION_JSON, TEXT_PLAIN, MediaType.ALL)
+                        .header("User-Agent", "axios/1.8.4")
+                        .header("Accept-Encoding", "identity")
+                        .content(JsonUtil.toJson(VerifyRequest.builder()
+                                .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
+                                .paymentPayload(signedPayload)
+                                .paymentRequirements(paymentRequirements)
+                                .build())))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.isValid").value(true))
+                .andExpect(jsonPath("$.invalidReason").isEmpty())
+                .andExpect(jsonPath("$.payer").value(TEST_CLIENT_WALLET_ADDRESS_1));
     }
 
 

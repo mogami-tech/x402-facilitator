@@ -10,7 +10,7 @@ import tech.mogami.commons.header.payment.PaymentRequirements;
 import tech.mogami.facilitator.verifier.general.RequestNotEmptyVerifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static tech.mogami.facilitator.verifier.VerificationError.UNDEFINED;
+import static tech.mogami.commons.api.facilitator.VerificationError.UNDEFINED;
 
 @SpringBootTest
 @DisplayName("Request not empty verifier tests")

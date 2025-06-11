@@ -11,7 +11,7 @@ import tech.mogami.facilitator.verifier.VerifierForExactScheme;
 
 import java.math.BigDecimal;
 
-import static tech.mogami.facilitator.verifier.VerificationError.INSUFFICIENT_PAYMENT_VALUE;
+import static tech.mogami.commons.api.facilitator.VerificationError.INSUFFICIENT_PAYMENT_VALUE;
 
 /**
  * Payment value verifier.

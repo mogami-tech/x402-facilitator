@@ -164,6 +164,11 @@
             <version>${assertj.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>tech.mogami.java.client</groupId>
+            <artifactId>mogami-x402-java-client</artifactId>
+            <version>0.1.1-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
     <!-- =========================================================================================================== -->

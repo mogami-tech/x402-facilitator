@@ -10,8 +10,8 @@ import tech.mogami.commons.header.payment.PaymentRequirements;
 import tech.mogami.facilitator.verifier.general.SchemeVerifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static tech.mogami.commons.api.facilitator.VerificationError.UNSUPPORTED_SCHEME;
 import static tech.mogami.commons.header.payment.schemes.Schemes.EXACT_SCHEME;
-import static tech.mogami.facilitator.verifier.VerificationError.UNSUPPORTED_SCHEME;
 
 @SpringBootTest
 @DisplayName("Scheme verifier tests")

@@ -43,7 +43,7 @@ public class VerifyServiceImplementation implements VerifyService {
         for (Verifier v : verifiers) {
             VerificationResult result = v.verify(verifyRequest);
             if (!result.isValid()) {
-                log.debug("Verification error {} : {}", v.type(), result.errorMessage());
+                log.info("Verification error {} : {}", v.type(), result.errorMessage());
                 return VerifyResponse.builder()
                         .isValid(false)
                         .invalidReason(result.verificationError().getErrorCode())
@@ -61,7 +61,6 @@ public class VerifyServiceImplementation implements VerifyService {
 
     /**
      * Gets the payer from the verification request.
-     * TODO optimize when all fields will be clearly checked.
      *
      * @param verificationRequest the verification request
      * @return the payer address or "PAYER_NOT_FOUND" if not found

@@ -10,7 +10,7 @@ import tech.mogami.facilitator.verifier.VerificationResult;
 import tech.mogami.facilitator.verifier.VerificationStep;
 import tech.mogami.facilitator.verifier.VerifierForExactScheme;
 
-import static tech.mogami.facilitator.verifier.VerificationError.INVALID_EXACT_EVM_PAYLOAD_RECIPIENT_MISMATCH;
+import static tech.mogami.commons.api.facilitator.VerificationError.INVALID_EXACT_EVM_PAYLOAD_RECIPIENT_MISMATCH;
 import static tech.mogami.facilitator.verifier.VerificationStep.PAYMENT_ADDRESS_FOR_EXACT_SCHEME;
 
 /**

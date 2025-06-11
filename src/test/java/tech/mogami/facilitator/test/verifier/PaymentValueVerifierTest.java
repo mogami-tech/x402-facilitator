@@ -11,7 +11,7 @@ import tech.mogami.commons.header.payment.schemes.exact.ExactSchemePayload;
 import tech.mogami.facilitator.verifier.exact.PaymentValueVerifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static tech.mogami.facilitator.verifier.VerificationError.INSUFFICIENT_PAYMENT_VALUE;
+import static tech.mogami.commons.api.facilitator.VerificationError.INSUFFICIENT_PAYMENT_VALUE;
 
 @SpringBootTest
 @DisplayName("Payment value verifier tests")
