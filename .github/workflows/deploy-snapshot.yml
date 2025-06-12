@@ -21,7 +21,7 @@ jobs:
       - name: Set up environment
         uses: ./.github/actions/setup
 
-      - name: Deploy docker image snapshot
+      - name: Build image and run tests
         run: |
           just build_docker_image
 

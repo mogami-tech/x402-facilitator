@@ -20,6 +20,21 @@ jobs:
       - name: Set up environment
         uses: ./.github/actions/setup
 
-      - name: Deploy release
+      - name: Get release number
+        id: release
+        run: echo "version=$(mvn help:evaluate -D expression=project.version -q -D forceStdout)" >> $GITHUB_OUTPUT
+
+      - name: Build image and run tests
         run: |
           just build_docker_image
+
+      - name: Docker Hub login
+        uses: docker/login-action@v3.3.0
+        with:
+          username: ${{ secrets.FACILITATOR_DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.FACILITATOR_DOCKER_HUB_PASSWORD }}
+
+      - name: Tag and push docker image to Docker hub
+        run: |
+          docker tag mogamitech/facilitator:latest mogamitech/facilitator:${{ steps.release.outputs.version }}
+          docker push mogamitech/facilitator:${{ steps.release.outputs.version }}
