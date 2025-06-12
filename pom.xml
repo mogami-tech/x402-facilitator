@@ -271,6 +271,19 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>${spring-boot.version}</version>
+                <configuration>
+                    <image>
+                        <name>mogamitech/facilitator:latest</name>
+                    </image>
+                    <mainClass>tech.mogami.facilitator.Application</mainClass>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <!-- =========================================================================================================== -->
             <!-- Release -->

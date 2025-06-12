@@ -22,4 +22,4 @@ jobs:
 
       - name: Deploy release
         run: |
-          just run_install
+          just build_docker_image

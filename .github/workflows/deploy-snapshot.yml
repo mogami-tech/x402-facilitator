@@ -1,0 +1,36 @@
+name: Deploy docker image snapshot to Docker Hub
+
+on:
+  push:
+    branches:
+      - development
+
+jobs:
+
+  snapshot:
+    name: Deploy docker image snapshot to Docker Hub
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: write
+    steps:
+
+      - name: Retrieve the sources
+        uses: actions/checkout@v4
+
+      - name: Set up environment
+        uses: ./.github/actions/setup
+
+      - name: Deploy docker image snapshot
+        run: |
+          just build_docker_image
+
+      - name: Docker Hub login
+        uses: docker/login-action@v3.3.0
+        with:
+          username: ${{ secrets.FACILITATOR_DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.FACILITATOR_DOCKER_HUB_PASSWORD }}
+
+      - name: Push docker image to Docker hub
+        run: |
+          docker push mogamitech/facilitator:latest

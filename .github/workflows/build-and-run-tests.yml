@@ -5,6 +5,7 @@ on:
     tags-ignore:
       - '*'
     branches-ignore:
+      - development
       - production
 
 jobs:
