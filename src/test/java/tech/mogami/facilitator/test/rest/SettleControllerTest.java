@@ -1,5 +1,6 @@
 package tech.mogami.facilitator.test.rest;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ import tech.mogami.java.client.helper.X402PaymentHelper;
 import static org.springframework.http.MediaType.ALL;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.http.MediaType.TEXT_PLAIN;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static tech.mogami.commons.api.facilitator.FacilitatorRoutes.SETTLE_URL;
 import static tech.mogami.commons.constant.network.Networks.BASE_SEPOLIA;
@@ -41,10 +43,31 @@ public class SettleControllerTest {
     @Test
     @DisplayName("/settle with an error")
     void settleWithErrorTest() throws Exception {
-
+        mockMvc.perform(MockMvcRequestBuilders.post(SETTLE_URL)
+                        .contentType(APPLICATION_JSON)
+                        .accept(APPLICATION_JSON, TEXT_PLAIN, ALL)
+                        .content(JsonUtil.toJson(
+                                VerifyRequest.builder()
+                                        .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
+                                        .paymentPayload(PaymentPayload.builder()
+                                                .network(BASE_SEPOLIA.name())
+                                                .scheme(EXACT_SCHEME.name())
+                                                .payload(ExactSchemePayload.builder()
+                                                        .authorization(ExactSchemePayload.Authorization.builder().build()))
+                                                .build())
+                                        .paymentRequirements(PaymentRequirements.builder()
+                                                .network(BASE_SEPOLIA.name())
+                                                .scheme("INVALID_SCHEME").build())
+                                        .build())))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.network").value(BASE_SEPOLIA.name()))
+                .andExpect(jsonPath("$.errorReason").value("unsupported_scheme"))
+                .andExpect(jsonPath("$.payer").value("PAYER_NOT_FOUND"));
     }
 
     @Test
+    @Disabled("Disabled until we can mock the smart contract call")
     @DisplayName("/settle without error")
     void settleWithoutErrorTest() throws Exception {
         long now = System.currentTimeMillis() / 1000;
@@ -90,11 +113,11 @@ public class SettleControllerTest {
                                 .paymentPayload(signedPayload)
                                 .paymentRequirements(paymentRequirements)
                                 .build())))
-                .andExpect(status().isOk());
-        //.andExpect(MockMvcResultMatchers.content().contentTypeCompatibleWith(APPLICATION_JSON))
-        //.andExpect(jsonPath("$.isValid").value(true))
-        //      .andExpect(jsonPath("$.invalidReason").isEmpty())
-        //      .andExpect(jsonPath("$.payer").value(TEST_CLIENT_WALLET_ADDRESS_1));
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.network").value(BASE_SEPOLIA.name()))
+                .andExpect(jsonPath("$.errorReason").isEmpty())
+                .andExpect(jsonPath("$.payer").value(TEST_CLIENT_WALLET_ADDRESS_1));
     }
 
 }
