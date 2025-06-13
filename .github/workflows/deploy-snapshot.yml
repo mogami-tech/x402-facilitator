@@ -1,4 +1,4 @@
-name: Deploy docker image snapshot to Docker Hub
+name: Deploy docker latest image to Docker Hub
 
 on:
   push:
@@ -8,11 +8,8 @@ on:
 jobs:
 
   snapshot:
-    name: Deploy docker image snapshot to Docker Hub
+    name: Deploy docker latest image to Docker Hub
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      actions: write
     steps:
 
       - name: Retrieve the sources
