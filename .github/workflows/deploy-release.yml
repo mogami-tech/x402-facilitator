@@ -1,4 +1,4 @@
-name: Deploy release to Maven Central
+name: Deploy docker image to Docker Hub
 
 on:
   push:
@@ -7,11 +7,8 @@ on:
 jobs:
 
   release:
-    name: Deploy release to Maven Central
+    name: Deploy docker image to Docker Hub
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      actions: write
     steps:
 
       - name: Retrieve the sources
