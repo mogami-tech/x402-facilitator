@@ -66,7 +66,7 @@
         <!-- ======================================================================================================= -->
         <!-- Libraries releases -->
         <spring-boot.version>3.5.0</spring-boot.version>
-        <caffeine.version>3.2.0</caffeine.version>
+        <caffeine.version>3.2.1</caffeine.version>
         <lombok.version>1.18.38</lombok.version>
 
         <!-- Crypto libraries -->
