@@ -12,8 +12,6 @@
     </a>
 </p>
 
-<hr>
-
 <h3 align="center">Mogami x402 facilitator - Verifies and settles the client’s signed payment on-chain </h3>
 
 <p align="center">
