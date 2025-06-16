@@ -1,5 +1,7 @@
 package tech.mogami.facilitator.web.rest;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,6 +34,7 @@ import static tech.mogami.commons.constant.network.Networks.BASE_SEPOLIA;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
+@Tag(name = "Settle", description = "Settle a payment")
 public class SettleController {
 
     /** X402 parameters. */
@@ -47,6 +50,7 @@ public class SettleController {
      * @return VerifyResponse containing the settlement result
      */
     @PostMapping(SETTLE_URL)
+    @Operation(summary = "Settle a payment request")
     SettleResponse settle(@RequestBody final VerifyRequest verifyRequest) {
         log.info("Received settlement request: {}", verifyRequest);
         VerifyResponse verifyResult = verifierService.verify(verifyRequest);

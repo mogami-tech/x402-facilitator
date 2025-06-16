@@ -1,5 +1,7 @@
 package tech.mogami.facilitator.web.rest;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
@@ -19,6 +21,7 @@ import static tech.mogami.commons.header.payment.schemes.Schemes.EXACT_SCHEME;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
+@Tag(name = "Supported", description = "Get supported payment schemes and networks")
 public class SupportedController {
 
     /**
@@ -27,6 +30,7 @@ public class SupportedController {
      * @return SupportedResponse
      */
     @GetMapping(SUPPORTED_URL)
+    @Operation(summary = "Supported Payment Schemes and Networks")
     @Cacheable(value = "supportedCache", key = "'supported'", sync = true)
     public SupportedResponse supported() {
         log.info("Received the first /supported request");

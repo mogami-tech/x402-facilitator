@@ -1,5 +1,7 @@
 package tech.mogami.facilitator.web.rest;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,11 +14,12 @@ import tech.mogami.facilitator.service.VerifyService;
 import static tech.mogami.commons.api.facilitator.FacilitatorRoutes.VERIFY_URL;
 
 /**
- * /verify endpoint - Verify a payment with a supported scheme and network.
+ * /verify endpoint - Verify a payment.
  */
 @Slf4j
 @RestController
 @RequiredArgsConstructor
+@Tag(name = "Verify", description = "Verify a payment")
 public class VerifyController {
 
     /** Verify service to handle verification logic. */
@@ -29,6 +32,7 @@ public class VerifyController {
      * @return VerifyResponse containing the verification result
      */
     @PostMapping(VERIFY_URL)
+    @Operation(summary = "Verify a payment request")
     VerifyResponse verify(@RequestBody final VerifyRequest verifyRequest) {
         log.info("Received verification request: {}", verifyRequest);
         return verifierService.verify(verifyRequest);
