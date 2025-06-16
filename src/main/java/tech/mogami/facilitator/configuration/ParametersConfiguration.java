@@ -1,6 +1,5 @@
 package tech.mogami.facilitator.configuration;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import tech.mogami.facilitator.parameter.X402Parameters;
@@ -12,7 +11,5 @@ import tech.mogami.facilitator.parameter.X402Parameters;
 @EnableConfigurationProperties({
         X402Parameters.class
 })
-@RequiredArgsConstructor
-@SuppressWarnings("checkstyle:DesignForExtension")
 public class ParametersConfiguration {
 }

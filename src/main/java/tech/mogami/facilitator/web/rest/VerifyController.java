@@ -1,6 +1,7 @@
 package tech.mogami.facilitator.web.rest;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -13,6 +14,7 @@ import static tech.mogami.commons.api.facilitator.FacilitatorRoutes.VERIFY_URL;
 /**
  * /verify endpoint - Verify a payment with a supported scheme and network.
  */
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 public class VerifyController {
@@ -28,6 +30,7 @@ public class VerifyController {
      */
     @PostMapping(VERIFY_URL)
     VerifyResponse verify(@RequestBody final VerifyRequest verifyRequest) {
+        log.info("Received verification request: {}", verifyRequest);
         return verifierService.verify(verifyRequest);
     }
 

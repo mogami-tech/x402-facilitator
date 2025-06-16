@@ -41,8 +41,8 @@ public class SettleControllerTest {
     private MockMvc mockMvc;
 
     @Test
-    @DisplayName("/settle with an error")
-    void settleWithErrorTest() throws Exception {
+    @DisplayName("Calling /settle with an error")
+    void settleWithError() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.post(SETTLE_URL)
                         .contentType(APPLICATION_JSON)
                         .accept(APPLICATION_JSON, TEXT_PLAIN, ALL)
@@ -69,9 +69,9 @@ public class SettleControllerTest {
     @Test
     @Disabled("Disabled until we can mock the smart contract call")
     @DisplayName("/settle without error")
-    void settleWithoutErrorTest() throws Exception {
+    void settleWithoutError() throws Exception {
         long now = System.currentTimeMillis() / 1000;
-        PaymentRequirements paymentRequirements = PaymentRequirements.builder()
+        var paymentRequirements = PaymentRequirements.builder()
                 .scheme(EXACT_SCHEME.name())
                 .network(BASE_SEPOLIA.name())
                 .maxAmountRequired("20000")
@@ -81,7 +81,7 @@ public class SettleControllerTest {
                 .extra(EXACT_SCHEME_PARAMETER_NAME, "USDC")
                 .extra(EXACT_SCHEME_PARAMETER_VERSION, "2")
                 .build();
-        PaymentPayload paymentPayload = PaymentPayload.builder()
+        var paymentPayload = PaymentPayload.builder()
                 .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
                 .scheme(EXACT_SCHEME.name())
                 .network(BASE_SEPOLIA.name())

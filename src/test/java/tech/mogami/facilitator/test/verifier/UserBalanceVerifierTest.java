@@ -29,8 +29,8 @@ public class UserBalanceVerifierTest {
 
     @Test
     @DisplayName("User balance insufficient test")
-    public void testUserBalanceInsufficient() {
-        PaymentRequirements paymentRequirements = PaymentRequirements.builder()
+    public void userBalanceInsufficient() {
+        var paymentRequirements = PaymentRequirements.builder()
                 .scheme(EXACT_SCHEME.name())
                 .network(BASE_SEPOLIA.name())
                 .maxAmountRequired("10000")
@@ -40,7 +40,7 @@ public class UserBalanceVerifierTest {
                 .extra(EXACT_SCHEME_PARAMETER_NAME, "USDC")
                 .extra(EXACT_SCHEME_PARAMETER_VERSION, "2")
                 .build();
-        PaymentPayload paymentPayload = PaymentPayload.builder()
+        var paymentPayload = PaymentPayload.builder()
                 .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
                 .scheme(EXACT_SCHEME.name())
                 .network(BASE_SEPOLIA.name())
@@ -72,9 +72,9 @@ public class UserBalanceVerifierTest {
     }
 
     @Test
-    @DisplayName("User balance sufficient test")
-    public void testUserBalanceSufficient() {
-        PaymentRequirements paymentRequirements = PaymentRequirements.builder()
+    @DisplayName("User balance sufficient")
+    public void userBalanceSufficient() {
+        var paymentRequirements = PaymentRequirements.builder()
                 .scheme(EXACT_SCHEME.name())
                 .network(BASE_SEPOLIA.name())
                 .maxAmountRequired("10000")
@@ -84,7 +84,7 @@ public class UserBalanceVerifierTest {
                 .extra(EXACT_SCHEME_PARAMETER_NAME, "USDC")
                 .extra(EXACT_SCHEME_PARAMETER_VERSION, "2")
                 .build();
-        PaymentPayload paymentPayload = PaymentPayload.builder()
+        var paymentPayload = PaymentPayload.builder()
                 .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
                 .scheme(EXACT_SCHEME.name())
                 .network(BASE_SEPOLIA.name())

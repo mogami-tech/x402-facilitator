@@ -24,8 +24,8 @@ public class DeadlineVerifierTest {
     private DeadlineVerifier deadlineVerifier;
 
     @Test
-    @DisplayName("validBefore test")
-    public void testValidBefore() {
+    @DisplayName("validBefore error")
+    public void validBeforeError() {
         assertThat(deadlineVerifier.verify(
                 VerifyRequest.builder()
                         .paymentPayload(PaymentPayload.builder()
@@ -54,8 +54,8 @@ public class DeadlineVerifierTest {
     }
 
     @Test
-    @DisplayName("validAfter test")
-    public void testValidAfter() {
+    @DisplayName("validAfter error")
+    public void validAfterError() {
         assertThat(deadlineVerifier.verify(
                 VerifyRequest.builder()
                         .paymentPayload(PaymentPayload.builder()

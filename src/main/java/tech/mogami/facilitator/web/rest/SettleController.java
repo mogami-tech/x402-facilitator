@@ -48,6 +48,7 @@ public class SettleController {
      */
     @PostMapping(SETTLE_URL)
     SettleResponse settle(@RequestBody final VerifyRequest verifyRequest) {
+        log.info("Received settlement request: {}", verifyRequest);
         VerifyResponse verifyResult = verifierService.verify(verifyRequest);
         if (!verifyResult.isValid()) {
             log.error("Invalid payment request: {}", verifyResult);
@@ -58,11 +59,10 @@ public class SettleController {
                     .payer(verifyResult.payer())
                     .build();
         } else {
-
             // TODO Make "https://sepolia.base.org" configurable.
             try (Web3j web3j = Web3j.build(new HttpService("https://sepolia.base.org"))) {
 
-                // Loading the contract to use to make the payment.
+                // Loading the contract to use to make the payment =====================================================
                 FiatTokenV2_2 contract = FiatTokenV2_2.load(
                         verifyRequest.paymentRequirements().asset(),
                         web3j,
@@ -78,7 +78,10 @@ public class SettleController {
                         )
                 );
 
-                // We create the transaction using the authorization details from the ExactSchemePayload.
+                // We send the transaction using the authorization =====================================================
+                log.info("Settling request {} with contract {}",
+                        verifyRequest,
+                        verifyRequest.paymentRequirements().asset());
                 ExactSchemePayload payload = (ExactSchemePayload) verifyRequest.paymentPayload().payload();
                 var transactionReceipt = contract.transferWithAuthorization(
                                 payload.authorization().from(),
@@ -90,7 +93,7 @@ public class SettleController {
                                 Numeric.hexStringToByteArray(payload.signature()))
                         .send();
 
-                // We treat the result of the transaction.
+                // We treat the result of the transaction ==============================================================
                 if (transactionReceipt.isStatusOK()) {
                     log.info("Successfully settled of request {}: {}",
                             verifyRequest,

@@ -31,8 +31,8 @@ public class SupportedControllerTest {
     private SupportedController supportedService;
 
     @Test
-    @DisplayName("/supported test")
-    void supportedTest() throws Exception {
+    @DisplayName("Calling /supported")
+    void supported() throws Exception {
         verify(supportedService, times(0)).supported();
 
         // First call without cache.

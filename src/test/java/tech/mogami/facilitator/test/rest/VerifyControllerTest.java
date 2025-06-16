@@ -41,9 +41,9 @@ public class VerifyControllerTest {
     private MockMvc mockMvc;
 
     @Test
-    @DisplayName("/verify with an error")
-    void verifyWithErrorTest() throws Exception {
-        PaymentRequirements paymentRequirements = PaymentRequirements.builder()
+    @DisplayName("Calling /verify with an error")
+    void verifyWithError() throws Exception {
+        var paymentRequirements = PaymentRequirements.builder()
                 .scheme(EXACT_SCHEME.name())
                 .network(BASE_SEPOLIA.name())
                 .maxAmountRequired("10000")
@@ -53,7 +53,7 @@ public class VerifyControllerTest {
                 .extra(EXACT_SCHEME_PARAMETER_NAME, "USDC")
                 .extra(EXACT_SCHEME_PARAMETER_VERSION, "2")
                 .build();
-        PaymentPayload paymentPayload = PaymentPayload.builder()
+        var paymentPayload = PaymentPayload.builder()
                 .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
                 .scheme(EXACT_SCHEME.name())
                 .network(BASE_SEPOLIA.name())
@@ -88,10 +88,10 @@ public class VerifyControllerTest {
     }
 
     @Test
-    @DisplayName("/verify without error")
-    void verifyWithoutErrorTest() throws Exception {
-        long now = System.currentTimeMillis() / 1000;
-        PaymentRequirements paymentRequirements = PaymentRequirements.builder()
+    @DisplayName("Calling /verify without error")
+    void verifyWithoutError() throws Exception {
+        var now = System.currentTimeMillis() / 1000;
+        var paymentRequirements = PaymentRequirements.builder()
                 .scheme(EXACT_SCHEME.name())
                 .network(BASE_SEPOLIA.name())
                 .maxAmountRequired("10000")
@@ -101,7 +101,7 @@ public class VerifyControllerTest {
                 .extra(EXACT_SCHEME_PARAMETER_NAME, "USDC")
                 .extra(EXACT_SCHEME_PARAMETER_VERSION, "2")
                 .build();
-        PaymentPayload paymentPayload = PaymentPayload.builder()
+        var paymentPayload = PaymentPayload.builder()
                 .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
                 .scheme(EXACT_SCHEME.name())
                 .network(BASE_SEPOLIA.name())
@@ -139,6 +139,5 @@ public class VerifyControllerTest {
                 .andExpect(jsonPath("$.invalidReason").isEmpty())
                 .andExpect(jsonPath("$.payer").value(TEST_CLIENT_WALLET_ADDRESS_1));
     }
-
 
 }

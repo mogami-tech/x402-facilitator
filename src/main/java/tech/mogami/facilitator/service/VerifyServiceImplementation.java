@@ -41,6 +41,7 @@ public class VerifyServiceImplementation implements VerifyService {
     public VerifyResponse verify(final VerifyRequest verifyRequest) {
         // We run all verifiers in order, and return the first failure if any (Using @Order annotation).
         for (Verifier v : verifiers) {
+            log.info("Running verification with {}: {}", v.type(), verifyRequest);
             VerificationResult result = v.verify(verifyRequest);
             if (!result.isValid()) {
                 log.info("Verification error {} : {}", v.type(), result.errorMessage());
@@ -49,10 +50,13 @@ public class VerifyServiceImplementation implements VerifyService {
                         .invalidReason(result.verificationError().getErrorCode())
                         .payer(getPayerFromVerifyRequest(verifyRequest))
                         .build();
+            } else {
+                log.debug("Verification successful with {}", v.type());
             }
         }
 
         // No error, so we return a valid response.
+        log.info("All verifiers passed for request: {}", verifyRequest);
         return VerifyResponse.builder()
                 .isValid(true)
                 .payer(getPayerFromVerifyRequest(verifyRequest))
@@ -69,12 +73,12 @@ public class VerifyServiceImplementation implements VerifyService {
         if (verificationRequest == null || verificationRequest.paymentPayload() == null) {
             return "PAYER_NOT_FOUND";
         }
-        ExactSchemePayload payload = (ExactSchemePayload) verificationRequest.paymentPayload().payload();
-        if (payload != null && payload.authorization() != null && payload.authorization().from() != null) {
-            return payload.authorization().from();
-        } else {
-            return "PAYER_NOT_FOUND";
+        if (verificationRequest.paymentPayload().payload() instanceof ExactSchemePayload exact
+                && exact.authorization() != null
+                && exact.authorization().from() != null) {
+            return exact.authorization().from();
         }
+        return "PAYER_NOT_FOUND";
     }
 
 }

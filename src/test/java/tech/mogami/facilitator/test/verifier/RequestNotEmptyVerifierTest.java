@@ -21,7 +21,7 @@ public class RequestNotEmptyVerifierTest {
 
     @Test
     @DisplayName("Request is empty")
-    public void testRequestIsEmpty() {
+    public void requestIsEmpty() {
         assertThat(requestNotEmptyVerifier.verify(null))
                 .isNotNull()
                 .satisfies(result -> {
@@ -33,7 +33,7 @@ public class RequestNotEmptyVerifierTest {
 
     @Test
     @DisplayName("Payment payload is null")
-    public void testPaymentPayloadIsNull() {
+    public void paymentPayloadIsNull() {
         assertThat(requestNotEmptyVerifier.verify(
                 VerifyRequest.builder()
                         .build()))
@@ -47,7 +47,7 @@ public class RequestNotEmptyVerifierTest {
 
     @Test
     @DisplayName("Payment requirements is null")
-    public void testPaymentRequirementsIsNull() {
+    public void paymentRequirementsIsNull() {
         assertThat(requestNotEmptyVerifier.verify(
                 VerifyRequest.builder()
                         .paymentPayload(PaymentPayload.builder().build())
@@ -62,7 +62,7 @@ public class RequestNotEmptyVerifierTest {
 
     @Test
     @DisplayName("Request not empty - valid request")
-    public void testRequestNotEmpty() {
+    public void validRequest() {
         assertThat(requestNotEmptyVerifier.verify(
                 VerifyRequest.builder()
                         .paymentPayload(PaymentPayload.builder().build())

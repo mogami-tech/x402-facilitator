@@ -1,6 +1,7 @@
 package tech.mogami.facilitator.web.rest;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,6 +16,7 @@ import static tech.mogami.commons.header.payment.schemes.Schemes.EXACT_SCHEME;
 /**
  * /supported endpoint - Get supported payment schemes and networks.
  */
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 public class SupportedController {
@@ -27,6 +29,7 @@ public class SupportedController {
     @GetMapping(SUPPORTED_URL)
     @Cacheable(value = "supportedCache", key = "'supported'", sync = true)
     public SupportedResponse supported() {
+        log.info("Received the first /supported request");
         return SupportedResponse.builder()
                 // Base networks =======================================================================================
                 .kind(SupportedKind.builder()
