@@ -14,6 +14,7 @@ import org.web3j.tx.RawTransactionManager;
 import org.web3j.tx.gas.StaticEIP1559GasProvider;
 import org.web3j.utils.Convert;
 import org.web3j.utils.Numeric;
+import tech.mogami.commons.api.facilitator.settle.SettleRequest;
 import tech.mogami.commons.api.facilitator.settle.SettleResponse;
 import tech.mogami.commons.api.facilitator.verify.VerifyRequest;
 import tech.mogami.commons.api.facilitator.verify.VerifyResponse;
@@ -46,19 +47,25 @@ public class SettleController {
     /**
      * Settle a payment request.
      *
-     * @param verifyRequest the request containing the payment details to settle
+     * @param settleRequest the request containing the payment details to settle
      * @return VerifyResponse containing the settlement result
      */
     @PostMapping(SETTLE_URL)
     @Operation(summary = "Settle a payment request")
-    SettleResponse settle(@RequestBody final VerifyRequest verifyRequest) {
-        log.info("Received settlement request: {}", verifyRequest);
-        VerifyResponse verifyResult = verifierService.verify(verifyRequest);
+    SettleResponse settle(@RequestBody final SettleRequest settleRequest) {
+        log.info("Received settlement request: {}", settleRequest);
+        VerifyResponse verifyResult = verifierService
+                .verify(VerifyRequest.builder()
+                        .x402Version(settleRequest.x402Version())
+                        .paymentPayload(settleRequest.paymentPayload())
+                        .paymentRequirements(settleRequest.paymentRequirements())
+                        .build());
+
         if (!verifyResult.isValid()) {
             log.error("Invalid payment request: {}", verifyResult);
             return SettleResponse.builder()
                     .success(false)
-                    .network(verifyRequest.paymentRequirements().network())
+                    .network(settleRequest.paymentRequirements().network())
                     .errorReason(verifyResult.invalidReason())
                     .payer(verifyResult.payer())
                     .build();
@@ -68,7 +75,7 @@ public class SettleController {
 
                 // Loading the contract to use to make the payment =====================================================
                 FiatTokenV2_2 contract = FiatTokenV2_2.load(
-                        verifyRequest.paymentRequirements().asset(),
+                        settleRequest.paymentRequirements().asset(),
                         web3j,
                         new RawTransactionManager(web3j,
                                 Credentials.create(x402Parameters.facilitator().privateKey()),
@@ -84,13 +91,13 @@ public class SettleController {
 
                 // We send the transaction using the authorization =====================================================
                 log.info("Settling request {} with contract {}",
-                        verifyRequest,
-                        verifyRequest.paymentRequirements().asset());
-                ExactSchemePayload payload = (ExactSchemePayload) verifyRequest.paymentPayload().payload();
+                        settleRequest,
+                        settleRequest.paymentRequirements().asset());
+                ExactSchemePayload payload = (ExactSchemePayload) settleRequest.paymentPayload().payload();
                 var transactionReceipt = contract.transferWithAuthorization(
                                 payload.authorization().from(),
-                                verifyRequest.paymentRequirements().payTo(),
-                                new BigInteger(verifyRequest.paymentRequirements().maxAmountRequired()),
+                                settleRequest.paymentRequirements().payTo(),
+                                new BigInteger(settleRequest.paymentRequirements().maxAmountRequired()),
                                 new BigInteger(payload.authorization().validAfter()),
                                 new BigInteger(payload.authorization().validBefore()),
                                 Numeric.hexStringToByteArray(payload.authorization().nonce()),
@@ -100,32 +107,32 @@ public class SettleController {
                 // We treat the result of the transaction ==============================================================
                 if (transactionReceipt.isStatusOK()) {
                     log.info("Successfully settled of request {}: {}",
-                            verifyRequest,
+                            settleRequest,
                             transactionReceipt.getTransactionHash());
                     return SettleResponse.builder()
                             .success(true)
-                            .network(verifyRequest.paymentRequirements().network())
+                            .network(settleRequest.paymentRequirements().network())
                             .transaction(transactionReceipt.getTransactionHash())
                             .payer(verifyResult.payer())
                             .build();
                 } else {
                     log.error("Failed to settle request {}: {}",
-                            verifyRequest,
+                            settleRequest,
                             transactionReceipt.getStatus());
                     return SettleResponse.builder()
                             .success(false)
-                            .network(verifyRequest.paymentRequirements().network())
+                            .network(settleRequest.paymentRequirements().network())
                             .errorReason("transaction_failed")
                             .payer(verifyResult.payer())
                             .build();
                 }
             } catch (Exception e) {
                 log.error("Exception during request settlement {}: {}",
-                        verifyRequest,
+                        settleRequest,
                         e.getMessage());
                 return SettleResponse.builder()
                         .success(false)
-                        .network(verifyRequest.paymentRequirements().network())
+                        .network(settleRequest.paymentRequirements().network())
                         .errorReason(e.getMessage())
                         .payer(verifyResult.payer())
                         .build();
