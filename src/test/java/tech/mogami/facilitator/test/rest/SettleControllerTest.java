@@ -93,9 +93,9 @@ public class SettleControllerTest {
                                 .validAfter(String.valueOf(now))
                                 .validBefore(String.valueOf(now + 10))
                                 .nonce(NonceUtil.generateNonce())
-                                .build()
-                        ).build()
-                ).build();
+                                .build())
+                        .build())
+                .build();
 
         // We use Mogami client SDK to create a payment payload with insufficient funds.
         var signedPayload = X402PaymentHelper.getSignedPayload(

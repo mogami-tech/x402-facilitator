@@ -5,8 +5,8 @@ package tech.mogami.facilitator.verifier;
  */
 public enum VerificationStep {
 
-    /** Verify that the request is not empty. */
-    REQUEST_NOT_EMPTY,
+    /** Verify that the request is globally valid (most fields). */
+    GLOBAL_VERIFIER,
 
     /** Verify the scheme. */
     SCHEME_EXISTS,

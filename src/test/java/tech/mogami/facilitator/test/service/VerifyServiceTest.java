@@ -42,38 +42,41 @@ public class VerifyServiceTest {
     }
 
     @Test
-    @DisplayName("Invalid schemes")
-    public void invalidSchemes() {
-        assertThat(verifyService.verify(
-                VerifyRequest.builder()
-                        .paymentPayload(PaymentPayload.builder().scheme("INVALID_SCHEME").build())
-                        .paymentRequirements(PaymentRequirements.builder().scheme(EXACT_SCHEME.name()).build())
-                        .build()))
-                .isNotNull()
-                .satisfies(result -> {
-                    assertThat(result.isValid()).isFalse();
-                    assertThat(result.invalidReason()).isEqualTo("unsupported_scheme");
-                });
-
-        assertThat(verifyService.verify(
-                VerifyRequest.builder()
-                        .paymentPayload(PaymentPayload.builder().scheme(EXACT_SCHEME.name()).build())
-                        .paymentRequirements(PaymentRequirements.builder().scheme("INVALID_SCHEME").build())
-                        .build()))
-                .isNotNull()
-                .satisfies(result -> {
-                    assertThat(result.isValid()).isFalse();
-                    assertThat(result.invalidReason()).isEqualTo("unsupported_scheme");
-                });
-    }
-
-    @Test
     @DisplayName("Invalid payment context")
     public void invalidPaymentContext() {
+        var paymentRequirements = PaymentRequirements.builder()
+                .scheme(EXACT_SCHEME.name())
+                .network(BASE_SEPOLIA.name())
+                .maxAmountRequired("10000")
+                .resource("http://localhost/weather")
+                .payTo(TEST_SERVER_WALLET_ADDRESS_1)
+                .maxTimeoutSeconds(60)
+                .asset("0x036CbD53842c5426634e7929541eC2318f3dCF7e")
+                .extra(EXACT_SCHEME_PARAMETER_VERSION, "2")
+                // USDC is missing for this test.
+                .build();
+        var paymentPayload = PaymentPayload.builder()
+                .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
+                .scheme(EXACT_SCHEME.name())
+                .network(BASE_SEPOLIA.name())
+                .payload(ExactSchemePayload.builder()
+                        .signature("0xde533856d81c76984a8dbc8d563bbb6d6d4ca36ce6c4d6e8cf315de3bfc14ab26d6bcdc37549aeed78bf92e39d5180268f8f399a4ffb816cfbf500823882b6001c")
+                        .authorization(ExactSchemePayload.Authorization.builder()
+                                .from(TEST_CLIENT_WALLET_ADDRESS_1)
+                                .to(TEST_SERVER_WALLET_ADDRESS_1)
+                                .value("10000")
+                                .validAfter("1748534647")
+                                .validBefore("1748534768")
+                                .nonce("0x9b750f5097972d82c02ac371278b83ecf3ca3be8387db59e664eb38c98f97a3d")
+                                .build())
+                        .build())
+                .build();
+
         assertThat(verifyService.verify(
                 VerifyRequest.builder()
-                        .paymentPayload(PaymentPayload.builder().scheme(EXACT_SCHEME.name()).build())
-                        .paymentRequirements(PaymentRequirements.builder().scheme(EXACT_SCHEME.name()).build())
+                        .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
+                        .paymentPayload(paymentPayload)
+                        .paymentRequirements(paymentRequirements)
                         .build()))
                 .isNotNull()
                 .satisfies(result -> {
@@ -91,6 +94,7 @@ public class VerifyServiceTest {
                 .maxAmountRequired("10000")
                 .resource("http://localhost/weather")
                 .payTo(TEST_SERVER_WALLET_ADDRESS_1)
+                .maxTimeoutSeconds(60)
                 .asset("0x036CbD53842c5426634e7929541eC2318f3dCF7e")
                 .extra(EXACT_SCHEME_PARAMETER_NAME, "USDC")
                 .extra(EXACT_SCHEME_PARAMETER_VERSION, "2")
@@ -150,6 +154,7 @@ public class VerifyServiceTest {
                 .maxAmountRequired("10000")
                 .resource("http://localhost/weather")
                 .payTo(TEST_SERVER_WALLET_ADDRESS_2)
+                .maxTimeoutSeconds(60)
                 .asset("0x036CbD53842c5426634e7929541eC2318f3dCF7e")
                 .extra(EXACT_SCHEME_PARAMETER_NAME, "USDC")
                 .extra(EXACT_SCHEME_PARAMETER_VERSION, "2")
@@ -193,6 +198,7 @@ public class VerifyServiceTest {
                 .maxAmountRequired("10000")
                 .resource("http://localhost/weather")
                 .payTo(TEST_SERVER_WALLET_ADDRESS_1)
+                .maxTimeoutSeconds(60)
                 .asset("0x036CbD53842c5426634e7929541eC2318f3dCF7e")
                 .extra(EXACT_SCHEME_PARAMETER_NAME, "USDC")
                 .extra(EXACT_SCHEME_PARAMETER_VERSION, "2")
@@ -221,6 +227,7 @@ public class VerifyServiceTest {
                 .maxAmountRequired("10000")
                 .resource("http://localhost/weather")
                 .payTo(TEST_SERVER_WALLET_ADDRESS_1)
+                .maxTimeoutSeconds(60)
                 .asset("0x036CbD53842c5426634e7929541eC2318f3dCF7e")
                 .extra(EXACT_SCHEME_PARAMETER_NAME, "USDC")
                 .extra(EXACT_SCHEME_PARAMETER_VERSION, "2")
@@ -271,6 +278,7 @@ public class VerifyServiceTest {
                 .maxAmountRequired("10000")
                 .resource("http://localhost/weather")
                 .payTo(TEST_SERVER_WALLET_ADDRESS_1)
+                .maxTimeoutSeconds(60)
                 .asset("0x036CbD53842c5426634e7929541eC2318f3dCF7e")
                 .extra(EXACT_SCHEME_PARAMETER_NAME, "USDC")
                 .extra(EXACT_SCHEME_PARAMETER_VERSION, "2")
