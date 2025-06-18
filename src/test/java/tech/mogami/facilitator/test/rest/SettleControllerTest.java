@@ -48,21 +48,11 @@ public class SettleControllerTest {
                         .accept(APPLICATION_JSON, TEXT_PLAIN, ALL)
                         .content(JsonUtil.toJson(
                                 VerifyRequest.builder()
-                                        .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
-                                        .paymentPayload(PaymentPayload.builder()
-                                                .network(BASE_SEPOLIA.name())
-                                                .scheme(EXACT_SCHEME.name())
-                                                .payload(ExactSchemePayload.builder()
-                                                        .authorization(ExactSchemePayload.Authorization.builder().build()))
-                                                .build())
-                                        .paymentRequirements(PaymentRequirements.builder()
-                                                .network(BASE_SEPOLIA.name())
-                                                .scheme("INVALID_SCHEME").build())
                                         .build())))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(false))
                 .andExpect(jsonPath("$.network").value(BASE_SEPOLIA.name()))
-                .andExpect(jsonPath("$.errorReason").value("unsupported_scheme"))
+                .andExpect(jsonPath("$.errorReason").value("invalid_payload"))
                 .andExpect(jsonPath("$.payer").value("PAYER_NOT_FOUND"));
     }
 

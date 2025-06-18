@@ -63,9 +63,19 @@ public class SettleController {
 
         if (!verifyResult.isValid()) {
             log.error("Invalid payment request: {}", verifyResult);
+
+            // The settle response should reply with the network, but we must be sure there is no null value.
+            String network;
+            if (settleRequest.paymentRequirements() == null || settleRequest.paymentRequirements().network() == null) {
+                log.error("Payment requirements network is null, using default BASE_SEPOLIA");
+                network = BASE_SEPOLIA.name();
+            } else {
+                network = settleRequest.paymentRequirements().network();
+            }
+
             return SettleResponse.builder()
                     .success(false)
-                    .network(settleRequest.paymentRequirements().network())
+                    .network(network)
                     .errorReason(verifyResult.invalidReason())
                     .payer(verifyResult.payer())
                     .build();
