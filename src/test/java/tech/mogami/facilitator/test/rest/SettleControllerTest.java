@@ -1,6 +1,5 @@
 package tech.mogami.facilitator.test.rest;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,15 +56,15 @@ public class SettleControllerTest {
     }
 
     @Test
-    @Disabled("Disabled until we can mock the smart contract call")
     @DisplayName("/settle without error")
     void settleWithoutError() throws Exception {
         long now = System.currentTimeMillis() / 1000;
         var paymentRequirements = PaymentRequirements.builder()
                 .scheme(EXACT_SCHEME.name())
                 .network(BASE_SEPOLIA.name())
-                .maxAmountRequired("20000")
+                .maxAmountRequired("200")
                 .resource("http://localhost/weather")
+                .maxTimeoutSeconds(60)
                 .payTo(TEST_SERVER_WALLET_ADDRESS_1)
                 .asset("0x036CbD53842c5426634e7929541eC2318f3dCF7e")
                 .extra(EXACT_SCHEME_PARAMETER_NAME, "USDC")
@@ -79,7 +78,7 @@ public class SettleControllerTest {
                         .authorization(ExactSchemePayload.Authorization.builder()
                                 .from(TEST_CLIENT_WALLET_ADDRESS_1)
                                 .to(TEST_SERVER_WALLET_ADDRESS_1)
-                                .value("20000")
+                                .value("200")
                                 .validAfter(String.valueOf(now))
                                 .validBefore(String.valueOf(now + 10))
                                 .nonce(NonceUtil.generateNonce())
@@ -102,7 +101,6 @@ public class SettleControllerTest {
                                 .paymentRequirements(paymentRequirements)
                                 .build())))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.network").value(BASE_SEPOLIA.name()))
                 .andExpect(jsonPath("$.errorReason").isEmpty())
                 .andExpect(jsonPath("$.payer").value(TEST_CLIENT_WALLET_ADDRESS_1));

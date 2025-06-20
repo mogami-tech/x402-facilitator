@@ -273,9 +273,7 @@ public class PaymentContextVerifierTest {
                                 .build())
                         .build()))
                 .isNotNull()
-                .satisfies(result -> {
-                    assertThat(result.isValid()).isTrue();
-                });
+                .satisfies(result -> assertThat(result.isValid()).isTrue());
     }
 
 }

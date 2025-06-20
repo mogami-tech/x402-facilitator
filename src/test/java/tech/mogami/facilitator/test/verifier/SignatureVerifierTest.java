@@ -90,7 +90,7 @@ public class SignatureVerifierTest {
                 .scheme(EXACT_SCHEME.name())
                 .network(BASE_SEPOLIA.name())
                 .payload(ExactSchemePayload.builder()
-                        .signature("0xde533856d81c76984a8dbc8d563bbb6d6d4ca36ce6c4d6e8cf315de3bfc14ab26d6bcdc37549aeed78bf92e39d5180268f8f399a4ffb816cfbf500823882b6001c")
+                        .signature("0x7d9463e2c7c98e33c08747882521be88cc02443a8c46f3a1f5b51ae8d1bdd9581fa41ab35c1cebfe70a79471640a1bde9ffadd377e38d708b5ca6a38b30300f61b")
                         .authorization(ExactSchemePayload.Authorization.builder()
                                 .from(TEST_CLIENT_WALLET_ADDRESS_1)
                                 .to(TEST_SERVER_WALLET_ADDRESS_1)

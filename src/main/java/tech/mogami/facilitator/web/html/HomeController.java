@@ -15,6 +15,7 @@ public class HomeController {
      * @return Redirects to the Swagger UI index page.
      */
     @GetMapping("/")
+    @SuppressWarnings("SameReturnValue")
     public String redirectToSwaggerUi() {
         return "redirect:/swagger-ui/index.html";
     }

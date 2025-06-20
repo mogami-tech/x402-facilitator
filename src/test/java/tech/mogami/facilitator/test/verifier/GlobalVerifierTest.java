@@ -1051,7 +1051,7 @@ public class GlobalVerifierTest {
     @Test
     @Order(37)
     @DisplayName("No validation errors - all fields are valid")
-    public void noValiadtionErros() {
+    public void noValidationErrors() {
         long now = System.currentTimeMillis() / 1000;
         assertThat(globalVerifier.verify(
                 VerifyRequest.builder()
