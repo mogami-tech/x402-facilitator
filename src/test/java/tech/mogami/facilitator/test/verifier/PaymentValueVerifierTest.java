@@ -22,7 +22,7 @@ public class PaymentValueVerifierTest {
 
     @Test
     @DisplayName("Payload value is not enough")
-    public void payloadValueIsNotEnoughTest() {
+    public void payloadValueIsNotEnough() {
         assertThat(paymentValueVerifier.verify(
                 VerifyRequest.builder()
                         .paymentPayload(PaymentPayload.builder()
@@ -47,7 +47,7 @@ public class PaymentValueVerifierTest {
 
     @Test
     @DisplayName("Payload value is enough")
-    public void payloadValueIsEnoughTest() {
+    public void payloadValueIsEnough() {
         assertThat(paymentValueVerifier.verify(
                 VerifyRequest.builder()
                         .paymentPayload(PaymentPayload.builder()
@@ -72,7 +72,7 @@ public class PaymentValueVerifierTest {
 
     @Test
     @DisplayName("Payload value is superior to required amount")
-    public void payloadValueIsSuperiorTest() {
+    public void payloadValueIsSuperior() {
         assertThat(paymentValueVerifier.verify(
                 VerifyRequest.builder()
                         .paymentPayload(PaymentPayload.builder()

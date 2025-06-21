@@ -28,7 +28,7 @@ public class PaymentValueVerifier implements VerifierForExactScheme {
         // Verify that payment was made to the correct address
         ExactSchemePayload payload = (ExactSchemePayload) verifyRequest.paymentPayload().payload();
 
-        // Check if the payment value is sufficient.
+        // Check if the payment value is enough.
         BigDecimal payloadValue = new BigDecimal(payload.authorization().value());
         BigDecimal maxAmountRequired = new BigDecimal(verifyRequest.paymentRequirements().maxAmountRequired());
         if (payloadValue.compareTo(maxAmountRequired) < 0) {

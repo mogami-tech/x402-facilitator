@@ -21,8 +21,8 @@ public class SchemeVerifierTest {
     private SchemeVerifier schemeVerifier;
 
     @Test
-    @DisplayName("Schemes are not set")
-    public void testSchemesNotSet() {
+    @DisplayName("Schemes is not set")
+    public void schemesNotSet() {
         assertThat(schemeVerifier.verify(
                 VerifyRequest.builder()
                         .paymentPayload(PaymentPayload.builder().build())
@@ -50,7 +50,7 @@ public class SchemeVerifierTest {
 
     @Test
     @DisplayName("Invalid schemes")
-    public void testInvalidSchemes() {
+    public void invalidSchemes() {
         assertThat(schemeVerifier.verify(
                 VerifyRequest.builder()
                         .paymentPayload(PaymentPayload.builder().scheme("INVALID_PAYLOAD_SCHEME").build())
@@ -78,7 +78,7 @@ public class SchemeVerifierTest {
 
     @Test
     @DisplayName("Valid schemes")
-    public void testValidSchemes() {
+    public void validSchemes() {
         assertThat(schemeVerifier.verify(
                 VerifyRequest.builder()
                         .paymentPayload(PaymentPayload.builder().scheme(EXACT_SCHEME.name()).build())

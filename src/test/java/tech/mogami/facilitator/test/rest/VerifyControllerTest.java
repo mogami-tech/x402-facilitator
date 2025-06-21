@@ -41,24 +41,25 @@ public class VerifyControllerTest {
     private MockMvc mockMvc;
 
     @Test
-    @DisplayName("/verify with an error")
-    void verifyWithErrorTest() throws Exception {
-        PaymentRequirements paymentRequirements = PaymentRequirements.builder()
+    @DisplayName("Calling /verify with an error")
+    void verifyWithError() throws Exception {
+        var paymentRequirements = PaymentRequirements.builder()
                 .scheme(EXACT_SCHEME.name())
                 .network(BASE_SEPOLIA.name())
                 .maxAmountRequired("10000")
                 .resource("http://localhost/weather")
                 .payTo(TEST_SERVER_WALLET_ADDRESS_1)
+                .maxTimeoutSeconds(60)
                 .asset("0x036CbD53842c5426634e7929541eC2318f3dCF7e")
                 .extra(EXACT_SCHEME_PARAMETER_NAME, "USDC")
                 .extra(EXACT_SCHEME_PARAMETER_VERSION, "2")
                 .build();
-        PaymentPayload paymentPayload = PaymentPayload.builder()
+        var paymentPayload = PaymentPayload.builder()
                 .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
                 .scheme(EXACT_SCHEME.name())
                 .network(BASE_SEPOLIA.name())
                 .payload(ExactSchemePayload.builder()
-                        .signature("0xde533856d81c76984a8dbc8d563bbb6d6d4ca36ce6c4d6e8cf315de3bfc14ab26d6bcdc37549aeed78bf92e39d5180268f8f399a4ffb816cfbf500823882b6001c")
+                        .signature("0x7d9463e2c7c98e33c08747882521be88cc02443a8c46f3a1f5b51ae8d1bdd9581fa41ab35c1cebfe70a79471640a1bde9ffadd377e38d708b5ca6a38b30300f61b")
                         .authorization(ExactSchemePayload.Authorization.builder()
                                 .from(TEST_CLIENT_WALLET_ADDRESS_1)
                                 .to(TEST_SERVER_WALLET_ADDRESS_1)
@@ -88,20 +89,21 @@ public class VerifyControllerTest {
     }
 
     @Test
-    @DisplayName("/verify without error")
-    void verifyWithoutErrorTest() throws Exception {
-        long now = System.currentTimeMillis() / 1000;
-        PaymentRequirements paymentRequirements = PaymentRequirements.builder()
+    @DisplayName("Calling /verify without error")
+    void verifyWithoutError() throws Exception {
+        var now = System.currentTimeMillis() / 1000;
+        var paymentRequirements = PaymentRequirements.builder()
                 .scheme(EXACT_SCHEME.name())
                 .network(BASE_SEPOLIA.name())
                 .maxAmountRequired("10000")
                 .resource("http://localhost/weather")
                 .payTo(TEST_SERVER_WALLET_ADDRESS_1)
+                .maxTimeoutSeconds(60)
                 .asset("0x036CbD53842c5426634e7929541eC2318f3dCF7e")
                 .extra(EXACT_SCHEME_PARAMETER_NAME, "USDC")
                 .extra(EXACT_SCHEME_PARAMETER_VERSION, "2")
                 .build();
-        PaymentPayload paymentPayload = PaymentPayload.builder()
+        var paymentPayload = PaymentPayload.builder()
                 .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
                 .scheme(EXACT_SCHEME.name())
                 .network(BASE_SEPOLIA.name())
@@ -139,6 +141,5 @@ public class VerifyControllerTest {
                 .andExpect(jsonPath("$.invalidReason").isEmpty())
                 .andExpect(jsonPath("$.payer").value(TEST_CLIENT_WALLET_ADDRESS_1));
     }
-
 
 }

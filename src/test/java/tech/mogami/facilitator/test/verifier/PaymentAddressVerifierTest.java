@@ -30,7 +30,7 @@ public class PaymentAddressVerifierTest {
 
     @Test
     @DisplayName("Address mismatch")
-    public void testAddressMismatch() {
+    public void addressMismatch() {
         PaymentRequirements paymentRequirements = PaymentRequirements.builder()
                 .scheme(EXACT_SCHEME.name())
                 .network(BASE_SEPOLIA.name())
@@ -54,9 +54,9 @@ public class PaymentAddressVerifierTest {
                                 .validAfter("1748534647")
                                 .validBefore("1748534768")
                                 .nonce("0x9b750f5097972d82c02ac371278b83ecf3ca3be8387db59e664eb38c98f97a3d")
-                                .build()
-                        ).build()
-                ).build();
+                                .build())
+                        .build())
+                .build();
 
         assertThat(paymentAddressVerifier.verify(
                 VerifyRequest.builder()
@@ -74,8 +74,8 @@ public class PaymentAddressVerifierTest {
 
     @Test
     @DisplayName("Valid address")
-    public void testValidAddress() {
-        PaymentRequirements paymentRequirements = PaymentRequirements.builder()
+    public void validAddress() {
+        var paymentRequirements = PaymentRequirements.builder()
                 .scheme(EXACT_SCHEME.name())
                 .network(BASE_SEPOLIA.name())
                 .maxAmountRequired("10000")
@@ -85,7 +85,7 @@ public class PaymentAddressVerifierTest {
                 .extra(EXACT_SCHEME_PARAMETER_NAME, "USDC")
                 .extra(EXACT_SCHEME_PARAMETER_VERSION, "2")
                 .build();
-        PaymentPayload paymentPayload = PaymentPayload.builder()
+        var paymentPayload = PaymentPayload.builder()
                 .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
                 .scheme(EXACT_SCHEME.name())
                 .network(BASE_SEPOLIA.name())
@@ -98,9 +98,9 @@ public class PaymentAddressVerifierTest {
                                 .validAfter("1748534647")
                                 .validBefore("1748534768")
                                 .nonce("0x9b750f5097972d82c02ac371278b83ecf3ca3be8387db59e664eb38c98f97a3d")
-                                .build()
-                        ).build()
-                ).build();
+                                .build())
+                        .build())
+                .build();
 
         assertThat(paymentAddressVerifier.verify(
                 VerifyRequest.builder()

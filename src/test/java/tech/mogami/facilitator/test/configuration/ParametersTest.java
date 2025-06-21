@@ -16,10 +16,10 @@ public class ParametersTest {
     private X402Parameters x402Parameters;
 
     @Test
-    @DisplayName("X402Parameters values")
-    void x402ParametersValuesTest() {
+    @DisplayName("Facilitator parameters")
+    void facilitatorParameters() {
         assertThat(x402Parameters.facilitator().privateKey())
-                .isEqualTo("0xf4f7e165433421377856179c698aa387bd8f872657977bd8fa6d62604f41773c");
+                .isEqualTo("0xc1f97668293dcaecb72bfc6fba31a39d34a1a5d1d3d36e30f237a9cbcb3077e9");
     }
 
 }

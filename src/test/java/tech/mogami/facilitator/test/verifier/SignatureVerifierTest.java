@@ -29,9 +29,9 @@ public class SignatureVerifierTest {
 
     @Test
     @DisplayName("Invalid signature")
-    public void testInvalidSignature() {
+    public void invalidSignature() {
         // We change just one parameter, validBefore, to make the signature invalid.
-        PaymentRequirements paymentRequirements = PaymentRequirements.builder()
+        var paymentRequirements = PaymentRequirements.builder()
                 .scheme(EXACT_SCHEME.name())
                 .network(BASE_SEPOLIA.name())
                 .maxAmountRequired("10000")
@@ -41,7 +41,7 @@ public class SignatureVerifierTest {
                 .extra(EXACT_SCHEME_PARAMETER_NAME, "USDC")
                 .extra(EXACT_SCHEME_PARAMETER_VERSION, "2")
                 .build();
-        PaymentPayload paymentPayload = PaymentPayload.builder()
+        var paymentPayload = PaymentPayload.builder()
                 .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
                 .scheme(EXACT_SCHEME.name())
                 .network(BASE_SEPOLIA.name())
@@ -54,9 +54,9 @@ public class SignatureVerifierTest {
                                 .validAfter("1748534647")
                                 .validBefore("1748534768")
                                 .nonce("0x9b750f5097972d82c02ac371278b83ecf3ca3be8387db59e664eb38c98f97a3d")
-                                .build()
-                        ).build()
-                ).build();
+                                .build())
+                        .build())
+                .build();
 
         assertThat(signatureVerifier.verify(
                 VerifyRequest.builder()
@@ -74,8 +74,8 @@ public class SignatureVerifierTest {
 
     @Test
     @DisplayName("Valid signature")
-    public void testValidSignature() {
-        PaymentRequirements paymentRequirements = PaymentRequirements.builder()
+    public void validSignature() {
+        var paymentRequirements = PaymentRequirements.builder()
                 .scheme(EXACT_SCHEME.name())
                 .network(BASE_SEPOLIA.name())
                 .maxAmountRequired("10000")
@@ -85,12 +85,12 @@ public class SignatureVerifierTest {
                 .extra(EXACT_SCHEME_PARAMETER_NAME, "USDC")
                 .extra(EXACT_SCHEME_PARAMETER_VERSION, "2")
                 .build();
-        PaymentPayload paymentPayload = PaymentPayload.builder()
+        var paymentPayload = PaymentPayload.builder()
                 .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
                 .scheme(EXACT_SCHEME.name())
                 .network(BASE_SEPOLIA.name())
                 .payload(ExactSchemePayload.builder()
-                        .signature("0xde533856d81c76984a8dbc8d563bbb6d6d4ca36ce6c4d6e8cf315de3bfc14ab26d6bcdc37549aeed78bf92e39d5180268f8f399a4ffb816cfbf500823882b6001c")
+                        .signature("0x7d9463e2c7c98e33c08747882521be88cc02443a8c46f3a1f5b51ae8d1bdd9581fa41ab35c1cebfe70a79471640a1bde9ffadd377e38d708b5ca6a38b30300f61b")
                         .authorization(ExactSchemePayload.Authorization.builder()
                                 .from(TEST_CLIENT_WALLET_ADDRESS_1)
                                 .to(TEST_SERVER_WALLET_ADDRESS_1)
@@ -98,9 +98,9 @@ public class SignatureVerifierTest {
                                 .validAfter("1748534647")
                                 .validBefore("1748534767")
                                 .nonce("0x9b750f5097972d82c02ac371278b83ecf3ca3be8387db59e664eb38c98f97a3d")
-                                .build()
-                        ).build()
-                ).build();
+                                .build())
+                        .build())
+                .build();
 
         assertThat(signatureVerifier.verify(
                 VerifyRequest.builder()

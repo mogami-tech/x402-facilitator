@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+
+  anvil:
+    image: ghcr.io/foundry-rs/foundry:latest
+    ports:
+      - "8545:8545"
+    entrypoint: >
+      anvil
+        --host 0.0.0.0
+        --chain-id 84532
+        --balance 1000
+        --block-time 10
+        --mnemonic "slice joke drink glove ice brown erosion frown census talk topic entire size pair safe"
+        --disable-default-create2-deployer
+        --code-size-limit 999999999
+        --gas-limit 999999999
+        --base-fee 0
+        --gas-price 0
+
+  deployer:
+    image: ghcr.io/foundry-rs/foundry:latest
+    depends_on: [ anvil ]
+    environment:
+      RPC_URL: http://anvil:8545
+      PK: c1f97668293dcaecb72bfc6fba31a39d34a1a5d1d3d36e30f237a9cbcb3077e9
+    volumes:
+      - ./src:/app/src:ro
+      - ./foundry.toml:/app/foundry.toml:ro
+    working_dir: /app
+    entrypoint:
+      - /bin/sh
+      - -c
+      - |
+        
+        BYTECODE=$$(cat src/FiatTokenV2_2.bin)        
+        cast send \
+            --rpc-url $$RPC_URL \
+            --private-key $$PK \
+            --gas-limit 20000000 \
+            --json \
+            --create 0x$$BYTECODE

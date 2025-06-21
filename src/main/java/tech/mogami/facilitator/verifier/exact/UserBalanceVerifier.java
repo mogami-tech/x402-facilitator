@@ -21,7 +21,7 @@ import static tech.mogami.facilitator.verifier.VerificationStep.USER_BALANCE_FOR
 
 /**
  * User balance verifier.
- * This verifier checks if the user has sufficient balance to perform the transaction.
+ * This verifier checks if the user has enough to perform the transaction.
  */
 @Order(14)
 @Component

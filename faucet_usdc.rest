@@ -1,0 +1,30 @@
+###
+
+# curl --request POST
+#     --url https://api.circle.com/v1/faucet/drips
+#     --header 'Accept: application/json'
+#     --header 'Authorization: Bearer TEST_API_KEY:XXX:XXX'
+#     --header 'Content-Type: application/json'
+#     --data '
+#{
+#    "address": "0xf6b42050A71Ca13f842eDa53C7d31B7C1BD94F6E",
+#    "blockchain": "BASE-SEPOLIA",
+#    "native": true,
+#    "usdc": true,
+#    "eurc": false
+#}
+#'
+POST https://api.circle.com/v1/faucet/drips
+Accept: application/json
+Authorization: Bearer TEST_API_KEY:XXX:XXX
+Content-Type: application/json
+
+{
+  "address": "0xf6b42050A71Ca13f842eDa53C7d31B7C1BD94F6E",
+  "blockchain": "BASE-SEPOLIA",
+  "native": true,
+  "usdc": true,
+  "eurc": false
+}
+
+

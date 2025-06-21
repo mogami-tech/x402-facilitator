@@ -26,7 +26,7 @@ public class PaymentContextVerifierTest {
 
     @Test
     @DisplayName("Invalid network")
-    public void testInvalidNetwork() {
+    public void invalidNetwork() {
         // On payment payload.
         assertThat(paymentContextVerifier.verify(
                 VerifyRequest.builder()
@@ -99,7 +99,7 @@ public class PaymentContextVerifierTest {
 
     @Test
     @DisplayName("Invalid payload")
-    public void testInvalidPayload() {
+    public void invalidPayload() {
         assertThat(paymentContextVerifier.verify(
                 VerifyRequest.builder()
                         .paymentPayload(PaymentPayload.builder()
@@ -121,8 +121,8 @@ public class PaymentContextVerifierTest {
     }
 
     @Test
-    @DisplayName("Valid stablecoin name")
-    public void testValidStablecoinName() {
+    @DisplayName("Invalid stablecoin name")
+    public void invalidStablecoinName() {
         assertThat(paymentContextVerifier.verify(
                 VerifyRequest.builder()
                         .paymentPayload(PaymentPayload.builder()
@@ -164,8 +164,8 @@ public class PaymentContextVerifierTest {
     }
 
     @Test
-    @DisplayName("Valid exact scheme version")
-    public void testValidExactSchemeVersion() {
+    @DisplayName("Invalid exact scheme version")
+    public void invalidExactSchemeVersion() {
         assertThat(paymentContextVerifier.verify(
                 VerifyRequest.builder()
                         .paymentPayload(PaymentPayload.builder()
@@ -208,8 +208,8 @@ public class PaymentContextVerifierTest {
     }
 
     @Test
-    @DisplayName("Valid asset contract address")
-    public void testValidAssetContractAddress() {
+    @DisplayName("Invalid asset contract address")
+    public void invalidAssetContractAddress() {
         assertThat(paymentContextVerifier.verify(
                 VerifyRequest.builder()
                         .paymentPayload(PaymentPayload.builder()
@@ -256,7 +256,7 @@ public class PaymentContextVerifierTest {
 
     @Test
     @DisplayName("Valid schemes")
-    public void testValidSchemes() {
+    public void validSchemes() {
         assertThat(paymentContextVerifier.verify(
                 VerifyRequest.builder()
                         .paymentPayload(PaymentPayload.builder()
@@ -273,9 +273,7 @@ public class PaymentContextVerifierTest {
                                 .build())
                         .build()))
                 .isNotNull()
-                .satisfies(result -> {
-                    assertThat(result.isValid()).isTrue();
-                });
+                .satisfies(result -> assertThat(result.isValid()).isTrue());
     }
 
 }

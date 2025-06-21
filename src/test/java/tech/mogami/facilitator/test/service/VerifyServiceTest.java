@@ -32,7 +32,7 @@ public class VerifyServiceTest {
 
     @Test
     @DisplayName("Empty request")
-    public void testEmptyRequest() {
+    public void emptyRequest() {
         assertThat(verifyService.verify(null))
                 .isNotNull()
                 .satisfies(result -> {
@@ -42,60 +42,20 @@ public class VerifyServiceTest {
     }
 
     @Test
-    @DisplayName("Invalid schemes")
-    public void testInvalidSchemes() {
-        assertThat(verifyService.verify(
-                VerifyRequest.builder()
-                        .paymentPayload(PaymentPayload.builder().scheme("INVALID_SCHEME").build())
-                        .paymentRequirements(PaymentRequirements.builder().scheme(EXACT_SCHEME.name()).build())
-                        .build()))
-                .isNotNull()
-                .satisfies(result -> {
-                    assertThat(result.isValid()).isFalse();
-                    assertThat(result.invalidReason()).isEqualTo("unsupported_scheme");
-                });
-
-        assertThat(verifyService.verify(
-                VerifyRequest.builder()
-                        .paymentPayload(PaymentPayload.builder().scheme(EXACT_SCHEME.name()).build())
-                        .paymentRequirements(PaymentRequirements.builder().scheme("INVALID_SCHEME").build())
-                        .build()))
-                .isNotNull()
-                .satisfies(result -> {
-                    assertThat(result.isValid()).isFalse();
-                    assertThat(result.invalidReason()).isEqualTo("unsupported_scheme");
-                });
-    }
-
-    @Test
     @DisplayName("Invalid payment context")
-    public void testInvalidPaymentContext() {
-        assertThat(verifyService.verify(
-                VerifyRequest.builder()
-                        .paymentPayload(PaymentPayload.builder().scheme(EXACT_SCHEME.name()).build())
-                        .paymentRequirements(PaymentRequirements.builder().scheme(EXACT_SCHEME.name()).build())
-                        .build()))
-                .isNotNull()
-                .satisfies(result -> {
-                    assertThat(result.isValid()).isFalse();
-                    assertThat(result.invalidReason()).isEqualTo("invalid_network");
-                });
-    }
-
-    @Test
-    @DisplayName("Invalid signature")
-    public void testInvalidSignature() {
-        PaymentRequirements paymentRequirements = PaymentRequirements.builder()
+    public void invalidPaymentContext() {
+        var paymentRequirements = PaymentRequirements.builder()
                 .scheme(EXACT_SCHEME.name())
                 .network(BASE_SEPOLIA.name())
                 .maxAmountRequired("10000")
                 .resource("http://localhost/weather")
                 .payTo(TEST_SERVER_WALLET_ADDRESS_1)
+                .maxTimeoutSeconds(60)
                 .asset("0x036CbD53842c5426634e7929541eC2318f3dCF7e")
-                .extra(EXACT_SCHEME_PARAMETER_NAME, "USDC")
                 .extra(EXACT_SCHEME_PARAMETER_VERSION, "2")
+                // USDC is missing for this test.
                 .build();
-        PaymentPayload paymentPayload = PaymentPayload.builder()
+        var paymentPayload = PaymentPayload.builder()
                 .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
                 .scheme(EXACT_SCHEME.name())
                 .network(BASE_SEPOLIA.name())
@@ -108,9 +68,53 @@ public class VerifyServiceTest {
                                 .validAfter("1748534647")
                                 .validBefore("1748534768")
                                 .nonce("0x9b750f5097972d82c02ac371278b83ecf3ca3be8387db59e664eb38c98f97a3d")
-                                .build()
-                        ).build()
-                ).build();
+                                .build())
+                        .build())
+                .build();
+
+        assertThat(verifyService.verify(
+                VerifyRequest.builder()
+                        .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
+                        .paymentPayload(paymentPayload)
+                        .paymentRequirements(paymentRequirements)
+                        .build()))
+                .isNotNull()
+                .satisfies(result -> {
+                    assertThat(result.isValid()).isFalse();
+                    assertThat(result.invalidReason()).isEqualTo("invalid_network");
+                });
+    }
+
+    @Test
+    @DisplayName("Invalid signature")
+    public void invalidSignature() {
+        var paymentRequirements = PaymentRequirements.builder()
+                .scheme(EXACT_SCHEME.name())
+                .network(BASE_SEPOLIA.name())
+                .maxAmountRequired("10000")
+                .resource("http://localhost/weather")
+                .payTo(TEST_SERVER_WALLET_ADDRESS_1)
+                .maxTimeoutSeconds(60)
+                .asset("0x036CbD53842c5426634e7929541eC2318f3dCF7e")
+                .extra(EXACT_SCHEME_PARAMETER_NAME, "USDC")
+                .extra(EXACT_SCHEME_PARAMETER_VERSION, "2")
+                .build();
+        var paymentPayload = PaymentPayload.builder()
+                .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
+                .scheme(EXACT_SCHEME.name())
+                .network(BASE_SEPOLIA.name())
+                .payload(ExactSchemePayload.builder()
+                        .signature("0xde533856d81c76984a8dbc8d563bbb6d6d4ca36ce6c4d6e8cf315de3bfc14ab26d6bcdc37549aeed78bf92e39d5180268f8f399a4ffb816cfbf500823882b6001c")
+                        .authorization(ExactSchemePayload.Authorization.builder()
+                                .from(TEST_CLIENT_WALLET_ADDRESS_1)
+                                .to(TEST_SERVER_WALLET_ADDRESS_1)
+                                .value("10000")
+                                .validAfter("1748534647")
+                                .validBefore("1748534768")
+                                .nonce("0x9b750f5097972d82c02ac371278b83ecf3ca3be8387db59e664eb38c98f97a3d")
+                                .build())
+                        .build())
+                .build();
 
         assertThat(verifyService.verify(
                 VerifyRequest.builder()
@@ -127,13 +131,13 @@ public class VerifyServiceTest {
 
     @Test
     @DisplayName("Payment address mismatch")
-    public void testPaymentAddressMismatch() {
-        PaymentPayload paymentPayload = PaymentPayload.builder()
+    public void paymentAddressMismatch() {
+        var paymentPayload = PaymentPayload.builder()
                 .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
                 .scheme(EXACT_SCHEME.name())
                 .network(BASE_SEPOLIA.name())
                 .payload(ExactSchemePayload.builder()
-                        .signature("0xde533856d81c76984a8dbc8d563bbb6d6d4ca36ce6c4d6e8cf315de3bfc14ab26d6bcdc37549aeed78bf92e39d5180268f8f399a4ffb816cfbf500823882b6001c")
+                        .signature("0x7d9463e2c7c98e33c08747882521be88cc02443a8c46f3a1f5b51ae8d1bdd9581fa41ab35c1cebfe70a79471640a1bde9ffadd377e38d708b5ca6a38b30300f61b")
                         .authorization(ExactSchemePayload.Authorization.builder()
                                 .from(TEST_CLIENT_WALLET_ADDRESS_1)
                                 .to(TEST_SERVER_WALLET_ADDRESS_1)
@@ -141,15 +145,16 @@ public class VerifyServiceTest {
                                 .validAfter("1748534647")
                                 .validBefore("1748534767")
                                 .nonce("0x9b750f5097972d82c02ac371278b83ecf3ca3be8387db59e664eb38c98f97a3d")
-                                .build()
-                        ).build()
-                ).build();
-        PaymentRequirements paymentRequirements = PaymentRequirements.builder()
+                                .build())
+                        .build())
+                .build();
+        var paymentRequirements = PaymentRequirements.builder()
                 .scheme(EXACT_SCHEME.name())
                 .network(BASE_SEPOLIA.name())
                 .maxAmountRequired("10000")
                 .resource("http://localhost/weather")
                 .payTo(TEST_SERVER_WALLET_ADDRESS_2)
+                .maxTimeoutSeconds(60)
                 .asset("0x036CbD53842c5426634e7929541eC2318f3dCF7e")
                 .extra(EXACT_SCHEME_PARAMETER_NAME, "USDC")
                 .extra(EXACT_SCHEME_PARAMETER_VERSION, "2")
@@ -170,13 +175,13 @@ public class VerifyServiceTest {
 
     @Test
     @DisplayName("Invalid validBefore")
-    public void testInvalidValidBefore() {
-        PaymentPayload paymentPayload = PaymentPayload.builder()
+    public void invalidValidBefore() {
+        var paymentPayload = PaymentPayload.builder()
                 .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
                 .scheme(EXACT_SCHEME.name())
                 .network(BASE_SEPOLIA.name())
                 .payload(ExactSchemePayload.builder()
-                        .signature("0xde533856d81c76984a8dbc8d563bbb6d6d4ca36ce6c4d6e8cf315de3bfc14ab26d6bcdc37549aeed78bf92e39d5180268f8f399a4ffb816cfbf500823882b6001c")
+                        .signature("0x7d9463e2c7c98e33c08747882521be88cc02443a8c46f3a1f5b51ae8d1bdd9581fa41ab35c1cebfe70a79471640a1bde9ffadd377e38d708b5ca6a38b30300f61b")
                         .authorization(ExactSchemePayload.Authorization.builder()
                                 .from(TEST_CLIENT_WALLET_ADDRESS_1)
                                 .to(TEST_SERVER_WALLET_ADDRESS_1)
@@ -184,15 +189,16 @@ public class VerifyServiceTest {
                                 .validAfter("1748534647")
                                 .validBefore("1748534767") // This is valid
                                 .nonce("0x9b750f5097972d82c02ac371278b83ecf3ca3be8387db59e664eb38c98f97a3d")
-                                .build()
-                        ).build()
-                ).build();
-        PaymentRequirements paymentRequirements = PaymentRequirements.builder()
+                                .build())
+                        .build())
+                .build();
+        var paymentRequirements = PaymentRequirements.builder()
                 .scheme(EXACT_SCHEME.name())
                 .network(BASE_SEPOLIA.name())
                 .maxAmountRequired("10000")
                 .resource("http://localhost/weather")
                 .payTo(TEST_SERVER_WALLET_ADDRESS_1)
+                .maxTimeoutSeconds(60)
                 .asset("0x036CbD53842c5426634e7929541eC2318f3dCF7e")
                 .extra(EXACT_SCHEME_PARAMETER_NAME, "USDC")
                 .extra(EXACT_SCHEME_PARAMETER_VERSION, "2")
@@ -213,19 +219,20 @@ public class VerifyServiceTest {
 
     @Test
     @DisplayName("Insufficient funds")
-    public void testInsufficientFunds() throws Exception {
-        long now = System.currentTimeMillis() / 1000;
+    public void insufficientFunds() {
+        var now = System.currentTimeMillis() / 1000;
         PaymentRequirements paymentRequirements = PaymentRequirements.builder()
                 .scheme(EXACT_SCHEME.name())
                 .network(BASE_SEPOLIA.name())
                 .maxAmountRequired("10000")
                 .resource("http://localhost/weather")
                 .payTo(TEST_SERVER_WALLET_ADDRESS_1)
+                .maxTimeoutSeconds(60)
                 .asset("0x036CbD53842c5426634e7929541eC2318f3dCF7e")
                 .extra(EXACT_SCHEME_PARAMETER_NAME, "USDC")
                 .extra(EXACT_SCHEME_PARAMETER_VERSION, "2")
                 .build();
-        PaymentPayload paymentPayload = PaymentPayload.builder()
+        var paymentPayload = PaymentPayload.builder()
                 .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
                 .scheme(EXACT_SCHEME.name())
                 .network(BASE_SEPOLIA.name())
@@ -237,9 +244,9 @@ public class VerifyServiceTest {
                                 .validAfter(String.valueOf(now))
                                 .validBefore(String.valueOf(now + 10))
                                 .nonce("0x9b750f5097972d82c02ac371278b83ecf3ca3be8387db59e664eb38c98f97a3d")
-                                .build()
-                        ).build()
-                ).build();
+                                .build())
+                        .build())
+                .build();
 
         // We use Mogami client SDK to create a payment payload with insufficient funds.
         var signedPayload = X402PaymentHelper.getSignedPayload(
@@ -263,19 +270,20 @@ public class VerifyServiceTest {
 
     @Test
     @DisplayName("Insufficient payment value")
-    public void testInsufficientPaymentValue() {
-        long now = System.currentTimeMillis() / 1000;
-        PaymentRequirements paymentRequirements = PaymentRequirements.builder()
+    public void InsufficientPaymentValue() {
+        var now = System.currentTimeMillis() / 1000;
+        var paymentRequirements = PaymentRequirements.builder()
                 .scheme(EXACT_SCHEME.name())
                 .network(BASE_SEPOLIA.name())
                 .maxAmountRequired("10000")
                 .resource("http://localhost/weather")
                 .payTo(TEST_SERVER_WALLET_ADDRESS_1)
+                .maxTimeoutSeconds(60)
                 .asset("0x036CbD53842c5426634e7929541eC2318f3dCF7e")
                 .extra(EXACT_SCHEME_PARAMETER_NAME, "USDC")
                 .extra(EXACT_SCHEME_PARAMETER_VERSION, "2")
                 .build();
-        PaymentPayload paymentPayload = PaymentPayload.builder()
+        var paymentPayload = PaymentPayload.builder()
                 .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
                 .scheme(EXACT_SCHEME.name())
                 .network(BASE_SEPOLIA.name())
@@ -287,9 +295,9 @@ public class VerifyServiceTest {
                                 .validAfter(String.valueOf(now))
                                 .validBefore(String.valueOf(now + 10))
                                 .nonce("0x9b750f5097972d82c02ac371278b83ecf3ca3be8387db59e664eb38c98f97a3d")
-                                .build()
-                        ).build()
-                ).build();
+                                .build())
+                        .build())
+                .build();
 
         // We use Mogami client SDK to create a payment payload with insufficient funds.
         var signedPayload = X402PaymentHelper.getSignedPayload(

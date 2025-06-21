@@ -40,5 +40,6 @@ public class PaymentAddressVerifier implements VerifierForExactScheme {
     public VerificationStep type() {
         return PAYMENT_ADDRESS_FOR_EXACT_SCHEME;
     }
+
 }
 
