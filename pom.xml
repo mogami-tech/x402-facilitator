@@ -77,7 +77,7 @@
         <!-- Tests -->
         <junit-jupiter-engine.version>5.13.0</junit-jupiter-engine.version>
         <assertj.version>3.27.3</assertj.version>
-        <testcontainers.version>1.21.2</testcontainers.version>
+        <testcontainers.version>1.21.3</testcontainers.version>
 
         <!-- Maven -->
         <maven.checkstyle.plugin.version>3.6.0</maven.checkstyle.plugin.version>
