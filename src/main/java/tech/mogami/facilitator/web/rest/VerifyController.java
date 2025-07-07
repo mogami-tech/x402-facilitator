@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import tech.mogami.commons.api.facilitator.verify.VerifyRequest;
 import tech.mogami.commons.api.facilitator.verify.VerifyResponse;
+import tech.mogami.commons.util.JsonUtil;
 import tech.mogami.facilitator.service.VerifyService;
 
 import static tech.mogami.commons.api.facilitator.FacilitatorRoutes.VERIFY_URL;
@@ -34,8 +35,16 @@ public class VerifyController {
     @PostMapping(VERIFY_URL)
     @Operation(summary = "Verify a payment request")
     VerifyResponse verify(@RequestBody final VerifyRequest verifyRequest) {
+        // X402 Console - Sending X402_FACILITATOR_VERIFY_REQUEST event to console.
+        log.info("Sending X402_FACILITATOR_VERIFY_REQUEST event to console: {}", JsonUtil.toJson(verifyRequest));
+
+        VerifyResponse result = verifierService.verify(verifyRequest);
+
+        // X402 Console - Sending X402_FACILITATOR_VERIFY_RESPONSE event to console.
+        log.info("Sending X402_FACILITATOR_VERIFY_RESPONSE event to console: {}", JsonUtil.toJson(result));
+
         log.info("Received verification request: {}", verifyRequest);
-        return verifierService.verify(verifyRequest);
+        return result;
     }
 
 }
