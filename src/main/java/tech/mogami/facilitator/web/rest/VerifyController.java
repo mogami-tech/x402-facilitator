@@ -12,7 +12,8 @@ import tech.mogami.commons.api.facilitator.verify.VerifyResponse;
 import tech.mogami.commons.util.JsonUtil;
 import tech.mogami.facilitator.service.VerifyService;
 
-import static tech.mogami.commons.api.facilitator.FacilitatorRoutes.VERIFY_URL;
+import static tech.mogami.commons.api.facilitator.FacilitatorApiEndpoints.VERIFY_URL;
+
 
 /**
  * /verify endpoint - Verify a payment.

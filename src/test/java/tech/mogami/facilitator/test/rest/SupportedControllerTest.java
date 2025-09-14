@@ -17,7 +17,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static tech.mogami.commons.api.facilitator.FacilitatorRoutes.SUPPORTED_URL;
+import static tech.mogami.commons.api.facilitator.FacilitatorApiEndpoints.SUPPORTED_URL;
 
 @SpringBootTest
 @AutoConfigureMockMvc

@@ -27,7 +27,7 @@ import tech.mogami.facilitator.service.VerifyService;
 import java.math.BigInteger;
 
 import static org.web3j.utils.Convert.Unit.GWEI;
-import static tech.mogami.commons.api.facilitator.FacilitatorRoutes.SETTLE_URL;
+import static tech.mogami.commons.api.facilitator.FacilitatorApiEndpoints.SETTLE_URL;
 import static tech.mogami.commons.constant.network.Networks.BASE_SEPOLIA;
 
 /**
@@ -138,7 +138,7 @@ public class SettleController {
                             .build();
 
                     // X402 Console - Sending X402_FACILITATOR_SETTLE_ERROR event to console.
-                    log.error("Sending X402_FACILITATOR_SETTLE_RESPONSE event to console: {}", JsonUtil.toJson(response));
+                    log.info("Sending X402_FACILITATOR_SETTLE_RESPONSE event to console: {}", JsonUtil.toJson(response));
 
                     return response;
                 } else {
