@@ -1,4 +1,4 @@
-name: Deploy docker image to Docker Hub
+name: Deploy docker image to DigitalOcean
 
 on:
   push:
@@ -23,19 +23,8 @@ jobs:
 
       - name: Build image and run tests
         run: |
+          just run_install
           just build_docker_image
-
-      # Deploy to Docker Hub ===========================================================================================
-      - name: Docker Hub login
-        uses: docker/login-action@v3.5.0
-        with:
-          username: ${{ secrets.FACILITATOR_DOCKER_HUB_USERNAME }}
-          password: ${{ secrets.FACILITATOR_DOCKER_HUB_PASSWORD }}
-
-      - name: Tag and push docker image to Docker hub
-        run: |
-          docker tag mogamitech/facilitator:latest mogamitech/facilitator:${{ steps.release.outputs.version }}
-          docker push mogamitech/facilitator:${{ steps.release.outputs.version }}
 
       # Deploy to Digital Ocean container registry =====================================================================
       - name: Install doctl
@@ -48,5 +37,5 @@ jobs:
 
       - name: Tag and push docker image to DigitalOcean registry
         run: |
-          docker tag mogamitech/facilitator:latest registry.digitalocean.com/mogami/facilitator:production
-          docker push registry.digitalocean.com/mogami/facilitator:production
+          docker tag mogamitech/facilitator:latest registry.digitalocean.com/mogamitech/facilitator:production
+          docker push registry.digitalocean.com/mogamitech/facilitator:production
