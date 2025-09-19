@@ -127,7 +127,7 @@
         <dependency>
             <groupId>tech.mogami.commons</groupId>
             <artifactId>mogami-x402-commons</artifactId>
-            <version>0.0.7-SNAPSHOT</version>
+            <version>0.0.7</version>
         </dependency>
 
         <dependency>
