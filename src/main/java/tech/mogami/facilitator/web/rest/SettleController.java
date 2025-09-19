@@ -20,13 +20,14 @@ import tech.mogami.commons.api.facilitator.verify.VerifyRequest;
 import tech.mogami.commons.api.facilitator.verify.VerifyResponse;
 import tech.mogami.commons.crypto.contract.FiatTokenV2_2;
 import tech.mogami.commons.header.payment.schemes.exact.ExactSchemePayload;
+import tech.mogami.commons.util.JsonUtil;
 import tech.mogami.facilitator.parameter.X402Parameters;
 import tech.mogami.facilitator.service.VerifyService;
 
 import java.math.BigInteger;
 
 import static org.web3j.utils.Convert.Unit.GWEI;
-import static tech.mogami.commons.api.facilitator.FacilitatorRoutes.SETTLE_URL;
+import static tech.mogami.commons.api.facilitator.FacilitatorApiEndpoints.SETTLE_URL;
 import static tech.mogami.commons.constant.network.Networks.BASE_SEPOLIA;
 
 /**
@@ -53,6 +54,10 @@ public class SettleController {
     @PostMapping(SETTLE_URL)
     @Operation(summary = "Settle a payment request")
     SettleResponse settle(@RequestBody final SettleRequest settleRequest) {
+
+        // X402 Console - Sending X402_FACILITATOR_SETTLE_REQUEST event to console.
+        log.info("Sending X402_FACILITATOR_SETTLE_REQUEST event to console: {}", JsonUtil.toJson(settleRequest));
+
         log.info("Received settlement request: {}", settleRequest);
         VerifyResponse verifyResult = verifierService
                 .verify(VerifyRequest.builder()
@@ -73,12 +78,17 @@ public class SettleController {
                 network = settleRequest.paymentRequirements().network();
             }
 
-            return SettleResponse.builder()
+            SettleResponse response = SettleResponse.builder()
                     .success(false)
                     .network(network)
                     .errorReason(verifyResult.invalidReason())
                     .payer(verifyResult.payer())
                     .build();
+
+            // X402 Console - Sending X402_FACILITATOR_SETTLE_ERROR event to console.
+            log.error("Sending X402_FACILITATOR_SETTLE_RESPONSE event to console: {}", JsonUtil.toJson(response));
+
+            return response;
         } else {
             // TODO Make "https://sepolia.base.org" configurable.
             try (Web3j web3j = Web3j.build(new HttpService("https://sepolia.base.org"))) {
@@ -119,33 +129,51 @@ public class SettleController {
                     log.info("Successfully settled of request {}: {}",
                             settleRequest,
                             transactionReceipt.getTransactionHash());
-                    return SettleResponse.builder()
+
+                    SettleResponse response = SettleResponse.builder()
                             .success(true)
                             .network(settleRequest.paymentRequirements().network())
                             .transaction(transactionReceipt.getTransactionHash())
                             .payer(verifyResult.payer())
                             .build();
+
+                    // X402 Console - Sending X402_FACILITATOR_SETTLE_ERROR event to console.
+                    log.info("Sending X402_FACILITATOR_SETTLE_RESPONSE event to console: {}", JsonUtil.toJson(response));
+
+                    return response;
                 } else {
                     log.error("Failed to settle request {}: {}",
                             settleRequest,
                             transactionReceipt.getStatus());
-                    return SettleResponse.builder()
+
+                    SettleResponse response = SettleResponse.builder()
                             .success(false)
                             .network(settleRequest.paymentRequirements().network())
                             .errorReason("transaction_failed")
                             .payer(verifyResult.payer())
                             .build();
+
+                    // X402 Console - Sending X402_FACILITATOR_SETTLE_ERROR event to console.
+                    log.error("Sending X402_FACILITATOR_SETTLE_RESPONSE event to console: {}", JsonUtil.toJson(response));
+
+                    return response;
                 }
             } catch (Exception e) {
                 log.error("Exception during request settlement {}: {}",
                         settleRequest,
                         e.getMessage());
-                return SettleResponse.builder()
+
+                SettleResponse response = SettleResponse.builder()
                         .success(false)
                         .network(settleRequest.paymentRequirements().network())
                         .errorReason(e.getMessage())
                         .payer(verifyResult.payer())
                         .build();
+
+                // X402 Console - Sending X402_FACILITATOR_SETTLE_ERROR event to console.
+                log.error("Sending X402_FACILITATOR_SETTLE_RESPONSE event to console: {}", JsonUtil.toJson(response));
+
+                return response;
             }
         }
     }
