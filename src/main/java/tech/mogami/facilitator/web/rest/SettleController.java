@@ -14,6 +14,7 @@ import org.web3j.tx.RawTransactionManager;
 import org.web3j.tx.gas.StaticEIP1559GasProvider;
 import org.web3j.utils.Convert;
 import org.web3j.utils.Numeric;
+import tech.mogami.commons.api.console.v1.EventRequest;
 import tech.mogami.commons.api.facilitator.settle.SettleRequest;
 import tech.mogami.commons.api.facilitator.settle.SettleResponse;
 import tech.mogami.commons.api.facilitator.verify.VerifyRequest;
@@ -22,11 +23,14 @@ import tech.mogami.commons.crypto.contract.FiatTokenV2_2;
 import tech.mogami.commons.header.payment.schemes.exact.ExactSchemePayload;
 import tech.mogami.commons.util.JsonUtil;
 import tech.mogami.facilitator.parameter.X402Parameters;
+import tech.mogami.facilitator.provider.console.ConsoleService;
 import tech.mogami.facilitator.service.VerifyService;
 
 import java.math.BigInteger;
 
 import static org.web3j.utils.Convert.Unit.GWEI;
+import static tech.mogami.commons.api.console.EventType.X402_FACILITATOR_SETTLE_REQUEST;
+import static tech.mogami.commons.api.console.EventType.X402_FACILITATOR_SETTLE_RESPONSE;
 import static tech.mogami.commons.api.facilitator.FacilitatorApiEndpoints.SETTLE_URL;
 import static tech.mogami.commons.constant.network.Networks.BASE_SEPOLIA;
 
@@ -42,6 +46,9 @@ public class SettleController {
     /** X402 parameters. */
     private final X402Parameters x402Parameters;
 
+    /** Console service. */
+    private final ConsoleService consoleService;
+
     /** Verify service to handle verification logic. */
     private final VerifyService verifierService;
 
@@ -54,9 +61,15 @@ public class SettleController {
     @PostMapping(SETTLE_URL)
     @Operation(summary = "Settle a payment request")
     SettleResponse settle(@RequestBody final SettleRequest settleRequest) {
+        final String nonce = settleRequest.getNonce()
+                .orElseThrow(() -> new IllegalArgumentException("Nonce is required in the payment payload"));
 
-        // X402 Console - Sending X402_FACILITATOR_SETTLE_REQUEST event to console.
-        log.info("Sending X402_FACILITATOR_SETTLE_REQUEST event to console: {}", JsonUtil.toJson(settleRequest));
+        // Send X402_FACILITATOR_SETTLE_REQUEST event to console.
+        consoleService.logEvent(EventRequest.builder()
+                .type(X402_FACILITATOR_SETTLE_REQUEST)
+                .nonce(nonce)
+                .payload(JsonUtil.toJson(settleRequest))
+                .build());
 
         log.info("Received settlement request: {}", settleRequest);
         VerifyResponse verifyResult = verifierService
@@ -85,8 +98,13 @@ public class SettleController {
                     .payer(verifyResult.payer())
                     .build();
 
-            // X402 Console - Sending X402_FACILITATOR_SETTLE_ERROR event to console.
-            log.error("Sending X402_FACILITATOR_SETTLE_RESPONSE event to console: {}", JsonUtil.toJson(response));
+            // Send X402_FACILITATOR_SETTLE_RESPONSE event to console.
+            consoleService.logEvent(EventRequest.builder()
+                    .type(X402_FACILITATOR_SETTLE_RESPONSE)
+                    .nonce(nonce)
+                    .payload(JsonUtil.toJson(response))
+                    .errorMessage(verifyResult.invalidReason())
+                    .build());
 
             return response;
         } else {
@@ -137,8 +155,13 @@ public class SettleController {
                             .payer(verifyResult.payer())
                             .build();
 
-                    // X402 Console - Sending X402_FACILITATOR_SETTLE_ERROR event to console.
-                    log.info("Sending X402_FACILITATOR_SETTLE_RESPONSE event to console: {}", JsonUtil.toJson(response));
+                    // Send X402_FACILITATOR_SETTLE_RESPONSE event to console.
+                    consoleService.logEvent(EventRequest.builder()
+                            .type(X402_FACILITATOR_SETTLE_RESPONSE)
+                            .nonce(nonce)
+                            .payload(JsonUtil.toJson(response))
+                            .errorMessage(verifyResult.invalidReason())
+                            .build());
 
                     return response;
                 } else {
@@ -153,8 +176,13 @@ public class SettleController {
                             .payer(verifyResult.payer())
                             .build();
 
-                    // X402 Console - Sending X402_FACILITATOR_SETTLE_ERROR event to console.
-                    log.error("Sending X402_FACILITATOR_SETTLE_RESPONSE event to console: {}", JsonUtil.toJson(response));
+                    // Send X402_FACILITATOR_SETTLE_RESPONSE event to console.
+                    consoleService.logEvent(EventRequest.builder()
+                            .type(X402_FACILITATOR_SETTLE_RESPONSE)
+                            .nonce(nonce)
+                            .payload(JsonUtil.toJson(response))
+                            .errorMessage(verifyResult.invalidReason())
+                            .build());
 
                     return response;
                 }
@@ -170,8 +198,13 @@ public class SettleController {
                         .payer(verifyResult.payer())
                         .build();
 
-                // X402 Console - Sending X402_FACILITATOR_SETTLE_ERROR event to console.
-                log.error("Sending X402_FACILITATOR_SETTLE_RESPONSE event to console: {}", JsonUtil.toJson(response));
+                // Send X402_FACILITATOR_SETTLE_RESPONSE event to console.
+                consoleService.logEvent(EventRequest.builder()
+                        .type(X402_FACILITATOR_SETTLE_RESPONSE)
+                        .nonce(nonce)
+                        .payload(JsonUtil.toJson(response))
+                        .errorMessage(verifyResult.invalidReason())
+                        .build());
 
                 return response;
             }
