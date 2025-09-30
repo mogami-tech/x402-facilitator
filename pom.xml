@@ -11,8 +11,7 @@
     <version>0.1.9-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>Mogami facilitator</name>
-    <description>The Mogami Facilitator Service is your backend gateway for processing x402 payments on-chain
-    </description>
+    <description>The Mogami Facilitator Service is your gateway for processing x402 payments on-chain</description>
     <url>https://github.com/mogami-tech/x402-facilitator</url>
     <licenses>
         <license>
