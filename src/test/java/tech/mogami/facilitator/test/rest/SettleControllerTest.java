@@ -47,6 +47,15 @@ public class SettleControllerTest {
                         .accept(APPLICATION_JSON, TEXT_PLAIN, ALL)
                         .content(JsonUtil.toJson(
                                 VerifyRequest.builder()
+                                        .paymentPayload(PaymentPayload.builder()
+                                                .scheme(EXACT_SCHEME.name())
+                                                .payload(ExactSchemePayload.builder()
+                                                        .authorization(ExactSchemePayload.
+                                                                Authorization.builder()
+                                                                .nonce("0x12345")
+                                                                .build())
+                                                        .build())
+                                                .build())
                                         .build())))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(false))
@@ -56,7 +65,7 @@ public class SettleControllerTest {
     }
 
     @Test
-    @DisplayName("/settle without error")
+    @DisplayName("/settle without error (LIVE TEST)")
     void settleWithoutError() throws Exception {
         long now = System.currentTimeMillis() / 1000;
         var paymentRequirements = PaymentRequirements.builder()
