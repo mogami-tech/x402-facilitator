@@ -68,7 +68,7 @@ public class SettleController {
         consoleService.logEvent(EventRequest.builder()
                 .type(X402_FACILITATOR_SETTLE_REQUEST)
                 .nonce(nonce)
-                .payload(JsonUtil.toJson(settleRequest))
+                .payload(JsonUtil.toPrettyJson(settleRequest))
                 .build());
 
         log.info("Received settlement request: {}", settleRequest);
@@ -102,7 +102,7 @@ public class SettleController {
             consoleService.logEvent(EventRequest.builder()
                     .type(X402_FACILITATOR_SETTLE_RESPONSE)
                     .nonce(nonce)
-                    .payload(JsonUtil.toJson(response))
+                    .payload(JsonUtil.toPrettyJson(response))
                     .errorMessage(verifyResult.invalidReason())
                     .build());
 
@@ -159,7 +159,7 @@ public class SettleController {
                     consoleService.logEvent(EventRequest.builder()
                             .type(X402_FACILITATOR_SETTLE_RESPONSE)
                             .nonce(nonce)
-                            .payload(JsonUtil.toJson(response))
+                            .payload(JsonUtil.toPrettyJson(response))
                             .errorMessage(verifyResult.invalidReason())
                             .build());
 
@@ -180,7 +180,7 @@ public class SettleController {
                     consoleService.logEvent(EventRequest.builder()
                             .type(X402_FACILITATOR_SETTLE_RESPONSE)
                             .nonce(nonce)
-                            .payload(JsonUtil.toJson(response))
+                            .payload(JsonUtil.toPrettyJson(response))
                             .errorMessage(verifyResult.invalidReason())
                             .build());
 
@@ -202,7 +202,7 @@ public class SettleController {
                 consoleService.logEvent(EventRequest.builder()
                         .type(X402_FACILITATOR_SETTLE_RESPONSE)
                         .nonce(nonce)
-                        .payload(JsonUtil.toJson(response))
+                        .payload(JsonUtil.toPrettyJson(response))
                         .errorMessage(verifyResult.invalidReason())
                         .build());
 

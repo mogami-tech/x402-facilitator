@@ -50,7 +50,7 @@ public class VerifyController {
         consoleService.logEvent(EventRequest.builder()
                 .type(X402_FACILITATOR_VERIFY_REQUEST)
                 .nonce(nonce)
-                .payload(JsonUtil.toJson(verifyRequest))
+                .payload(JsonUtil.toPrettyJson(verifyRequest))
                 .build());
 
         // Call the verification service to process the request.
@@ -60,7 +60,7 @@ public class VerifyController {
         consoleService.logEvent(EventRequest.builder()
                 .type(X402_FACILITATOR_VERIFY_RESPONSE)
                 .nonce(nonce)
-                .payload(JsonUtil.toJson(result))
+                .payload(JsonUtil.toPrettyJson(result))
                 .errorMessage(result.invalidReason())
                 .build());
 
