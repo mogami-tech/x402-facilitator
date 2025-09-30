@@ -10,8 +10,9 @@
     <artifactId>mogami-x402-facilitator</artifactId>
     <version>0.1.9-SNAPSHOT</version>
     <packaging>jar</packaging>
-    <name>Mogami Java x402 client - Retrieve payment information and pay</name>
-    <description>Mogami Java x402 client - Retrieve payment information and pay</description>
+    <name>Mogami facilitator</name>
+    <description>The Mogami Facilitator Service is your backend gateway for processing x402 payments on-chain
+    </description>
     <url>https://github.com/mogami-tech/x402-facilitator</url>
     <licenses>
         <license>
