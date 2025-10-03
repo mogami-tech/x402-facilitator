@@ -16,7 +16,7 @@ import tech.mogami.facilitator.service.VerifyService;
 
 import static tech.mogami.commons.api.console.EventType.X402_FACILITATOR_VERIFY_REQUEST;
 import static tech.mogami.commons.api.console.EventType.X402_FACILITATOR_VERIFY_RESPONSE;
-import static tech.mogami.commons.api.facilitator.FacilitatorApiEndpoints.VERIFY_URL;
+import static tech.mogami.commons.api.facilitator.FacilitatorApiEndpoints.VERIFY_ENDPOINT;
 
 
 /**
@@ -40,7 +40,7 @@ public class VerifyController {
      * @param verifyRequest the request containing the payment details to verify
      * @return VerifyResponse containing the verification result
      */
-    @PostMapping(VERIFY_URL)
+    @PostMapping(VERIFY_ENDPOINT)
     @Operation(summary = "Verify a payment request")
     VerifyResponse verify(@RequestBody final VerifyRequest verifyRequest) {
         final String nonce = verifyRequest.getNonce()

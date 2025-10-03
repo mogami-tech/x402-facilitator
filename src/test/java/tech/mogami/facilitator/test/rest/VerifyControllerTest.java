@@ -22,7 +22,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.http.MediaType.TEXT_PLAIN;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static tech.mogami.commons.api.facilitator.FacilitatorApiEndpoints.VERIFY_URL;
+import static tech.mogami.commons.api.facilitator.FacilitatorApiEndpoints.VERIFY_ENDPOINT;
 import static tech.mogami.commons.constant.network.Networks.BASE_SEPOLIA;
 import static tech.mogami.commons.constant.version.X402Versions.X402_SUPPORTED_VERSION_BY_MOGAMI;
 import static tech.mogami.commons.header.payment.schemes.Schemes.EXACT_SCHEME;
@@ -71,7 +71,7 @@ public class VerifyControllerTest {
                         .build())
                 .build();
 
-        mockMvc.perform(MockMvcRequestBuilders.post(VERIFY_URL)
+        mockMvc.perform(MockMvcRequestBuilders.post(VERIFY_ENDPOINT)
                         .contentType(APPLICATION_JSON)
                         .accept(APPLICATION_JSON, TEXT_PLAIN, ALL)
                         .header("User-Agent", "axios/1.8.4")
@@ -125,7 +125,7 @@ public class VerifyControllerTest {
                 paymentRequirements,
                 paymentPayload);
 
-        mockMvc.perform(MockMvcRequestBuilders.post(VERIFY_URL)
+        mockMvc.perform(MockMvcRequestBuilders.post(VERIFY_ENDPOINT)
                         .contentType(APPLICATION_JSON)
                         .accept(APPLICATION_JSON, TEXT_PLAIN, ALL)
                         .header("User-Agent", "axios/1.8.4")
