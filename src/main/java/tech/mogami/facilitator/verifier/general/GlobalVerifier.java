@@ -13,8 +13,8 @@ import tech.mogami.facilitator.verifier.VerifierUtil;
 
 import java.util.Comparator;
 
-import static tech.mogami.commons.api.facilitator.VerificationError.INVALID_PAYLOAD;
-import static tech.mogami.commons.api.facilitator.VerificationError.UNDEFINED;
+import static tech.mogami.commons.constant.X402Error.INVALID_PAYLOAD;
+import static tech.mogami.commons.constant.X402Error.UNKNOWN;
 import static tech.mogami.facilitator.verifier.VerificationStep.GLOBAL_VERIFIER;
 
 /**
@@ -62,13 +62,17 @@ public class GlobalVerifier extends VerifierUtil implements Verifier {
     @Override
     public VerificationResult verify(final VerifyRequest verifyRequest) {
         if (verifyRequest == null) {
-            return VerificationResult.fail(UNDEFINED, "The request object received is null");
+            return VerificationResult.fail(
+                    UNKNOWN,
+                    "The request object received is null");
         }
 
         // Return the first violation found, sorted by property path.
         return validator.validate(verifyRequest).stream()
                 .min(VIOLATION_COMPARATOR)
-                .map(violation -> VerificationResult.fail(INVALID_PAYLOAD, getErrorMessage(violation)))
+                .map(violation -> VerificationResult.fail(
+                        INVALID_PAYLOAD,
+                        getErrorMessage(violation)))
                 .orElseGet(VerificationResult::ok);
     }
 

@@ -15,8 +15,8 @@ import tech.mogami.commons.util.NonceUtil;
 import tech.mogami.facilitator.verifier.general.GlobalVerifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static tech.mogami.commons.api.facilitator.VerificationError.INVALID_PAYLOAD;
-import static tech.mogami.commons.api.facilitator.VerificationError.UNDEFINED;
+import static tech.mogami.commons.constant.X402Error.INVALID_PAYLOAD;
+import static tech.mogami.commons.constant.X402Error.UNKNOWN;
 import static tech.mogami.commons.constant.network.Networks.BASE_SEPOLIA;
 import static tech.mogami.commons.constant.version.X402Versions.X402_SUPPORTED_VERSION_BY_MOGAMI;
 import static tech.mogami.commons.header.payment.schemes.Schemes.EXACT_SCHEME;
@@ -41,7 +41,7 @@ public class GlobalVerifierTest {
                 .isNotNull()
                 .satisfies(result -> {
                     assertThat(result.isValid()).isFalse();
-                    assertThat(result.verificationError()).isEqualTo(UNDEFINED);
+                    assertThat(result.verificationError()).isEqualTo(UNKNOWN);
                     assertThat(result.errorMessage()).isEqualTo("The request object received is null");
                 });
     }

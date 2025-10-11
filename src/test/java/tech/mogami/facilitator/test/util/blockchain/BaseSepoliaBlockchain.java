@@ -29,6 +29,7 @@ public abstract class BaseSepoliaBlockchain {
      * Start the container.
      */
     @BeforeAll
+    @SuppressWarnings("resource")
     public static void setUp() {
         container = new DockerComposeContainer<>(new File("src/test/resources/docker-compose-base-sepolia.yml"))
                 .waitingFor(BLOCKCHAIN_SERVICE_NAME, new LogMessageWaitStrategy().withRegEx(".*Listening on 0.0.0.0:8545.*"))

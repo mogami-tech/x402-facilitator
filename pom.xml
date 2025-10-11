@@ -4,8 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <!-- =========================================================================================================== -->
-    <!-- Project information -->
+    <!-- Project information ======================================================================================= -->
     <groupId>tech.mogami.facilitator</groupId>
     <artifactId>mogami-x402-facilitator</artifactId>
     <version>0.1.9-SNAPSHOT</version>
@@ -20,10 +19,8 @@
             <distribution>repo</distribution>
         </license>
     </licenses>
-    <!-- =========================================================================================================== -->
 
-    <!-- =========================================================================================================== -->
-    <!-- Developers -->
+    <!-- Developers ================================================================================================ -->
     <developers>
         <developer>
             <id>straumat</id>
@@ -32,29 +29,22 @@
             <url>https://github.com/straumat</url>
         </developer>
     </developers>
-    <!-- =========================================================================================================== -->
 
-    <!-- =========================================================================================================== -->
-    <!-- Source Code Management -->
+    <!-- Source Code Management ==================================================================================== -->
     <scm>
         <url>https://github.com/mogami-tech/x402-facilitator</url>
         <connection>scm:git:git://github.com/mogami-tech/x402-facilitator.git</connection>
         <developerConnection>scm:git:git@github.com:mogami-tech/x402-facilitator.git</developerConnection>
     </scm>
-    <!-- =========================================================================================================== -->
 
-    <!-- =========================================================================================================== -->
-    <!-- Issue management -->
+    <!-- Issue management ========================================================================================== -->
     <issueManagement>
         <system>GitHub Issues</system>
         <url>https://github.com/mogami-tech/x402-facilitator/issues</url>
     </issueManagement>
-    <!-- =========================================================================================================== -->
 
-    <!-- =========================================================================================================== -->
-    <!-- Project configuration -->
+    <!-- Project configuration ===================================================================================== -->
     <properties>
-        <!-- ======================================================================================================= -->
         <!-- Java build configuration -->
         <java.version>21</java.version>
         <maven.compiler.target>21</maven.compiler.target>
@@ -62,7 +52,6 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <!-- ======================================================================================================= -->
         <!-- Mogami -->
         <mogami.commons.version>0.0.9-SNAPSHOT</mogami.commons.version>
         <mogami.java-client.version>0.1.3</mogami.java-client.version>
@@ -96,10 +85,8 @@
         <maven.deploy-plugin.version>3.1.4</maven.deploy-plugin.version>
         <maven.central-publishing-maven-plugin.version>0.9.0</maven.central-publishing-maven-plugin.version>
     </properties>
-    <!-- =========================================================================================================== -->
 
-    <!-- =========================================================================================================== -->
-    <!-- Dependencies -->
+    <!-- Dependencies ============================================================================================== -->
     <dependencies>
         <!-- Mogami -->
         <dependency>
@@ -179,6 +166,7 @@
         </dependency>
     </dependencies>
 
+    <!-- Dependency management ===================================================================================== -->
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -198,15 +186,13 @@
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
-                <version>2.0.17</version> <!-- Aligned with Spring boot Boot -->
+                <version>2.0.17</version> <!-- Aligned with Spring boot -->
             </dependency>
         </dependencies>
     </dependencyManagement>
 
-    <!-- =========================================================================================================== -->
-    <!-- Build configuration -->
+    <!-- Build configuration ======================================================================================= -->
     <build>
-        <!-- Plugins -->
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -234,7 +220,6 @@
                     <violationSeverity>warning</violationSeverity>
                 </configuration>
             </plugin>
-            <!-- Tests -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -256,7 +241,6 @@
                     </statelessTestsetInfoReporter>
                 </configuration>
             </plugin>
-            <!-- Jar (classes, sources and documentation)-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
@@ -317,8 +301,6 @@
                     </execution>
                 </executions>
             </plugin>
-            <!-- =========================================================================================================== -->
-            <!-- Release -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-deploy-plugin</artifactId>
@@ -351,10 +333,8 @@
             </plugin>
         </plugins>
     </build>
-    <!-- =========================================================================================================== -->
 
-    <!-- =========================================================================================================== -->
-    <!-- Profiles -->
+    <!-- Profiles ================================================================================================== -->
     <profiles>
         <profile>
             <id>release</id>
@@ -398,9 +378,8 @@
             </build>
         </profile>
     </profiles>
-    <!-- =========================================================================================================== -->
 
-    <!-- =========================================================================================================== -->
+    <!-- Repositories ============================================================================================== -->
     <repositories>
         <repository>
             <id>central-snapshots</id>
@@ -415,6 +394,8 @@
             </releases>
         </repository>
     </repositories>
+
+    <!-- Distribution management =================================================================================== -->
     <distributionManagement>
         <repository>
             <id>central</id>
@@ -425,6 +406,5 @@
             <url>https://central.sonatype.com/repository/maven-snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
-    <!-- =========================================================================================================== -->
 
 </project>

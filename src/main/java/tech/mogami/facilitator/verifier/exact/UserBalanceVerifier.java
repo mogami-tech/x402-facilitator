@@ -16,7 +16,7 @@ import tech.mogami.facilitator.verifier.VerifierForExactScheme;
 
 import java.math.BigInteger;
 
-import static tech.mogami.commons.api.facilitator.VerificationError.INSUFFICIENT_FUNDS;
+import static tech.mogami.commons.constant.X402Error.INSUFFICIENT_FUNDS;
 import static tech.mogami.facilitator.verifier.VerificationStep.USER_BALANCE_FOR_EXACT_SCHEME;
 
 /**
@@ -31,6 +31,7 @@ public class UserBalanceVerifier implements VerifierForExactScheme {
 
     @Override
     public VerificationResult verify(final VerifyRequest verifyRequest) {
+        // TODO Make "https://sepolia.base.org" configurable.
         try (Web3j web3j = Web3j.build(new HttpService("https://sepolia.base.org"))) {
             // Retrieve the balance of the user.
             ExactSchemePayload payload = (ExactSchemePayload) verifyRequest.paymentPayload().payload();
@@ -43,10 +44,14 @@ public class UserBalanceVerifier implements VerifierForExactScheme {
             // Compare the balance with the required amount.
             BigInteger rawBalance = token.balanceOf(payload.authorization().from()).send();
             if (rawBalance.compareTo(new BigInteger(verifyRequest.paymentRequirements().maxAmountRequired())) < 0) {
-                return VerificationResult.fail(INSUFFICIENT_FUNDS, "Insufficient funds: " + rawBalance + " available");
+                return VerificationResult.fail(
+                        INSUFFICIENT_FUNDS,
+                        "Insufficient funds: " + rawBalance + " available");
             }
         } catch (Exception e) {
-            return VerificationResult.fail(INSUFFICIENT_FUNDS, "Error getting balance: " + e.getMessage());
+            return VerificationResult.fail(
+                    INSUFFICIENT_FUNDS,
+                    "Error getting balance: " + e.getMessage());
         }
         return VerificationResult.ok();
     }

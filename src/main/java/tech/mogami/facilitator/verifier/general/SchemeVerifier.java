@@ -13,7 +13,7 @@ import tech.mogami.facilitator.verifier.VerifierUtil;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import static tech.mogami.commons.api.facilitator.VerificationError.UNSUPPORTED_SCHEME;
+import static tech.mogami.commons.constant.X402Error.UNSUPPORTED_SCHEME;
 import static tech.mogami.facilitator.verifier.VerificationStep.SCHEME_EXISTS;
 
 /**
@@ -36,7 +36,9 @@ public class SchemeVerifier extends VerifierUtil implements Verifier {
                 )
                 .flatMap(Set::stream)
                 .findFirst()
-                .map(violation -> VerificationResult.fail(UNSUPPORTED_SCHEME, getErrorMessage(violation)))
+                .map(violation -> VerificationResult.fail(
+                        UNSUPPORTED_SCHEME,
+                        getErrorMessage(violation)))
                 .orElseGet(VerificationResult::ok);
     }
 

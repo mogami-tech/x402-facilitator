@@ -11,7 +11,7 @@ import tech.mogami.commons.header.payment.schemes.exact.ExactSchemePayload;
 import tech.mogami.facilitator.verifier.exact.UserBalanceVerifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static tech.mogami.commons.api.facilitator.VerificationError.INSUFFICIENT_FUNDS;
+import static tech.mogami.commons.constant.X402Error.INSUFFICIENT_FUNDS;
 import static tech.mogami.commons.constant.network.Networks.BASE_SEPOLIA;
 import static tech.mogami.commons.constant.version.X402Versions.X402_SUPPORTED_VERSION_BY_MOGAMI;
 import static tech.mogami.commons.header.payment.schemes.Schemes.EXACT_SCHEME;

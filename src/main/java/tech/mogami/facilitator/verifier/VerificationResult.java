@@ -1,6 +1,6 @@
 package tech.mogami.facilitator.verifier;
 
-import tech.mogami.commons.api.facilitator.VerificationError;
+import tech.mogami.commons.constant.X402Error;
 
 /**
  * VerificationResult is a placeholder for the result of a verification process.
@@ -11,7 +11,7 @@ import tech.mogami.commons.api.facilitator.VerificationError;
  */
 public record VerificationResult(
         boolean isValid,
-        VerificationError verificationError,
+        X402Error verificationError,
         String errorMessage
 ) {
 
@@ -30,7 +30,7 @@ public record VerificationResult(
      * @param verificationError the error that caused the failure
      * @return a VerificationResult indicating failure with the specified error
      */
-    public static VerificationResult fail(final VerificationError verificationError, final String errorMessage) {
+    public static VerificationResult fail(final X402Error verificationError, final String errorMessage) {
         return new VerificationResult(false, verificationError, errorMessage);
     }
 

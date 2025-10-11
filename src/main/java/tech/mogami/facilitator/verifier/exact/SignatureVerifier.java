@@ -10,7 +10,7 @@ import tech.mogami.facilitator.verifier.VerificationResult;
 import tech.mogami.facilitator.verifier.VerificationStep;
 import tech.mogami.facilitator.verifier.VerifierForExactScheme;
 
-import static tech.mogami.commons.api.facilitator.VerificationError.INVALID_EXACT_SIGNATURE;
+import static tech.mogami.commons.constant.X402Error.INVALID_EXACT_EVM_PAYLOAD_SIGNATURE;
 import static tech.mogami.facilitator.verifier.VerificationStep.SIGNATURE_FOR_EXACT_SCHEME;
 
 /**
@@ -34,10 +34,14 @@ public class SignatureVerifier implements VerifierForExactScheme {
                     payload.authorization().from())) {
                 return VerificationResult.ok();
             } else {
-                return VerificationResult.fail(INVALID_EXACT_SIGNATURE, "Signature verification failed for exact scheme");
+                return VerificationResult.fail(
+                        INVALID_EXACT_EVM_PAYLOAD_SIGNATURE,
+                        "Signature verification failed for exact scheme");
             }
         } catch (Exception e) {
-            return VerificationResult.fail(INVALID_EXACT_SIGNATURE, "Signature verification exception: " + e.getMessage());
+            return VerificationResult.fail(
+                    INVALID_EXACT_EVM_PAYLOAD_SIGNATURE,
+                    "Signature verification exception: " + e.getMessage());
         }
     }
 

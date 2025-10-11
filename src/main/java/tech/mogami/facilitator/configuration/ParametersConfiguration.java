@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import tech.mogami.facilitator.parameter.X402Parameters;
 
 /**
- * Parameter configuration for the X402 facilitator.
+ * Parameter configuration.
  */
 @Configuration
 @EnableConfigurationProperties({

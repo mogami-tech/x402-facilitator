@@ -33,7 +33,6 @@ public class SupportedController {
     @Operation(summary = "Supported Payment Schemes and Networks")
     @Cacheable(value = "supportedCache", key = "'supported'", sync = true)
     public SupportedResponse supported() {
-        log.info("Received the first /supported request");
         return SupportedResponse.builder()
                 // Base networks =======================================================================================
                 .kind(SupportedKind.builder()

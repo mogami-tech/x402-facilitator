@@ -11,8 +11,8 @@ import tech.mogami.commons.header.payment.schemes.exact.ExactSchemePayload;
 import tech.mogami.facilitator.verifier.exact.DeadlineVerifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static tech.mogami.commons.api.facilitator.VerificationError.INVALID_EXACT_EVM_PAYLOAD_VALID_AFTER;
-import static tech.mogami.commons.api.facilitator.VerificationError.INVALID_EXACT_EVM_PAYLOAD_VALID_BEFORE;
+import static tech.mogami.commons.constant.X402Error.INVALID_EXACT_EVM_PAYLOAD_AUTHORIZATION_VALID_AFTER;
+import static tech.mogami.commons.constant.X402Error.INVALID_EXACT_EVM_PAYLOAD_AUTHORIZATION_VALID_BEFORE;
 import static tech.mogami.commons.constant.network.Networks.BASE_SEPOLIA;
 import static tech.mogami.commons.header.payment.schemes.Schemes.EXACT_SCHEME;
 
@@ -48,7 +48,7 @@ public class DeadlineVerifierTest {
                 .isNotNull()
                 .satisfies(result -> {
                     assertThat(result.isValid()).isFalse();
-                    assertThat(result.verificationError()).isEqualTo(INVALID_EXACT_EVM_PAYLOAD_VALID_BEFORE);
+                    assertThat(result.verificationError()).isEqualTo(INVALID_EXACT_EVM_PAYLOAD_AUTHORIZATION_VALID_BEFORE);
                     assertThat(result.errorMessage()).isEqualTo("Authorization 'validBefore' is in the past or too close to the current time");
                 });
     }
@@ -78,7 +78,7 @@ public class DeadlineVerifierTest {
                 .isNotNull()
                 .satisfies(result -> {
                     assertThat(result.isValid()).isFalse();
-                    assertThat(result.verificationError()).isEqualTo(INVALID_EXACT_EVM_PAYLOAD_VALID_AFTER);
+                    assertThat(result.verificationError()).isEqualTo(INVALID_EXACT_EVM_PAYLOAD_AUTHORIZATION_VALID_AFTER);
                     assertThat(result.errorMessage()).isEqualTo("Authorization 'validAfter' is in the future");
                 });
     }
