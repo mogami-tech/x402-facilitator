@@ -31,7 +31,7 @@ import java.math.BigInteger;
 import static org.web3j.utils.Convert.Unit.GWEI;
 import static tech.mogami.commons.api.console.EventType.X402_FACILITATOR_SETTLE_REQUEST;
 import static tech.mogami.commons.api.console.EventType.X402_FACILITATOR_SETTLE_RESPONSE;
-import static tech.mogami.commons.api.facilitator.FacilitatorApiEndpoints.SETTLE_URL;
+import static tech.mogami.commons.api.facilitator.FacilitatorApiEndpoints.SETTLE_ENDPOINT;
 import static tech.mogami.commons.constant.network.Networks.BASE_SEPOLIA;
 
 /**
@@ -58,7 +58,7 @@ public class SettleController {
      * @param settleRequest the request containing the payment details to settle
      * @return VerifyResponse containing the settlement result
      */
-    @PostMapping(SETTLE_URL)
+    @PostMapping(SETTLE_ENDPOINT)
     @Operation(summary = "Settle a payment request")
     SettleResponse settle(@RequestBody final SettleRequest settleRequest) {
         final String nonce = settleRequest.getNonce()

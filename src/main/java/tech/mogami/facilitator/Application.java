@@ -16,7 +16,6 @@ public class Application {
      * @param args command line arguments
      */
     public static void main(final String[] args) {
-        System.out.println("Starting X402 Facilitator Application...");
         SpringApplication.run(Application.class, args);
     }
 

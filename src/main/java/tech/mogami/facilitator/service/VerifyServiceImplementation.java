@@ -47,7 +47,7 @@ public class VerifyServiceImplementation implements VerifyService {
                 log.info("Verification error {} : {}", v.type(), result.errorMessage());
                 return VerifyResponse.builder()
                         .isValid(false)
-                        .invalidReason(result.verificationError().getErrorCode())
+                        .invalidReason(result.verificationError().getCode())
                         .payer(getPayerFromVerifyRequest(verifyRequest))
                         .build();
             } else {

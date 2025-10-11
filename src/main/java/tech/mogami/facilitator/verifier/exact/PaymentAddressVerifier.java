@@ -10,7 +10,7 @@ import tech.mogami.facilitator.verifier.VerificationResult;
 import tech.mogami.facilitator.verifier.VerificationStep;
 import tech.mogami.facilitator.verifier.VerifierForExactScheme;
 
-import static tech.mogami.commons.api.facilitator.VerificationError.INVALID_EXACT_EVM_PAYLOAD_RECIPIENT_MISMATCH;
+import static tech.mogami.commons.constant.X402Error.INVALID_EXACT_EVM_PAYLOAD_RECIPIENT_MISMATCH;
 import static tech.mogami.facilitator.verifier.VerificationStep.PAYMENT_ADDRESS_FOR_EXACT_SCHEME;
 
 /**
@@ -29,7 +29,9 @@ public class PaymentAddressVerifier implements VerifierForExactScheme {
 
         // Check if the payment address is valid
         if (!StringUtils.equalsIgnoreCase(payload.authorization().to(), verifyRequest.paymentRequirements().payTo())) {
-            return VerificationResult.fail(INVALID_EXACT_EVM_PAYLOAD_RECIPIENT_MISMATCH, "Authorization 'to' address does not match the payment requirements 'payTo' address");
+            return VerificationResult.fail(
+                    INVALID_EXACT_EVM_PAYLOAD_RECIPIENT_MISMATCH,
+                    "Authorization 'to' address does not match the payment requirements 'payTo' address");
         }
 
         // If everything is fine, we return an OK result

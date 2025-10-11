@@ -11,7 +11,7 @@ import tech.mogami.commons.header.payment.schemes.exact.ExactSchemePayload;
 import tech.mogami.facilitator.verifier.exact.PaymentValueVerifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static tech.mogami.commons.api.facilitator.VerificationError.INSUFFICIENT_PAYMENT_VALUE;
+import static tech.mogami.commons.constant.X402Error.INVALID_EXACT_EVM_PAYLOAD_AUTHORIZATION_VALUE;
 
 @SpringBootTest
 @DisplayName("Payment value verifier tests")
@@ -40,7 +40,7 @@ public class PaymentValueVerifierTest {
                 .isNotNull()
                 .satisfies(result -> {
                     assertThat(result.isValid()).isFalse();
-                    assertThat(result.verificationError()).isEqualTo(INSUFFICIENT_PAYMENT_VALUE);
+                    assertThat(result.verificationError()).isEqualTo(INVALID_EXACT_EVM_PAYLOAD_AUTHORIZATION_VALUE);
                     assertThat(result.errorMessage()).isEqualTo("Payment value is less than the required maximum amount (100 < 110)");
                 });
     }

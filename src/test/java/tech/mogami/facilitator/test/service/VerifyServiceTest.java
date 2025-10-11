@@ -37,7 +37,7 @@ public class VerifyServiceTest {
                 .isNotNull()
                 .satisfies(result -> {
                     assertThat(result.isValid()).isFalse();
-                    assertThat(result.invalidReason()).isEqualTo("undefined");
+                    assertThat(result.invalidReason()).isEqualTo("unknown_error");
                 });
     }
 

@@ -11,7 +11,7 @@ import tech.mogami.facilitator.verifier.VerifierForExactScheme;
 
 import java.math.BigDecimal;
 
-import static tech.mogami.commons.api.facilitator.VerificationError.INSUFFICIENT_PAYMENT_VALUE;
+import static tech.mogami.commons.constant.X402Error.INVALID_EXACT_EVM_PAYLOAD_AUTHORIZATION_VALUE;
 
 /**
  * Payment value verifier.
@@ -33,7 +33,7 @@ public class PaymentValueVerifier implements VerifierForExactScheme {
         BigDecimal maxAmountRequired = new BigDecimal(verifyRequest.paymentRequirements().maxAmountRequired());
         if (payloadValue.compareTo(maxAmountRequired) < 0) {
             return VerificationResult.fail(
-                    INSUFFICIENT_PAYMENT_VALUE,
+                    INVALID_EXACT_EVM_PAYLOAD_AUTHORIZATION_VALUE,
                     "Payment value is less than the required maximum amount (" + payloadValue + " < " + maxAmountRequired + ")"
             );
         }

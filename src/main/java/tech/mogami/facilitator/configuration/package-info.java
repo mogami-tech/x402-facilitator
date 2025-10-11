@@ -1,4 +1,4 @@
 /**
- * Facilitator configuration package.
+ * Facilitator configuration.
  */
 package tech.mogami.facilitator.configuration;

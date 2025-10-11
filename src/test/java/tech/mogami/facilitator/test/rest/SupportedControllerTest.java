@@ -17,7 +17,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static tech.mogami.commons.api.facilitator.FacilitatorApiEndpoints.SUPPORTED_URL;
+import static tech.mogami.commons.api.facilitator.FacilitatorApiEndpoints.SUPPORTED_ENDPOINT;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -36,7 +36,7 @@ public class SupportedControllerTest {
         verify(supportedService, times(0)).supported();
 
         // First call without cache.
-        mockMvc.perform(get(SUPPORTED_URL))
+        mockMvc.perform(get(SUPPORTED_ENDPOINT))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(APPLICATION_JSON))
                 .andExpect(jsonPath("$.kinds").isArray())
@@ -48,7 +48,7 @@ public class SupportedControllerTest {
         verify(supportedService, times(1)).supported();
 
         // Second call with cache (REST service should only have been called once).
-        mockMvc.perform(get(SUPPORTED_URL))
+        mockMvc.perform(get(SUPPORTED_ENDPOINT))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(APPLICATION_JSON))
                 .andExpect(jsonPath("$.kinds").isArray())

@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * OpenAPI configuration for the Mogami Facilitator.
+ * OpenAPI configuration.
  */
 @Configuration
 public class OpenAPIConfiguration {

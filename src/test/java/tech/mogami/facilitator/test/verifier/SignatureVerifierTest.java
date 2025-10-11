@@ -11,7 +11,7 @@ import tech.mogami.commons.header.payment.schemes.exact.ExactSchemePayload;
 import tech.mogami.facilitator.verifier.exact.SignatureVerifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static tech.mogami.commons.api.facilitator.VerificationError.INVALID_EXACT_SIGNATURE;
+import static tech.mogami.commons.constant.X402Error.INVALID_EXACT_EVM_PAYLOAD_SIGNATURE;
 import static tech.mogami.commons.constant.network.Networks.BASE_SEPOLIA;
 import static tech.mogami.commons.constant.version.X402Versions.X402_SUPPORTED_VERSION_BY_MOGAMI;
 import static tech.mogami.commons.header.payment.schemes.Schemes.EXACT_SCHEME;
@@ -67,7 +67,7 @@ public class SignatureVerifierTest {
                 .isNotNull()
                 .satisfies(result -> {
                     assertThat(result.isValid()).isFalse();
-                    assertThat(result.verificationError()).isEqualTo(INVALID_EXACT_SIGNATURE);
+                    assertThat(result.verificationError()).isEqualTo(INVALID_EXACT_EVM_PAYLOAD_SIGNATURE);
                     assertThat(result.errorMessage()).isEqualTo("Signature verification failed for exact scheme");
                 });
     }

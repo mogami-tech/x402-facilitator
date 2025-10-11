@@ -21,7 +21,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.http.MediaType.TEXT_PLAIN;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static tech.mogami.commons.api.facilitator.FacilitatorApiEndpoints.SETTLE_URL;
+import static tech.mogami.commons.api.facilitator.FacilitatorApiEndpoints.SETTLE_ENDPOINT;
 import static tech.mogami.commons.constant.network.Networks.BASE_SEPOLIA;
 import static tech.mogami.commons.constant.version.X402Versions.X402_SUPPORTED_VERSION_BY_MOGAMI;
 import static tech.mogami.commons.header.payment.schemes.Schemes.EXACT_SCHEME;
@@ -42,7 +42,7 @@ public class SettleControllerTest {
     @Test
     @DisplayName("Calling /settle with an error")
     void settleWithError() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.post(SETTLE_URL)
+        mockMvc.perform(MockMvcRequestBuilders.post(SETTLE_ENDPOINT)
                         .contentType(APPLICATION_JSON)
                         .accept(APPLICATION_JSON, TEXT_PLAIN, ALL)
                         .content(JsonUtil.toJson(
@@ -101,7 +101,7 @@ public class SettleControllerTest {
                 paymentRequirements,
                 paymentPayload);
 
-        mockMvc.perform(MockMvcRequestBuilders.post(SETTLE_URL)
+        mockMvc.perform(MockMvcRequestBuilders.post(SETTLE_ENDPOINT)
                         .contentType(APPLICATION_JSON)
                         .accept(APPLICATION_JSON, TEXT_PLAIN, ALL)
                         .content(JsonUtil.toJson(VerifyRequest.builder()

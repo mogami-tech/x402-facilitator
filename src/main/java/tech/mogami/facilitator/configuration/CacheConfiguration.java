@@ -4,7 +4,7 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Cache configuration for the X402 facilitator server.
+ * Cache configuration.
  */
 @Configuration
 @EnableCaching
