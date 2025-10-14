@@ -53,7 +53,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <!-- Mogami -->
-        <mogami.commons.version>1.0.0</mogami.commons.version>
+        <mogami.commons.version>1.0.1-SNAPSHOT</mogami.commons.version>
         <mogami.java-client.version>1.0.0</mogami.java-client.version>
 
         <!-- Boilerplate & Utils -->
@@ -67,6 +67,7 @@
         <!-- Tests -->
         <junit-jupiter.version>6.0.0</junit-jupiter.version>
         <assertj.version>3.27.6</assertj.version>
+        <awaitility.version>4.3.0</awaitility.version>
         <testcontainers.version>1.21.3</testcontainers.version>
 
         <!-- Maven -->
@@ -151,6 +152,12 @@
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
             <version>${assertj.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.awaitility</groupId>
+            <artifactId>awaitility</artifactId>
+            <version>${awaitility.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
