@@ -12,6 +12,7 @@ import tech.mogami.facilitator.verifier.exact.PaymentContextVerifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static tech.mogami.commons.constant.X402Error.INVALID_NETWORK;
+import static tech.mogami.commons.constant.network.Networks.BASE_MAINNET;
 import static tech.mogami.commons.constant.network.Networks.BASE_SEPOLIA;
 import static tech.mogami.commons.header.payment.schemes.Schemes.EXACT_SCHEME;
 import static tech.mogami.commons.header.payment.schemes.exact.ExactSchemeConstants.EXACT_SCHEME_PARAMETER_NAME;
@@ -121,8 +122,8 @@ public class PaymentContextVerifierTest {
     }
 
     @Test
-    @DisplayName("Invalid stablecoin name")
-    public void invalidStablecoinName() {
+    @DisplayName("Invalid stablecoin name in exact scheme parameter name")
+    public void invalidStablecoinNameInExactSchemaParameterName() {
         assertThat(paymentContextVerifier.verify(
                 VerifyRequest.builder()
                         .paymentPayload(PaymentPayload.builder()
@@ -159,7 +160,49 @@ public class PaymentContextVerifierTest {
                 .satisfies(result -> {
                     assertThat(result.isValid()).isFalse();
                     assertThat(result.verificationError()).isEqualTo(INVALID_NETWORK);
-                    assertThat(result.errorMessage()).isEqualTo("Stablecoin name is invalid: INVALID_STABLECOIN_NAME");
+                    assertThat(result.errorMessage()).isEqualTo("Exact scheme parameter name invalid: INVALID_STABLECOIN_NAME");
+                });
+
+        // If network = "base sepolia", then the value of "name" is "USDC"
+        assertThat(paymentContextVerifier.verify(
+                VerifyRequest.builder()
+                        .paymentPayload(PaymentPayload.builder()
+                                .scheme(EXACT_SCHEME.name())
+                                .network(BASE_SEPOLIA.name())
+                                .payload(ExactSchemePayload.builder().build())
+                                .build())
+                        .paymentRequirements(PaymentRequirements.builder()
+                                .scheme(EXACT_SCHEME.name())
+                                .network(BASE_SEPOLIA.name())
+                                .extra(EXACT_SCHEME_PARAMETER_NAME, "USD Coin")
+                                .build())
+                        .build()))
+                .isNotNull()
+                .satisfies(result -> {
+                    assertThat(result.isValid()).isFalse();
+                    assertThat(result.verificationError()).isEqualTo(INVALID_NETWORK);
+                    assertThat(result.errorMessage()).isEqualTo("On Base Sepolia testnet, the exact scheme parameter name must be 'USDC'");
+                });
+
+        // If network = "base", then the value of "name" is "USD Coin"
+        assertThat(paymentContextVerifier.verify(
+                VerifyRequest.builder()
+                        .paymentPayload(PaymentPayload.builder()
+                                .scheme(EXACT_SCHEME.name())
+                                .network(BASE_MAINNET.name())
+                                .payload(ExactSchemePayload.builder().build())
+                                .build())
+                        .paymentRequirements(PaymentRequirements.builder()
+                                .scheme(EXACT_SCHEME.name())
+                                .network(BASE_MAINNET.name())
+                                .extra(EXACT_SCHEME_PARAMETER_NAME, "USDC")
+                                .build())
+                        .build()))
+                .isNotNull()
+                .satisfies(result -> {
+                    assertThat(result.isValid()).isFalse();
+                    assertThat(result.verificationError()).isEqualTo(INVALID_NETWORK);
+                    assertThat(result.errorMessage()).isEqualTo("On Base mainnet, the exact scheme parameter name must be 'USD Coin'");
                 });
     }
 

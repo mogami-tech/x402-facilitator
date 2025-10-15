@@ -44,6 +44,7 @@ import static tech.mogami.commons.constant.network.Networks.BASE_SEPOLIA;
 @RestController
 @RequiredArgsConstructor
 @Tag(name = "Settle", description = "Settle a payment")
+@SuppressWarnings({"checkstyle:MethodLength"})
 public class SettleController {
 
     /** X402 parameters. */
@@ -124,9 +125,9 @@ public class SettleController {
                         web3j,
                         new RawTransactionManager(web3j,
                                 Credentials.create(x402Parameters.facilitator().privateKey()),
-                                Long.parseLong(web3j.netVersion().send().getNetVersion())),
+                                network.chainId()),
                         new StaticEIP1559GasProvider(
-                                Long.parseLong(web3j.netVersion().send().getNetVersion()),
+                                network.chainId(),
                                 gasFees.maximumFeePerGas(),
                                 gasFees.maximumPriorityFeePerGas(),
                                 DEFAULT_GAS_LIMIT // gas limit
@@ -138,6 +139,7 @@ public class SettleController {
                         settleRequest,
                         settleRequest.paymentRequirements().asset());
                 ExactSchemePayload payload = (ExactSchemePayload) settleRequest.paymentPayload().payload();
+
                 var transactionReceipt = contract.transferWithAuthorization(
                                 payload.authorization().from(),
                                 settleRequest.paymentRequirements().payTo(),
