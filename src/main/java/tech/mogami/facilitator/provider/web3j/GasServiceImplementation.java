@@ -1,6 +1,5 @@
 package tech.mogami.facilitator.provider.web3j;
 
-import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -28,11 +27,6 @@ public class GasServiceImplementation implements GasService {
 
     /** Cache of gas fees per network. */
     private final Map<String, GasFees> cache = new ConcurrentHashMap<>();
-
-    @PostConstruct
-    public void init() {
-        ALL_NETWORKS.forEach(network -> log.info("[GasService] {} with rpc {})", network.name(), network.rpcUrl()));
-    }
 
     @Override
     public GasFees getGasFees(final String networkName) {

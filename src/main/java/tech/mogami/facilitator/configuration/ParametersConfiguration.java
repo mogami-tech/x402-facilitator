@@ -8,6 +8,8 @@ import org.springframework.context.annotation.Configuration;
 import org.web3j.crypto.Credentials;
 import tech.mogami.facilitator.parameter.X402Parameters;
 
+import static tech.mogami.commons.constant.network.Networks.ALL_NETWORKS;
+
 /**
  * Parameter configuration.
  */
@@ -25,7 +27,8 @@ public class ParametersConfiguration {
     @PostConstruct
     public final void init() {
         final Credentials credentials = Credentials.create(x402Parameters.facilitator().privateKey());
-        log.info("[X402Parameters] Facilitator address: {}", credentials.getAddress());
+        log.info("[Configuration] Facilitator address is {}", credentials.getAddress());
+        ALL_NETWORKS.forEach(network -> log.info("[Configuration] Network {} uses {} as rpc server", network.name(), network.rpcUrl()));
     }
 
 }
