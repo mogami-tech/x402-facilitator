@@ -54,7 +54,7 @@
 
         <!-- Mogami -->
         <mogami.commons.version>1.0.2</mogami.commons.version>
-        <mogami.java-client.version>1.0.0</mogami.java-client.version>
+        <mogami.java-client.version>1.0.1</mogami.java-client.version>
 
         <!-- Boilerplate & Utils -->
         <lombok.version>1.18.42</lombok.version>
