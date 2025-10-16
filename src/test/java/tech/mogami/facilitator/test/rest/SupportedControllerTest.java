@@ -40,11 +40,14 @@ public class SupportedControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(APPLICATION_JSON))
                 .andExpect(jsonPath("$.kinds").isArray())
-                .andExpect(jsonPath("$.kinds", hasSize(1)))
+                .andExpect(jsonPath("$.kinds", hasSize(2)))
                 // Checking base networks ==============================================================================
                 .andExpect(jsonPath("$.kinds[0].x402Version").value("1"))
                 .andExpect(jsonPath("$.kinds[0].scheme").value("exact"))
-                .andExpect(jsonPath("$.kinds[0].network").value("base-sepolia"));
+                .andExpect(jsonPath("$.kinds[0].network").value("base-sepolia"))
+                .andExpect(jsonPath("$.kinds[1].x402Version").value("1"))
+                .andExpect(jsonPath("$.kinds[1].scheme").value("exact"))
+                .andExpect(jsonPath("$.kinds[1].network").value("base"));
         verify(supportedService, times(1)).supported();
 
         // Second call with cache (REST service should only have been called once).
@@ -52,7 +55,7 @@ public class SupportedControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(APPLICATION_JSON))
                 .andExpect(jsonPath("$.kinds").isArray())
-                .andExpect(jsonPath("$.kinds", hasSize(1)));
+                .andExpect(jsonPath("$.kinds", hasSize(2)));
         verify(supportedService, times(1)).supported();
     }
 

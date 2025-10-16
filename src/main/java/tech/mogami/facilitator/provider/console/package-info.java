@@ -1,4 +1,4 @@
 /**
- * Mogami x402 provider.
+ * Mogami x402 console provider.
  */
 package tech.mogami.facilitator.provider.console;

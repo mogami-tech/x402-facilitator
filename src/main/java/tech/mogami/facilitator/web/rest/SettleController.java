@@ -12,26 +12,29 @@ import org.web3j.protocol.Web3j;
 import org.web3j.protocol.http.HttpService;
 import org.web3j.tx.RawTransactionManager;
 import org.web3j.tx.gas.StaticEIP1559GasProvider;
-import org.web3j.utils.Convert;
 import org.web3j.utils.Numeric;
 import tech.mogami.commons.api.console.v1.EventRequest;
 import tech.mogami.commons.api.facilitator.settle.SettleRequest;
 import tech.mogami.commons.api.facilitator.settle.SettleResponse;
 import tech.mogami.commons.api.facilitator.verify.VerifyRequest;
 import tech.mogami.commons.api.facilitator.verify.VerifyResponse;
+import tech.mogami.commons.constant.network.Network;
+import tech.mogami.commons.constant.network.Networks;
 import tech.mogami.commons.crypto.contract.FiatTokenV2_2;
+import tech.mogami.commons.crypto.gas.GasFees;
 import tech.mogami.commons.header.payment.schemes.exact.ExactSchemePayload;
 import tech.mogami.commons.util.JsonUtil;
 import tech.mogami.facilitator.parameter.X402Parameters;
 import tech.mogami.facilitator.provider.console.ConsoleService;
+import tech.mogami.facilitator.provider.web3j.GasService;
 import tech.mogami.facilitator.service.VerifyService;
 
 import java.math.BigInteger;
 
-import static org.web3j.utils.Convert.Unit.GWEI;
 import static tech.mogami.commons.api.console.EventType.X402_FACILITATOR_SETTLE_REQUEST;
 import static tech.mogami.commons.api.console.EventType.X402_FACILITATOR_SETTLE_RESPONSE;
 import static tech.mogami.commons.api.facilitator.FacilitatorApiEndpoints.SETTLE_ENDPOINT;
+import static tech.mogami.commons.constant.BlockchainConstants.DEFAULT_GAS_LIMIT;
 import static tech.mogami.commons.constant.network.Networks.BASE_SEPOLIA;
 
 /**
@@ -41,6 +44,7 @@ import static tech.mogami.commons.constant.network.Networks.BASE_SEPOLIA;
 @RestController
 @RequiredArgsConstructor
 @Tag(name = "Settle", description = "Settle a payment")
+@SuppressWarnings({"checkstyle:MethodLength"})
 public class SettleController {
 
     /** X402 parameters. */
@@ -52,6 +56,9 @@ public class SettleController {
     /** Verify service to handle verification logic. */
     private final VerifyService verifierService;
 
+    /** Gas service. */
+    private final GasService gasService;
+
     /**
      * Settle a payment request.
      *
@@ -61,8 +68,7 @@ public class SettleController {
     @PostMapping(SETTLE_ENDPOINT)
     @Operation(summary = "Settle a payment request")
     SettleResponse settle(@RequestBody final SettleRequest settleRequest) {
-        final String nonce = settleRequest.getNonce()
-                .orElseThrow(() -> new IllegalArgumentException("Nonce is required in the payment payload"));
+        final String nonce = settleRequest.getNonce().orElseThrow(() -> new IllegalArgumentException("Nonce is required in the payment payload"));
 
         // Send X402_FACILITATOR_SETTLE_REQUEST event to console.
         consoleService.logEvent(EventRequest.builder()
@@ -79,21 +85,22 @@ public class SettleController {
                         .paymentRequirements(settleRequest.paymentRequirements())
                         .build());
 
+        // The settle response should reply with the network, but we must be sure there is no null value.
+        final Network network;
+        if (settleRequest.paymentRequirements() == null || settleRequest.paymentRequirements().network() == null) {
+            log.error("Payment requirements network is null, using default BASE_SEPOLIA");
+            network = BASE_SEPOLIA;
+        } else {
+            network = Networks.findByName(settleRequest.paymentRequirements().network())
+                    .orElseThrow(() -> new IllegalArgumentException("Unsupported network: " + settleRequest.paymentRequirements().network()));
+        }
+
         if (!verifyResult.isValid()) {
             log.error("Invalid payment request: {}", verifyResult);
 
-            // The settle response should reply with the network, but we must be sure there is no null value.
-            String network;
-            if (settleRequest.paymentRequirements() == null || settleRequest.paymentRequirements().network() == null) {
-                log.error("Payment requirements network is null, using default BASE_SEPOLIA");
-                network = BASE_SEPOLIA.name();
-            } else {
-                network = settleRequest.paymentRequirements().network();
-            }
-
             SettleResponse response = SettleResponse.builder()
                     .success(false)
-                    .network(network)
+                    .network(network.name())
                     .errorReason(verifyResult.invalidReason())
                     .payer(verifyResult.payer())
                     .build();
@@ -108,8 +115,9 @@ public class SettleController {
 
             return response;
         } else {
-            // TODO Make "https://sepolia.base.org" configurable.
-            try (Web3j web3j = Web3j.build(new HttpService("https://sepolia.base.org"))) {
+            try (Web3j web3j = Web3j.build(new HttpService(network.rpcUrl()))) {
+                // Get the gas fees for the network ====================================================================
+                GasFees gasFees = gasService.getGasFees(network.name());
 
                 // Loading the contract to use to make the payment =====================================================
                 FiatTokenV2_2 contract = FiatTokenV2_2.load(
@@ -117,13 +125,12 @@ public class SettleController {
                         web3j,
                         new RawTransactionManager(web3j,
                                 Credentials.create(x402Parameters.facilitator().privateKey()),
-                                Long.parseLong(web3j.netVersion().send().getNetVersion())),
-                        // TODO change this to a more suitable gas provider depending on the network chosen.
+                                network.chainId()),
                         new StaticEIP1559GasProvider(
-                                BASE_SEPOLIA.chainId(),
-                                Convert.toWei("0.002", GWEI).toBigInteger(),   // maxFee ≈ 0.002 gwei
-                                Convert.toWei("0.001", GWEI).toBigInteger(),   // priority ≈ 0.001 gwei
-                                new BigInteger("120000") // gas limit
+                                network.chainId(),
+                                gasFees.maximumFeePerGas(),
+                                gasFees.maximumPriorityFeePerGas(),
+                                DEFAULT_GAS_LIMIT // gas limit
                         )
                 );
 
@@ -132,6 +139,7 @@ public class SettleController {
                         settleRequest,
                         settleRequest.paymentRequirements().asset());
                 ExactSchemePayload payload = (ExactSchemePayload) settleRequest.paymentPayload().payload();
+
                 var transactionReceipt = contract.transferWithAuthorization(
                                 payload.authorization().from(),
                                 settleRequest.paymentRequirements().payTo(),
@@ -193,7 +201,7 @@ public class SettleController {
 
                 SettleResponse response = SettleResponse.builder()
                         .success(false)
-                        .network(settleRequest.paymentRequirements().network())
+                        .network(network.name())
                         .errorReason(e.getMessage())
                         .payer(verifyResult.payer())
                         .build();

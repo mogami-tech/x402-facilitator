@@ -11,6 +11,7 @@ import tech.mogami.commons.api.facilitator.supported.SupportedResponse;
 import tech.mogami.commons.api.facilitator.supported.SupportedResponse.SupportedKind;
 
 import static tech.mogami.commons.api.facilitator.FacilitatorApiEndpoints.SUPPORTED_ENDPOINT;
+import static tech.mogami.commons.constant.network.Networks.BASE_MAINNET;
 import static tech.mogami.commons.constant.network.Networks.BASE_SEPOLIA;
 import static tech.mogami.commons.constant.version.X402Versions.X402_SUPPORTED_VERSION_BY_MOGAMI;
 import static tech.mogami.commons.header.payment.schemes.Schemes.EXACT_SCHEME;
@@ -39,6 +40,11 @@ public class SupportedController {
                         .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
                         .scheme(EXACT_SCHEME.name())
                         .network(BASE_SEPOLIA.name())
+                        .build())
+                .kind(SupportedKind.builder()
+                        .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
+                        .scheme(EXACT_SCHEME.name())
+                        .network(BASE_MAINNET.name())
                         .build())
                 .build();
     }
