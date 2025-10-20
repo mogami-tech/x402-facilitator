@@ -845,7 +845,7 @@ public class GlobalVerifierTest {
                 .satisfies(result -> {
                     assertThat(result.isValid()).isFalse();
                     assertThat(result.verificationError()).isEqualTo(INVALID_PAYLOAD);
-                    assertThat(result.errorMessage()).isEqualTo("Pay-to in payment requirements is required");
+                    assertThat(result.errorMessage()).isEqualTo("Pay-to field in payment requirements is required");
                 });
     }
 
@@ -884,7 +884,7 @@ public class GlobalVerifierTest {
                 .satisfies(result -> {
                     assertThat(result.isValid()).isFalse();
                     assertThat(result.verificationError()).isEqualTo(INVALID_PAYLOAD);
-                    assertThat(result.errorMessage()).isEqualTo("Pay-to in payment requirements is invalid (Your value: invalid)");
+                    assertThat(result.errorMessage()).isEqualTo("Pay-to field in payment requirements is invalid (Your value: invalid)");
                 });
     }
 

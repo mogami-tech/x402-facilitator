@@ -181,7 +181,7 @@ public class PaymentContextVerifierTest {
                 .satisfies(result -> {
                     assertThat(result.isValid()).isFalse();
                     assertThat(result.verificationError()).isEqualTo(INVALID_NETWORK);
-                    assertThat(result.errorMessage()).isEqualTo("On Base Sepolia testnet, the exact scheme parameter name must be 'USDC'");
+                    assertThat(result.errorMessage()).isEqualTo("On base-sepolia, the exact scheme parameter name must be 'USDC'");
                 });
 
         // If network = "base", then the value of "name" is "USD Coin"
@@ -202,7 +202,7 @@ public class PaymentContextVerifierTest {
                 .satisfies(result -> {
                     assertThat(result.isValid()).isFalse();
                     assertThat(result.verificationError()).isEqualTo(INVALID_NETWORK);
-                    assertThat(result.errorMessage()).isEqualTo("On Base mainnet, the exact scheme parameter name must be 'USD Coin'");
+                    assertThat(result.errorMessage()).isEqualTo("On base, the exact scheme parameter name must be 'USD Coin'");
                 });
     }
 

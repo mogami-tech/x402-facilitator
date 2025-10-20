@@ -6,6 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import tech.mogami.commons.api.facilitator.verify.VerifyRequest;
+import tech.mogami.commons.constant.network.Network;
 import tech.mogami.commons.header.payment.PaymentRequirements;
 import tech.mogami.commons.header.payment.schemes.exact.ExactSchemePayload;
 import tech.mogami.facilitator.verifier.VerificationResult;
@@ -18,8 +19,7 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import static tech.mogami.commons.constant.X402Error.INVALID_NETWORK;
-import static tech.mogami.commons.constant.network.Networks.BASE_MAINNET;
-import static tech.mogami.commons.constant.network.Networks.BASE_SEPOLIA;
+import static tech.mogami.commons.constant.network.Networks.findByName;
 import static tech.mogami.commons.header.payment.schemes.exact.ExactSchemeConstants.EXACT_SCHEME_PARAMETER_NAME;
 import static tech.mogami.commons.header.payment.schemes.exact.ExactSchemeConstants.EXACT_SCHEME_PARAMETER_VERSION;
 import static tech.mogami.facilitator.verifier.VerificationStep.PAYMENT_CONTEXT_FOR_EXACT_SCHEME;
@@ -64,19 +64,19 @@ public class PaymentContextVerifier extends VerifierUtil implements VerifierForE
         if (stableCoinName.isEmpty()) {
             return VerificationResult.fail(INVALID_NETWORK, "Stablecoin name is not provided in the payment requirements");
         } else {
+            Optional<Network> network = findByName(verifyRequest.paymentRequirements().network());
+
+            if (network.isEmpty()) {
+                return VerificationResult.fail(INVALID_NETWORK, "Unknown network: " + verifyRequest.paymentRequirements().network());
+            }
             // If it's not a valid value
             if (!StringUtils.equalsAnyIgnoreCase(stableCoinName.get(), "USDC", "USD Coin")) {
                 return VerificationResult.fail(INVALID_NETWORK, "Exact scheme parameter name invalid: " + stableCoinName.get());
             }
-            // If network = "base sepolia", then the value of "name" is "USDC"
-            if (StringUtils.equalsIgnoreCase(verifyRequest.paymentRequirements().network(), BASE_SEPOLIA.name())
-                    && !StringUtils.equalsIgnoreCase(stableCoinName.get(), "USDC")) {
-                return VerificationResult.fail(INVALID_NETWORK, "On Base Sepolia testnet, the exact scheme parameter name must be 'USDC'");
-            }
-            // If network = "base", then the value of "name" is "USD Coin"
-            if (StringUtils.equalsIgnoreCase(verifyRequest.paymentRequirements().network(), BASE_MAINNET.name())
-                    && !StringUtils.equalsIgnoreCase(stableCoinName.get(), "USD Coin")) {
-                return VerificationResult.fail(INVALID_NETWORK, "On Base mainnet, the exact scheme parameter name must be 'USD Coin'");
+            // Checking specific network requirements
+            if (StringUtils.equalsIgnoreCase(verifyRequest.paymentRequirements().network(), network.get().name())
+                    && !StringUtils.equalsIgnoreCase(stableCoinName.get(), network.get().usdc().displayName())) {
+                return VerificationResult.fail(INVALID_NETWORK, "On " + network.get().name() + ", the exact scheme parameter name must be '" + network.get().usdc().displayName() + "'");
             }
         }
 
