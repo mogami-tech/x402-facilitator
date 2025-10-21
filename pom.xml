@@ -7,7 +7,7 @@
     <!-- Project information ======================================================================================= -->
     <groupId>tech.mogami.facilitator</groupId>
     <artifactId>mogami-x402-facilitator</artifactId>
-    <version>1.0.1</version>
+    <version>1.1.0</version>
     <packaging>jar</packaging>
     <name>Mogami x402 facilitator</name>
     <description>Gateway server to verify and settle x402 transactions instantly</description>
@@ -53,8 +53,8 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <!-- Mogami -->
-        <mogami.commons.version>1.0.2</mogami.commons.version>
-        <mogami.java-client.version>1.0.1</mogami.java-client.version>
+        <mogami.commons.version>1.1.0</mogami.commons.version>
+        <mogami.java-client.version>1.1.0</mogami.java-client.version>
 
         <!-- Boilerplate & Utils -->
         <lombok.version>1.18.42</lombok.version>
@@ -68,11 +68,11 @@
         <junit-jupiter.version>6.0.0</junit-jupiter.version>
         <assertj.version>3.27.6</assertj.version>
         <awaitility.version>4.3.0</awaitility.version>
-        <testcontainers.version>2.0.0</testcontainers.version>
+        <testcontainers.version>2.0.1</testcontainers.version>
 
         <!-- Maven -->
         <maven.checkstyle.plugin.version>3.6.0</maven.checkstyle.plugin.version>
-        <maven.puppycrawl.checkstyle.version>12.0.1</maven.puppycrawl.checkstyle.version>
+        <maven.puppycrawl.checkstyle.version>12.1.0</maven.puppycrawl.checkstyle.version>
         <maven.resources.plugin.version>3.3.1</maven.resources.plugin.version>
         <maven.compiler.plugin.version>3.14.0</maven.compiler.plugin.version>
         <maven.surefire.plugin.version>3.5.4</maven.surefire.plugin.version>
