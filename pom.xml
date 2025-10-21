@@ -68,11 +68,11 @@
         <junit-jupiter.version>6.0.0</junit-jupiter.version>
         <assertj.version>3.27.6</assertj.version>
         <awaitility.version>4.3.0</awaitility.version>
-        <testcontainers.version>2.0.0</testcontainers.version>
+        <testcontainers.version>2.0.1</testcontainers.version>
 
         <!-- Maven -->
         <maven.checkstyle.plugin.version>3.6.0</maven.checkstyle.plugin.version>
-        <maven.puppycrawl.checkstyle.version>12.0.1</maven.puppycrawl.checkstyle.version>
+        <maven.puppycrawl.checkstyle.version>12.1.0</maven.puppycrawl.checkstyle.version>
         <maven.resources.plugin.version>3.3.1</maven.resources.plugin.version>
         <maven.compiler.plugin.version>3.14.0</maven.compiler.plugin.version>
         <maven.surefire.plugin.version>3.5.4</maven.surefire.plugin.version>
