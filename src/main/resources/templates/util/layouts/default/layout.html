@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
+<!--/* Head ====================================================================================================== */-->
+<head th:replace="~{util/layouts/default/head :: head}">
+    <title th:text="#{head.title}"></title>
+</head>
+
+<!--/* Body ====================================================================================================== */-->
+<!--/*
+    min-h-screen    :   Sets the minimum height of the element to 100% of the viewport height.
+    flex            :   Applies flexbox layout to the element.
+    flex-col        :   Arranges the flex items in a column.
+*/-->
+<body class="min-h-screen flex flex-col">
+
+<!--/* Header ==================================================================================================== */-->
+<header th:replace="~{util/layouts/default/header :: header}"></header>
+
+<!--/* Content =================================================================================================== */-->
+<!--/*
+    flex-1          :   Allows the element to grow and fill the available space in the flex container.
+    flex            :   Applies flexbox layout to the element.
+*/-->
+<main class="flex-1 flex">
+    <div id="content" layout:fragment="content">
+        <!--/* Content */-->
+    </div>
+</main>
+
+<!--/* Footer ==================================================================================================== */-->
+<footer th:replace="~{util/layouts/default/footer :: footer}"></footer>
+
+</body>
+
+</html>

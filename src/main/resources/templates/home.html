@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en"
+      layout:decorate="~{util/layouts/default/layout}"
+      xmlns="http://www.w3.org/1999/html" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org">
+
+<!--/*
+    w-full          :   Sets the width of the element to 100% of its parent container.
+    flex            :   Applies flexbox layout to the element.
+    justify-center  :   Centers the flex items horizontally within the container.
+    grow            :   Allows the element to grow and fill the available space in the flex container
+    mt-[22vh]       :   Applies a top margin of 22% of the viewport height.
+*/-->
+<div class="w-full flex flex-col flex-grow justify-between items-center mt-[22vh]"
+     layout:fragment="content"
+     th:fragment="home-fragment">
+
+    Welcome!
+
+</div>
+
+</html>

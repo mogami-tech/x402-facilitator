@@ -1,0 +1,29 @@
+@import "tailwindcss";
+
+@plugin "daisyui";
+
+html {
+    overflow-y: scroll;
+}
+
+.no-wrap {
+    white-space: nowrap;
+}
+
+/* ================================================================================================================== */
+/* Tailwind's base styles and any base styles registered by plugins. */
+@layer base {
+
+}
+
+/* ================================================================================================================== */
+/* Tailwind's component classes and any component classes registered by plugins. */
+@layer components {
+
+}
+
+/* ================================================================================================================== */
+/* Tailwind's utility classes and any utility classes registered by plugins. */
+@layer utilities {
+
+}

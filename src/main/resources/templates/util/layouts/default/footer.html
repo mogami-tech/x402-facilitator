@@ -1,0 +1,11 @@
+<!--/*
+    footer      :   A footer element that contains the copyright notice.
+    p-4         :   Applies padding of 1rem to all sides of the footer.
+    bg-base-300 :   Sets the background color of the footer to a predefined base color.
+    mt-auto     :   Applies a top margin that automatically adjusts to fill the available space.
+*/-->
+<footer class="footer p-4 bg-base-300 mt-auto" x-data="{ year: new Date().getFullYear() }">
+    <aside class="w-full text-center">
+        <p>&copy; <span x-text="year"></span> – <a href="https://mogami.tech" target="_blank">Mogami</a></p>
+    </aside>
+</footer>
