@@ -7,7 +7,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.web.servlet.MockMvc;
-import tech.mogami.facilitator.web.rest.SupportedController;
+import tech.mogami.facilitator.service.SupportedService;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.times;
@@ -28,7 +28,7 @@ public class SupportedControllerTest {
     private MockMvc mockMvc;
 
     @MockitoSpyBean
-    private SupportedController supportedService;
+    private SupportedService supportedService;
 
     @Test
     @DisplayName("Calling /supported")
