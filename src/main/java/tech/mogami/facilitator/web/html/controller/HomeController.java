@@ -32,6 +32,9 @@ public class HomeController extends BaseController {
                        final HttpServletRequest request,
                        final RedirectAttributes redirectAttributes,
                        @RequestParam(required = false) final String query) {
+        // We add all available network/scheme combinations to the model.
+
+
         return getPage(model, request, HOME);
     }
 

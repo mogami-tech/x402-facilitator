@@ -11,11 +11,62 @@
     grow            :   Allows the element to grow and fill the available space in the flex container
     mt-[22vh]       :   Applies a top margin of 22% of the viewport height.
 */-->
-<div class="w-full flex flex-col flex-grow justify-between items-center mt-[22vh]"
+<div class="w-full flex flex-col flex-grow justify-between items-center mt-[11vh]"
      layout:fragment="content"
      th:fragment="home-fragment">
 
-    Welcome!
+    <!--/* Search field ========================================================================================== */-->
+    <form class="w-full"
+          hx-params="*"
+          hx-push-url="true"
+          th:action="@{/search}"
+          th:method="GET">
+        <div class="flex items-center justify-center gap-2 w-full">
+
+            <img alt="X402 Logo"
+                 class="hidden md:block w-[72px] h-[72px] object-contain mask mask-squircle"
+                 th:src="@{/images/logo/x402-icon-blue.png}"/>
+
+            <label class="input input-bordered flex items-center gap-2 w-[70%] sm:w-[70%] md:w-[50%] lg:max-w-lg">
+
+                <!--/* Icon for search input */-->
+                <svg class="h-[1em] opacity-50" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <g fill="none"
+                       stroke="currentColor"
+                       stroke-linecap="round"
+                       stroke-linejoin="round"
+                       stroke-width="2.5">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <path d="m21 21-4.3-4.3"></path>
+                    </g>
+                </svg>
+
+                <!--/* Search input */-->
+                <label class="sr-only" for="query" th:text="#{search.helper}"></label>
+                <input @click="$el.select()"
+                       @focus="$el.select()"
+                       autocomplete="false"
+                       autofocus
+                       class="grow"
+                       hx-trigger="keyup[key=='Enter']"
+                       id="query"
+                       name="query"
+                       required
+                       spellcheck="false"
+                       th:placeholder="#{search.helper}"
+                       th:value="${query}"
+                       type="search"
+                       x-data="{}">
+
+            </label>
+
+        </div>
+    </form>
+
+    <!--/* Error management ====================================================================================== */-->
+    <div th:if="${errorMessage}"
+         th:insert="~{util/fragments/error_message :: error_message(${errorMessage})}">
+    </div>
 
 </div>
 
