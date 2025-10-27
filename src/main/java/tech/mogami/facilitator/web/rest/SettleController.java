@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.web3j.crypto.Credentials;
 import org.web3j.protocol.Web3j;
-import org.web3j.protocol.http.HttpService;
 import org.web3j.tx.RawTransactionManager;
 import org.web3j.utils.Numeric;
 import tech.mogami.commons.api.console.v1.EventRequest;
@@ -28,6 +27,7 @@ import tech.mogami.facilitator.provider.web3j.GasService;
 import tech.mogami.facilitator.service.VerifyService;
 
 import java.math.BigInteger;
+import java.util.Map;
 
 import static tech.mogami.commons.api.console.EventType.X402_FACILITATOR_SETTLE_REQUEST;
 import static tech.mogami.commons.api.console.EventType.X402_FACILITATOR_SETTLE_RESPONSE;
@@ -47,6 +47,9 @@ public class SettleController {
 
     /** X402 parameters. */
     private final X402Parameters x402Parameters;
+
+    /** Web3j clients for different networks. */
+    private final Map<Network, Web3j> web3jClients;
 
     /** Console service. */
     private final ConsoleService consoleService;
@@ -113,8 +116,9 @@ public class SettleController {
 
             return response;
         } else {
-            try (Web3j web3j = Web3j.build(new HttpService(network.rpcUrl()))) {
+            try {
                 // Loading the contract to use to make the payment =====================================================
+                Web3j web3j = web3jClients.get(network);
                 FiatTokenV2_2 contract = FiatTokenV2_2.load(
                         settleRequest.paymentRequirements().asset(),
                         web3j,

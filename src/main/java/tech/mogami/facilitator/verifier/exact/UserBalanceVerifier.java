@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.web3j.protocol.Web3j;
-import org.web3j.protocol.http.HttpService;
 import org.web3j.tx.ClientTransactionManager;
 import tech.mogami.commons.api.facilitator.verify.VerifyRequest;
 import tech.mogami.commons.constant.network.Network;
@@ -17,6 +16,7 @@ import tech.mogami.facilitator.verifier.VerificationStep;
 import tech.mogami.facilitator.verifier.VerifierForExactScheme;
 
 import java.math.BigInteger;
+import java.util.Map;
 
 import static tech.mogami.commons.constant.X402Error.INSUFFICIENT_FUNDS;
 import static tech.mogami.facilitator.verifier.VerificationStep.USER_BALANCE_FOR_EXACT_SCHEME;
@@ -31,6 +31,9 @@ import static tech.mogami.facilitator.verifier.VerificationStep.USER_BALANCE_FOR
 @SuppressWarnings({"checkstyle:DesignForExtension", "unused", "checkstyle:MagicNumber"})
 public class UserBalanceVerifier implements VerifierForExactScheme {
 
+    /** Web3j clients for different networks. */
+    private final Map<Network, Web3j> web3jClients;
+
     /** Gas service. */
     private final GasService gasService;
 
@@ -39,7 +42,8 @@ public class UserBalanceVerifier implements VerifierForExactScheme {
         Network network = Networks.findByName(verifyRequest.paymentRequirements().network())
                 .orElseThrow(() -> new IllegalArgumentException("Unsupported network: " + verifyRequest.paymentRequirements().network()));
 
-        try (Web3j web3j = Web3j.build(new HttpService(network.rpcUrl()))) {
+        try {
+            final Web3j web3j = web3jClients.get(network);
             // Retrieve the balance of the user.
             ExactSchemePayload payload = (ExactSchemePayload) verifyRequest.paymentPayload().payload();
             ERC20 token = ERC20.load(
