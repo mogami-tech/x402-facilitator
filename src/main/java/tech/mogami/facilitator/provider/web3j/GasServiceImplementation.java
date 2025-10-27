@@ -53,7 +53,7 @@ public class GasServiceImplementation implements GasService {
      * Runs every 60 seconds.
      */
     @Scheduled(fixedRateString = GAS_FEES_REFRESH_INTERVAL)
-    public void refreshAll() {
+    public void refreshGasFees() {
         ALL_NETWORKS.forEach(network -> {
             try (Web3j web3j = Web3j.build(new HttpService(network.rpcUrl()))) {
                 // Getting the latest block to fetch base fee ==================================================

@@ -36,6 +36,7 @@ import static tech.mogami.commons.constant.network.Networks.BASE_SEPOLIA;
 
 /**
  * /settle endpoint - Settle a payment.
+ * TODO Create a service to handle the settlement logic.
  */
 @Slf4j
 @RestController
