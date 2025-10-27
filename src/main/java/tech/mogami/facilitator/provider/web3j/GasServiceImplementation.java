@@ -5,13 +5,17 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.http.HttpService;
+import org.web3j.tx.gas.ContractGasProvider;
 import org.web3j.tx.gas.DynamicEIP1559GasProvider;
+import org.web3j.tx.gas.StaticEIP1559GasProvider;
+import tech.mogami.commons.constant.network.Network;
 import tech.mogami.commons.crypto.gas.GasFees;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static tech.mogami.commons.constant.BlockchainConstants.DEFAULT_GAS_FEES;
+import static tech.mogami.commons.constant.BlockchainConstants.DEFAULT_GAS_LIMIT;
 import static tech.mogami.commons.constant.network.Networks.ALL_NETWORKS;
 
 /**
@@ -31,6 +35,17 @@ public class GasServiceImplementation implements GasService {
     @Override
     public GasFees getGasFees(final String networkName) {
         return cache.getOrDefault(networkName, DEFAULT_GAS_FEES);
+    }
+
+    @Override
+    public ContractGasProvider getGasProvider(final Network network) {
+        final GasFees gasFees = getGasFees(network.name());
+        return new StaticEIP1559GasProvider(
+                network.chainId(),
+                gasFees.maximumFeePerGas(),
+                gasFees.maximumPriorityFeePerGas(),
+                DEFAULT_GAS_LIMIT // gas limit defined in x402-commons
+        );
     }
 
     /**

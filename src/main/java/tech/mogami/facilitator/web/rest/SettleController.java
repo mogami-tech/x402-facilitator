@@ -11,7 +11,6 @@ import org.web3j.crypto.Credentials;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.http.HttpService;
 import org.web3j.tx.RawTransactionManager;
-import org.web3j.tx.gas.StaticEIP1559GasProvider;
 import org.web3j.utils.Numeric;
 import tech.mogami.commons.api.console.v1.EventRequest;
 import tech.mogami.commons.api.facilitator.settle.SettleRequest;
@@ -21,7 +20,6 @@ import tech.mogami.commons.api.facilitator.verify.VerifyResponse;
 import tech.mogami.commons.constant.network.Network;
 import tech.mogami.commons.constant.network.Networks;
 import tech.mogami.commons.crypto.contract.FiatTokenV2_2;
-import tech.mogami.commons.crypto.gas.GasFees;
 import tech.mogami.commons.header.payment.schemes.exact.ExactSchemePayload;
 import tech.mogami.commons.util.JsonUtil;
 import tech.mogami.facilitator.parameter.X402Parameters;
@@ -34,7 +32,6 @@ import java.math.BigInteger;
 import static tech.mogami.commons.api.console.EventType.X402_FACILITATOR_SETTLE_REQUEST;
 import static tech.mogami.commons.api.console.EventType.X402_FACILITATOR_SETTLE_RESPONSE;
 import static tech.mogami.commons.api.facilitator.FacilitatorApiEndpoints.SETTLE_ENDPOINT;
-import static tech.mogami.commons.constant.BlockchainConstants.DEFAULT_GAS_LIMIT;
 import static tech.mogami.commons.constant.network.Networks.BASE_SEPOLIA;
 
 /**
@@ -116,9 +113,6 @@ public class SettleController {
             return response;
         } else {
             try (Web3j web3j = Web3j.build(new HttpService(network.rpcUrl()))) {
-                // Get the gas fees for the network ====================================================================
-                GasFees gasFees = gasService.getGasFees(network.name());
-
                 // Loading the contract to use to make the payment =====================================================
                 FiatTokenV2_2 contract = FiatTokenV2_2.load(
                         settleRequest.paymentRequirements().asset(),
@@ -126,12 +120,7 @@ public class SettleController {
                         new RawTransactionManager(web3j,
                                 Credentials.create(x402Parameters.facilitator().privateKey()),
                                 network.chainId()),
-                        new StaticEIP1559GasProvider(
-                                network.chainId(),
-                                gasFees.maximumFeePerGas(),
-                                gasFees.maximumPriorityFeePerGas(),
-                                DEFAULT_GAS_LIMIT // gas limit
-                        )
+                        gasService.getGasProvider(network)
                 );
 
                 // We send the transaction using the authorization =====================================================

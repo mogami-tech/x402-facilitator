@@ -28,7 +28,7 @@ public class GlobalVerifier extends VerifierUtil implements Verifier {
 
     /** Comparator to sort constraint violations by declaration order. */
     private static final Comparator<ConstraintViolation<?>> VIOLATION_COMPARATOR = Comparator.comparingInt(
-            v -> switch (v.getPropertyPath().toString()) {
+            constraintViolation -> switch (constraintViolation.getPropertyPath().toString()) {
                 case "x402Version" -> 100;
                 // PaymentPayload fields
                 case "paymentPayload" -> 200;
@@ -56,6 +56,7 @@ public class GlobalVerifier extends VerifierUtil implements Verifier {
                 default -> 999;
             }
     );
+
     /** Validator. */
     private final Validator validator;
 
