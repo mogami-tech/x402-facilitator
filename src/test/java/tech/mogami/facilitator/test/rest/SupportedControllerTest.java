@@ -7,7 +7,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.web.servlet.MockMvc;
-import tech.mogami.facilitator.web.rest.SupportedController;
+import tech.mogami.facilitator.service.SupportedService;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.times;
@@ -28,7 +28,7 @@ public class SupportedControllerTest {
     private MockMvc mockMvc;
 
     @MockitoSpyBean
-    private SupportedController supportedService;
+    private SupportedService supportedService;
 
     @Test
     @DisplayName("Calling /supported")
@@ -55,7 +55,14 @@ public class SupportedControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(APPLICATION_JSON))
                 .andExpect(jsonPath("$.kinds").isArray())
-                .andExpect(jsonPath("$.kinds", hasSize(2)));
+                .andExpect(jsonPath("$.kinds", hasSize(2)))
+                // Checking base networks ==============================================================================
+                .andExpect(jsonPath("$.kinds[0].x402Version").value("1"))
+                .andExpect(jsonPath("$.kinds[0].scheme").value("exact"))
+                .andExpect(jsonPath("$.kinds[0].network").value("base-sepolia"))
+                .andExpect(jsonPath("$.kinds[1].x402Version").value("1"))
+                .andExpect(jsonPath("$.kinds[1].scheme").value("exact"))
+                .andExpect(jsonPath("$.kinds[1].network").value("base"));
         verify(supportedService, times(1)).supported();
     }
 

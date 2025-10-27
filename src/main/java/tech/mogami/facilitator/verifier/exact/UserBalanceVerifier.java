@@ -6,12 +6,10 @@ import org.springframework.stereotype.Component;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.http.HttpService;
 import org.web3j.tx.ClientTransactionManager;
-import org.web3j.tx.gas.StaticEIP1559GasProvider;
 import tech.mogami.commons.api.facilitator.verify.VerifyRequest;
 import tech.mogami.commons.constant.network.Network;
 import tech.mogami.commons.constant.network.Networks;
 import tech.mogami.commons.crypto.contract.ERC20;
-import tech.mogami.commons.crypto.gas.GasFees;
 import tech.mogami.commons.header.payment.schemes.exact.ExactSchemePayload;
 import tech.mogami.facilitator.provider.web3j.GasService;
 import tech.mogami.facilitator.verifier.VerificationResult;
@@ -20,7 +18,6 @@ import tech.mogami.facilitator.verifier.VerifierForExactScheme;
 
 import java.math.BigInteger;
 
-import static tech.mogami.commons.constant.BlockchainConstants.DEFAULT_GAS_LIMIT;
 import static tech.mogami.commons.constant.X402Error.INSUFFICIENT_FUNDS;
 import static tech.mogami.facilitator.verifier.VerificationStep.USER_BALANCE_FOR_EXACT_SCHEME;
 
@@ -45,17 +42,11 @@ public class UserBalanceVerifier implements VerifierForExactScheme {
         try (Web3j web3j = Web3j.build(new HttpService(network.rpcUrl()))) {
             // Retrieve the balance of the user.
             ExactSchemePayload payload = (ExactSchemePayload) verifyRequest.paymentPayload().payload();
-            GasFees gasFees = gasService.getGasFees(network.name());
             ERC20 token = ERC20.load(
                     verifyRequest.paymentRequirements().asset(),
                     web3j,
                     new ClientTransactionManager(web3j, payload.authorization().from()),
-                    new StaticEIP1559GasProvider(
-                            network.chainId(),
-                            gasFees.maximumFeePerGas(),
-                            gasFees.maximumPriorityFeePerGas(),
-                            DEFAULT_GAS_LIMIT // gas limit
-                    )
+                    gasService.getGasProvider(network)
             );
             // Compare the balance with the required amount.
             BigInteger rawBalance = token.balanceOf(payload.authorization().from()).send();

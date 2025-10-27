@@ -11,9 +11,9 @@ public interface VerifyService {
     /**
      * Verifies a payment request.
      *
-     * @param verificationRequest the request containing the payment details to verify
+     * @param verifyRequest the request containing the payment details to verify
      * @return VerifyResponse containing the verification result
      */
-    VerifyResponse verify(VerifyRequest verificationRequest);
+    VerifyResponse verify(VerifyRequest verifyRequest);
 
 }

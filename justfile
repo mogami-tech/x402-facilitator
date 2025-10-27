@@ -8,6 +8,12 @@ run_tests:
 run_application:
     mvn spring-boot:run -Dspring-boot.run.profiles=development
 
+run_web_backend:
+    mvn clean spring-boot:run -Dspring-boot.run.profiles=dev
+
+run_web_frontend:
+    npm run build && npm run watch
+
 # Docker ===============================================================================================================
 build_docker_image:
     mvn spring-boot:build-image -P release

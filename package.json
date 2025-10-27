@@ -1,0 +1,33 @@
+{
+  "name": "mogami-x402-console-web",
+  "scripts": {
+    "build": "npm-run-all --parallel build:*",
+    "build:html": "node copy-files.js .*\\.html$",
+    "build:css": "mkdirp target/classes/static/css && npx @tailwindcss/cli -i src/main/resources/static/css/application.css -o target/classes/static/css/application.css",
+    "build:prod": "NODE_ENV='production' npm-run-all --parallel build-prod:*",
+    "build-prod:html": "npm run build:html",
+    "build-prod:css": "npm run build:css",
+    "watch": "npm-run-all --parallel watch:*",
+    "watch:html": "onchange 'src/main/resources/templates/**/*.html' -- npm-run-all --serial build:css build:html",
+    "watch:css": "onchange 'src/main/resources/static/css/**/*.css' -- npm run build:css",
+    "watch:serve": "browser-sync start --no-inject-changes --proxy localhost:8080 --files 'target/classes/templates' 'target/classes/static'"
+  },
+  "devDependencies": {
+    "@iconify-json/mdi": "^1.2.3",
+    "@iconify/tailwind": "^1.2.0",
+    "@tailwindcss/postcss": "^4.1.14",
+    "autoprefixer": "^10.4.21",
+    "browser-sync": "^3.0.4",
+    "daisyui": "^5.3.3",
+    "mkdirp": "^3.0.1",
+    "ncp": "^2.0.0",
+    "npm-run-all": "^4.1.5",
+    "onchange": "^7.1.0",
+    "postcss": "^8.5.3",
+    "postcss-cli": "^11.0.1",
+    "tailwindcss": "^4.1.14"
+  },
+  "dependencies": {
+    "@tailwindcss/cli": "^4.1.14"
+  }
+}

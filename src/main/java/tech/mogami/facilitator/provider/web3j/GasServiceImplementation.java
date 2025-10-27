@@ -5,13 +5,17 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.http.HttpService;
+import org.web3j.tx.gas.ContractGasProvider;
 import org.web3j.tx.gas.DynamicEIP1559GasProvider;
+import org.web3j.tx.gas.StaticEIP1559GasProvider;
+import tech.mogami.commons.constant.network.Network;
 import tech.mogami.commons.crypto.gas.GasFees;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static tech.mogami.commons.constant.BlockchainConstants.DEFAULT_GAS_FEES;
+import static tech.mogami.commons.constant.BlockchainConstants.DEFAULT_GAS_LIMIT;
 import static tech.mogami.commons.constant.network.Networks.ALL_NETWORKS;
 
 /**
@@ -33,12 +37,23 @@ public class GasServiceImplementation implements GasService {
         return cache.getOrDefault(networkName, DEFAULT_GAS_FEES);
     }
 
+    @Override
+    public ContractGasProvider getGasProvider(final Network network) {
+        final GasFees gasFees = getGasFees(network.name());
+        return new StaticEIP1559GasProvider(
+                network.chainId(),
+                gasFees.maximumFeePerGas(),
+                gasFees.maximumPriorityFeePerGas(),
+                DEFAULT_GAS_LIMIT // gas limit defined in x402-commons
+        );
+    }
+
     /**
      * Scheduled refresh of gas fees for all configured networks.
      * Runs every 60 seconds.
      */
     @Scheduled(fixedRateString = GAS_FEES_REFRESH_INTERVAL)
-    public void refreshAll() {
+    public void refreshGasFees() {
         ALL_NETWORKS.forEach(network -> {
             try (Web3j web3j = Web3j.build(new HttpService(network.rpcUrl()))) {
                 // Getting the latest block to fetch base fee ==================================================

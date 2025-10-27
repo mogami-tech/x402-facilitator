@@ -1,0 +1,31 @@
+<!--/*
+    justify-between :   Distributes space between items, pushing them to the edges.
+    px-4            :   Applies horizontal padding.
+    py-4            :   Applies vertical padding.
+*/-->
+<header class="navbar justify-between px-4 py-4">
+
+    <!--/*
+        flex            :   Applies flexbox layout to the element.
+        gap-2           :   Adds a gap of 0.5rem between flex items
+    */-->
+    <a class="flex gap-2" th:href="@{/}">
+        <img alt="Mogami X402 Console logo"
+             class="h-6 w-6 align-text-bottom"
+             th:src="@{/images/logo/mogami-x402-facilitator-logo-32x32.png}"/>
+        <span th:text="#{generic.application.shortName}"></span>
+    </a>
+
+    <!--/*
+        btn             :   Applies button styling.
+        btn-secondary   :   Applies secondary button color scheme.
+        btn-sm          :   Makes the button small.
+        btn-outline     :   Applies outline style to the button.
+    */-->
+    <a class="btn btn-secondary btn-sm btn-outline hidden md:inline-flex"
+       target="mogami_api_documentation"
+       th:href="@{/swagger-ui/index.html}"
+       th:text="#{home.documentation.button}">
+    </a>
+
+</header>
