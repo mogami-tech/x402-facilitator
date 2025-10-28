@@ -64,7 +64,7 @@ public class GasServiceImplementation implements GasService {
                 DynamicEIP1559GasProvider provider = new DynamicEIP1559GasProvider(web3j, network.chainId());
                 GasFees newFees = new GasFees(provider.getMaxFeePerGas(), provider.getMaxPriorityFeePerGas());
                 cache.put(network.name(), newFees);
-                log.info("[GasService] Fetched gas fees for network {}: {}", network.name(), newFees);
+                log.debug("[GasService] Fetched gas fees for network {}: {}", network.name(), newFees);
             } catch (Exception e) {
                 log.error("[GasService] Failed to fetch gas fees for network {}: {}", network.name(), e.getMessage());
             }
