@@ -118,7 +118,7 @@ public class SettleController {
         } else {
             try {
                 // Loading the contract to use to make the payment =====================================================
-                Web3j web3j = web3jClients.get(network);
+                final Web3j web3j = web3jClients.get(network);
                 FiatTokenV2_2 contract = FiatTokenV2_2.load(
                         settleRequest.paymentRequirements().asset(),
                         web3j,
