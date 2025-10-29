@@ -43,6 +43,10 @@ public class GasServiceImplementation implements GasService {
 
     @Override
     public ContractGasProvider getGasProvider(final Network network) {
+        if (network == null) {
+            throw new IllegalArgumentException("Network cannot be null");
+        }
+
         final GasFees gasFees = getGasFees(network.name());
         return new StaticEIP1559GasProvider(
                 network.chainId(),
@@ -59,9 +63,9 @@ public class GasServiceImplementation implements GasService {
     @Scheduled(fixedRateString = GAS_FEES_REFRESH_INTERVAL)
     public void refreshGasFees() {
         ALL_NETWORKS.forEach(network -> {
-            try (Web3j web3j = web3jClients.get(network)) {
-                // Getting the latest block to fetch base fee ==================================================
-                DynamicEIP1559GasProvider provider = new DynamicEIP1559GasProvider(web3j, network.chainId());
+            try {
+                // Getting the latest block to fetch base fee ==========================================================
+                DynamicEIP1559GasProvider provider = new DynamicEIP1559GasProvider(web3jClients.get(network), network.chainId());
                 GasFees newFees = new GasFees(provider.getMaxFeePerGas(), provider.getMaxPriorityFeePerGas());
                 cache.put(network.name(), newFees);
                 log.debug("[GasService] Fetched gas fees for network {}: {}", network.name(), newFees);
