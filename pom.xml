@@ -62,9 +62,9 @@
         <mapstruct.version>1.6.3</mapstruct.version>
 
         <!-- Spring -->
-        <spring-boot.version>3.5.6</spring-boot.version>
+        <spring-boot.version>3.5.7</spring-boot.version>
         <springdoc.version>2.8.13</springdoc.version>
-        <caffeine.version>3.2.2</caffeine.version>
+        <caffeine.version>3.2.3</caffeine.version>
 
         <!-- Web -->
         <frontend-maven-plugin.version>1.15.4</frontend-maven-plugin.version>
@@ -72,8 +72,8 @@
         <frontend-maven-plugin.npmVersion>10.8.2</frontend-maven-plugin.npmVersion>
         <htmx-spring-boot-thymeleaf.version>4.0.1</htmx-spring-boot-thymeleaf.version>
         <webjars-locator.version>0.52</webjars-locator.version>
-        <htmx.version>2.0.7</htmx.version>
-        <alpinejs.version>3.15.0</alpinejs.version>
+        <htmx.version>2.0.8</htmx.version>
+        <alpinejs.version>3.15.1</alpinejs.version>
 
         <!-- Tests -->
         <junit-jupiter.version>6.0.0</junit-jupiter.version>
@@ -84,9 +84,9 @@
 
         <!-- Maven -->
         <maven.checkstyle.plugin.version>3.6.0</maven.checkstyle.plugin.version>
-        <maven.puppycrawl.checkstyle.version>12.1.0</maven.puppycrawl.checkstyle.version>
+        <maven.puppycrawl.checkstyle.version>12.1.1</maven.puppycrawl.checkstyle.version>
         <maven.resources.plugin.version>3.3.1</maven.resources.plugin.version>
-        <maven.compiler.plugin.version>3.14.0</maven.compiler.plugin.version>
+        <maven.compiler.plugin.version>3.14.1</maven.compiler.plugin.version>
         <maven.surefire.plugin.version>3.5.4</maven.surefire.plugin.version>
         <maven.surefire-junit5-tree-reporter.version>1.5.1</maven.surefire-junit5-tree-reporter.version>
         <maven.jar.plugin.version>3.4.2</maven.jar.plugin.version>
