@@ -17,15 +17,40 @@
     </a>
 
     <!--/*
+        Right: Buttons (hidden on mobile)
         btn             :   Applies button styling.
         btn-secondary   :   Applies secondary button color scheme.
         btn-sm          :   Makes the button small.
         btn-outline     :   Applies outline style to the button.
     */-->
-    <a class="btn btn-secondary btn-sm btn-outline hidden md:inline-flex"
-       target="mogami_api_documentation"
-       th:href="@{/swagger-ui/index.html}"
-       th:text="#{home.documentation.button}">
-    </a>
+    <div class="hidden md:flex gap-2 items-center">
+
+        <!-- Source (GitHub) -->
+        <a class="btn btn-secondary btn-sm btn-outline flex items-center gap-2"
+           href="https://github.com/mogami-tech/x402-facilitator"
+           rel="noopener"
+           target="_blank">
+            <span class="icon-[mdi--github] inline-block h-5 w-5"></span>
+            <span>Sources</span>
+        </a>
+
+        <!-- API (Swagger) -->
+        <a class="btn btn-secondary btn-sm btn-outline flex items-center gap-2"
+           rel="noopener"
+           target="_blank"
+           th:href="@{/swagger-ui/index.html}">
+            <span class="icon-[mdi--api] inline-block h-5 w-5"></span>
+            <span>Documentation</span>
+        </a>
+
+        <!-- Contact (email) -->
+        <a class="btn btn-secondary btn-sm btn-outline flex items-center gap-2"
+           href="mailto:contact@mogami.tech"
+           rel="noopener">
+            <span class="icon-[mdi--email] inline-block h-5 w-5"></span>
+            <span>Contact</span>
+        </a>
+
+    </div>
 
 </header>

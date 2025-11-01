@@ -1,3 +1,9 @@
+/* ===========================================================
+   Link Tailwind CLI to your config and HTML sources
+   =========================================================== */
+@config "../../../../../tailwind.config.js";
+
+
 @import "tailwindcss";
 
 @plugin "daisyui";
