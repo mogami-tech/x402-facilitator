@@ -5,13 +5,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.web.servlet.MockMvc;
-import tech.mogami.facilitator.service.SupportedService;
 
 import static org.hamcrest.Matchers.hasSize;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -27,15 +23,10 @@ public class SupportedControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @MockitoSpyBean
-    private SupportedService supportedService;
-
     @Test
     @DisplayName("Calling /supported")
     void supported() throws Exception {
-        verify(supportedService, times(0)).supported();
-
-        // First call without cache.
+        // First call.
         mockMvc.perform(get(SUPPORTED_ENDPOINT))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(APPLICATION_JSON))
@@ -48,9 +39,8 @@ public class SupportedControllerTest {
                 .andExpect(jsonPath("$.kinds[1].x402Version").value("1"))
                 .andExpect(jsonPath("$.kinds[1].scheme").value("exact"))
                 .andExpect(jsonPath("$.kinds[1].network").value("base"));
-        verify(supportedService, times(1)).supported();
 
-        // Second call with cache (REST service should only have been called once).
+        // Second call.
         mockMvc.perform(get(SUPPORTED_ENDPOINT))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(APPLICATION_JSON))
@@ -63,7 +53,6 @@ public class SupportedControllerTest {
                 .andExpect(jsonPath("$.kinds[1].x402Version").value("1"))
                 .andExpect(jsonPath("$.kinds[1].scheme").value("exact"))
                 .andExpect(jsonPath("$.kinds[1].network").value("base"));
-        verify(supportedService, times(1)).supported();
     }
 
 }

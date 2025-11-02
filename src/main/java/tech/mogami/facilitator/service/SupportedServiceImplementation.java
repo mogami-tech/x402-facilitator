@@ -1,7 +1,6 @@
 package tech.mogami.facilitator.service;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import tech.mogami.commons.api.facilitator.supported.SupportedResponse;
 
@@ -18,15 +17,11 @@ import static tech.mogami.commons.header.payment.schemes.Schemes.EXACT_SCHEME;
 @SuppressWarnings({"checkstyle:DesignForExtension", "unused"})
 public class SupportedServiceImplementation implements SupportedService {
 
-    /**
-     * Returns supported payment schemes and networks.
-     *
-     * @return SupportedResponse
-     */
-    @Override
-    @Cacheable(value = "supportedCache", key = "'supported'", sync = true)
-    public SupportedResponse supported() {
-        return SupportedResponse.builder()
+    /** Cached supported response. */
+    private final SupportedResponse cachedSupportedResponse;
+
+    public SupportedServiceImplementation() {
+        cachedSupportedResponse = SupportedResponse.builder()
                 // Base networks =======================================================================================
                 .kind(SupportedResponse.SupportedKind.builder()
                         .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
@@ -39,6 +34,16 @@ public class SupportedServiceImplementation implements SupportedService {
                         .network(BASE_MAINNET.name())
                         .build())
                 .build();
+    }
+
+    /**
+     * Returns supported payment schemes and networks.
+     *
+     * @return SupportedResponse
+     */
+    @Override
+    public SupportedResponse supported() {
+        return cachedSupportedResponse;
     }
 
 }
