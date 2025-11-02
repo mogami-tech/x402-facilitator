@@ -25,13 +25,13 @@
     */-->
     <div class="hidden md:flex gap-2 items-center">
 
-        <!-- Source (GitHub) -->
+        <!-- Sources (GitHub) -->
         <a class="btn btn-secondary btn-sm btn-outline flex items-center gap-2"
            href="https://github.com/mogami-tech/x402-facilitator"
            rel="noopener"
            target="_blank">
             <span class="icon-[mdi--github] inline-block h-5 w-5"></span>
-            <span>Sources</span>
+            <span th:text="#{home.github.button}"></span>
         </a>
 
         <!-- API (Swagger) -->
@@ -40,15 +40,15 @@
            target="_blank"
            th:href="@{/swagger-ui/index.html}">
             <span class="icon-[mdi--api] inline-block h-5 w-5"></span>
-            <span>Documentation</span>
+            <span th:text="#{home.documentation.button}"></span>
         </a>
 
         <!-- Contact (email) -->
         <a class="btn btn-secondary btn-sm btn-outline flex items-center gap-2"
            href="mailto:contact@mogami.tech"
            rel="noopener">
-            <span class="icon-[mdi--email] inline-block h-5 w-5"></span>
-            <span>Contact</span>
+            <span class="icon-[mdi--email-outline] inline-block h-5 w-5"></span>
+            <span th:text="#{home.contact.button}"></span>
         </a>
 
     </div>
