@@ -1,5 +1,10 @@
 @import "tailwindcss";
 
+/* ===========================================================
+   Link Tailwind CLI to your config and HTML sources
+   =========================================================== */
+@config "../../../../../tailwind.config.js";
+
 @plugin "daisyui";
 
 html {
@@ -19,6 +24,10 @@ html {
 /* ================================================================================================================== */
 /* Tailwind's component classes and any component classes registered by plugins. */
 @layer components {
+
+    .button-header {
+        @apply btn btn-secondary btn-sm btn-outline flex items-center gap-2;
+    }
 
 }
 
