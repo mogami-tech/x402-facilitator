@@ -1,0 +1,51 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.4.xsd">
+    <changeSet author="straumat" id="1.1.6-table-client">
+
+        <createTable tableName="USER"
+                     remarks="Table containing user information (linked to the CLIENT table)">
+
+            <!-- Keys -->
+            <column name="ID" type="BIGINT" remarks="Internal unique identifier">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_USER"/>
+            </column>
+            <column name="USER_ID" type="VARCHAR(255)" remarks="User ID">
+                <constraints nullable="false" unique="true" uniqueConstraintName="UNIQUE_USER_USER_ID"/>
+            </column>
+
+            <!-- Foreign keys -->
+            <column name="FK_CLIENT_ID" type="BIGINT" remarks="Foreign key to CLIENT table">
+                <constraints nullable="false" foreignKeyName="FK_CLIENT_ID_USER"
+                             referencedTableName="CLIENT"
+                             referencedColumnNames="ID"/>
+            </column>
+
+            <!-- Data -->
+            <column name="FIRST_NAME" type="VARCHAR(255)"/>
+            <column name="LAST_NAME" type="VARCHAR(255)"/>
+            <column name="EMAIL" type="VARCHAR(255)"/>
+
+        </createTable>
+
+        <!-- Auto increment on the unique identifier -->
+        <addAutoIncrement tableName="USER"
+                          columnName="ID"
+                          columnDataType="BIGINT"
+                          startWith="1"/>
+
+        <!-- Index on USER.USER_ID -->
+        <createIndex indexName="INDEX_USER_USER_ID"
+                     tableName="USER">
+            <column name="USER_ID"/>
+        </createIndex>
+
+        <!-- Index on USER.FK_CLIENT_ID -->
+        <createIndex indexName="INDEX_USER_FK_CLIENT_ID"
+                     tableName="USER">
+            <column name="FK_CLIENT_ID"/>
+        </createIndex>
+
+    </changeSet>
+</databaseChangeLog>

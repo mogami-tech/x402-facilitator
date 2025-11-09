@@ -1,0 +1,29 @@
+databaseChangeLog:
+
+  # 1.1.6 Table definition =============================================================================================
+  - include:
+      file:
+        /db/changelog/1.1.6/tables/client.xml
+  - include:
+      file:
+        /db/changelog/1.1.6/tables/user.xml
+  - include:
+      file:
+        /db/changelog/1.1.6/tables/tenant.xml
+  - include:
+      file:
+        /db/changelog/1.1.6/tables/tenant_api_key.xml
+  - include:
+      file:
+        /db/changelog/1.1.6/tables/payment_trace.xml
+  - include:
+      file:
+        /db/changelog/1.1.6/tables/payment_trace_step.xml
+
+  # 1.1.6 Data =========================================================================================================
+  - include:
+      file:
+        /db/changelog/1.1.6/data/client.xml
+  - include:
+      file:
+        /db/changelog/1.1.6/data/tenant.xml

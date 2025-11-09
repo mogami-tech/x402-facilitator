@@ -1,0 +1,16 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.4.xsd">
+    <changeSet author="straumat" id="1.1.6-data-tenant">
+
+        <!-- Mogami tenant - Used for public logs -->
+        <insert tableName="TENANT">
+            <column name="ID" valueNumeric="0"/>
+            <column name="TENANT_ID" value="00000000-0000-0000-0000-000000000000"/>
+            <column name="FK_CLIENT_ID" valueNumeric="0"/>
+            <column name="NAME" value="Public tenant"/>
+        </insert>
+
+    </changeSet>
+</databaseChangeLog>
