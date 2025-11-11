@@ -7,7 +7,7 @@ import tech.mogami.commons.api.facilitator.supported.SupportedResponse;
 import static tech.mogami.commons.constant.network.Networks.BASE_MAINNET;
 import static tech.mogami.commons.constant.network.Networks.BASE_SEPOLIA;
 import static tech.mogami.commons.constant.version.X402Versions.X402_SUPPORTED_VERSION_BY_MOGAMI;
-import static tech.mogami.commons.header.payment.schemes.Schemes.EXACT_SCHEME;
+import static tech.mogami.commons.payment.schemes.Schemes.EXACT_SCHEME;
 
 /**
  * {@link SupportedService} implementation.

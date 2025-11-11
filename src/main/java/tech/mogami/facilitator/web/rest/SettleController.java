@@ -18,7 +18,7 @@ import tech.mogami.commons.api.facilitator.verify.VerifyResponse;
 import tech.mogami.commons.constant.network.Network;
 import tech.mogami.commons.constant.network.Networks;
 import tech.mogami.commons.crypto.contract.FiatTokenV2_2;
-import tech.mogami.commons.header.payment.schemes.exact.ExactSchemePayload;
+import tech.mogami.commons.payment.schemes.exact.ExactSchemePayload;
 import tech.mogami.facilitator.parameter.X402Parameters;
 import tech.mogami.facilitator.provider.web3j.GasService;
 import tech.mogami.facilitator.service.VerifyService;

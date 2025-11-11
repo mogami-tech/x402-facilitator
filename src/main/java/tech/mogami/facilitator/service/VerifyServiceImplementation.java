@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import tech.mogami.commons.api.facilitator.verify.VerifyRequest;
 import tech.mogami.commons.api.facilitator.verify.VerifyResponse;
-import tech.mogami.commons.header.payment.schemes.exact.ExactSchemePayload;
+import tech.mogami.commons.payment.schemes.exact.ExactSchemePayload;
 import tech.mogami.facilitator.verifier.VerificationResult;
 import tech.mogami.facilitator.verifier.Verifier;
 
