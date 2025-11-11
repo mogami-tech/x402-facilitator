@@ -17,7 +17,7 @@
 
             <!-- Foreign keys -->
             <column name="FK_TENANT_ID" type="BIGINT" remarks="Corresponding tenant">
-                <constraints nullable="false" foreignKeyName="FK_TENANT_ID_TENANT_API_KEY"
+                <constraints nullable="false" foreignKeyName="TENANT_API_KEY_FK_TENANT_ID"
                              referencedTableName="TENANT"
                              referencedColumnNames="ID"/>
             </column>

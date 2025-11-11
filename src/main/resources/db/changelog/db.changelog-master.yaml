@@ -6,6 +6,9 @@ databaseChangeLog:
         /db/changelog/1.1.6/tables/participant.xml
   - include:
       file:
+        /db/changelog/1.1.6/tables/address.xml
+  - include:
+      file:
         /db/changelog/1.1.6/tables/tenant.xml
   - include:
       file:

@@ -19,12 +19,12 @@
 
             <!-- Foreign keys -->
             <column name="FK_TENANT_TENANT_ID" type="VARCHAR(255)" remarks="Tenant">
-                <constraints nullable="false" foreignKeyName="FK_TENANT_TENANT_ID_PAYMENT_STEP"
+                <constraints nullable="false" foreignKeyName="PAYMENT_STEP_FK_TENANT_TENANT_ID"
                              referencedTableName="TENANT"
                              referencedColumnNames="TENANT_ID"/>
             </column>
             <column name="FK_PAYMENT_ID" type="BIGINT" remarks="Corresponding payment">
-                <constraints nullable="false" foreignKeyName="FK_PAYMENT_ID_PAYMENT"
+                <constraints nullable="false" foreignKeyName="PAYMENT_STEP_FK_PAYMENT_ID"
                              referencedTableName="PAYMENT"
                              referencedColumnNames="ID"/>
             </column>

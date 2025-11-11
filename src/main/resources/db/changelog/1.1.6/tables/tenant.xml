@@ -17,7 +17,7 @@
 
             <!-- Foreign keys -->
             <column name="FK_PARTICIPANT_ID" type="BIGINT" remarks="Owning participant">
-                <constraints nullable="false" foreignKeyName="FK_PARTICIPANT_ID_TENANT"
+                <constraints nullable="false" foreignKeyName="TENANT_FK_PARTICIPANT_ID"
                              referencedTableName="PARTICIPANT"
                              referencedColumnNames="ID"/>
             </column>

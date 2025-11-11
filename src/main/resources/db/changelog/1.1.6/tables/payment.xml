@@ -18,9 +18,19 @@
 
             <!-- Foreign keys -->
             <column name="FK_TENANT_TENANT_ID" type="VARCHAR(255)" remarks="Tenant">
-                <constraints nullable="false" foreignKeyName="FK_TENANT_TENANT_ID_PAYMENT"
+                <constraints nullable="false" foreignKeyName="PAYMENT_FK_TENANT_TENANT_ID"
                              referencedTableName="TENANT"
                              referencedColumnNames="TENANT_ID"/>
+            </column>
+            <column name="FK_ADDRESS_FROM_ADDRESS_ID" type="BIGINT" remarks="Source address">
+                <constraints nullable="false" foreignKeyName="PAYMENT_FK_ADDRESS_FROM_ADDRESS_ID"
+                             referencedTableName="ADDRESS"
+                             referencedColumnNames="ID"/>
+            </column>
+            <column name="FK_ADDRESS_TO_ADDRESS_ID" type="BIGINT" remarks="Destination address">
+                <constraints nullable="false" foreignKeyName="PAYMENT_FK_ADDRESS_TO_ADDRESS_ID"
+                             referencedTableName="ADDRESS"
+                             referencedColumnNames="ID"/>
             </column>
 
         </createTable>
@@ -42,12 +52,6 @@
                      tableName="PAYMENT">
             <column name="FK_TENANT_TENANT_ID"/>
         </createIndex>
-
-        <!-- Unique constraint on PAYMENT.FK_TENANT_TENANT_ID and PAYMENT.PAYMENT_ID -->
-        <addUniqueConstraint tableName="PAYMENT"
-                             columnNames="FK_TENANT_TENANT_ID, PAYMENT_ID"
-                             constraintName="UNIQUE_PAYMENT_FK_TENANT_TENANT_ID_PAYMENT_ID">
-        </addUniqueConstraint>
 
     </changeSet>
 </databaseChangeLog>
