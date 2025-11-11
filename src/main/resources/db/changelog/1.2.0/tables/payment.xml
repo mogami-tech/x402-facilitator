@@ -34,6 +34,9 @@
             </column>
 
             <!-- Data -->
+            <column name="ASSET_AMOUNT" type="NUMERIC(78, 0)" remarks="Asset amount (in atomic units)"/>
+            <column name="ASSET_NAME" type="varchar(50)" remarks="Asset name"/>
+            <column name="NETWORK_NAME" type="varchar(50)" remarks="Network name (ex: base-sepolia)"/>
             <column name="STATUS" type="VARCHAR(50)" remarks="Payment status">
                 <constraints nullable="false"/>
             </column>
