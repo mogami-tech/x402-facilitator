@@ -2,6 +2,7 @@ package tech.mogami.facilitator.domain.payment;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
@@ -12,11 +13,13 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import tech.mogami.commons.payment.PaymentStatus;
 import tech.mogami.facilitator.domain.blockchain.Address;
 import tech.mogami.facilitator.domain.util.BaseTenantEntity;
 
 import java.util.List;
 
+import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.FetchType.EAGER;
 
 /**
@@ -44,6 +47,11 @@ public class Payment extends BaseTenantEntity {
     @ManyToOne(fetch = EAGER)
     @JoinColumn(name = "FK_TO_ADDRESS_ID", nullable = false)
     private Address to;
+
+    /** Payment status. */
+    @Enumerated(STRING)
+    @Column(name = "STATUS", nullable = false)
+    private PaymentStatus status;
 
     /** Payment steps associated with this payment. */
     @OneToMany(mappedBy = "payment", fetch = EAGER)

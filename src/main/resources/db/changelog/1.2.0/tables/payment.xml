@@ -2,7 +2,7 @@
 <databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.4.xsd">
-    <changeSet author="straumat" id="1.1.6-table-payment">
+    <changeSet author="straumat" id="1.2.0-table-payment">
 
         <!-- Payment table - Store payment information -->
         <createTable tableName="PAYMENT"
@@ -31,6 +31,11 @@
                 <constraints nullable="false" foreignKeyName="PAYMENT_FK_ADDRESS_TO_ADDRESS_ID"
                              referencedTableName="ADDRESS"
                              referencedColumnNames="ID"/>
+            </column>
+
+            <!-- Data -->
+            <column name="STATUS" type="VARCHAR(50)" remarks="Payment status">
+                <constraints nullable="false"/>
             </column>
 
         </createTable>
