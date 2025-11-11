@@ -16,9 +16,9 @@
             </column>
 
             <!-- Foreign keys -->
-            <column name="FK_CLIENT_ID" type="BIGINT" remarks="Owning client">
-                <constraints nullable="false" foreignKeyName="FK_CLIENT_ID_TENANT"
-                             referencedTableName="CLIENT"
+            <column name="FK_PARTICIPANT_ID" type="BIGINT" remarks="Owning participant">
+                <constraints nullable="false" foreignKeyName="FK_PARTICIPANT_ID_TENANT"
+                             referencedTableName="PARTICIPANT"
                              referencedColumnNames="ID"/>
             </column>
 
@@ -39,10 +39,10 @@
             <column name="TENANT_ID"/>
         </createIndex>
 
-        <!-- Index on TENANT.FK_CLIENT_ID -->
-        <createIndex indexName="INDEX_TENANT_FK_CLIENT_ID"
+        <!-- Index on TENANT.FK_PARTICIPANT_ID -->
+        <createIndex indexName="INDEX_TENANT_FK_PARTICIPANT_ID"
                      tableName="TENANT">
-            <column name="FK_CLIENT_ID"/>
+            <column name="FK_PARTICIPANT_ID"/>
         </createIndex>
 
     </changeSet>

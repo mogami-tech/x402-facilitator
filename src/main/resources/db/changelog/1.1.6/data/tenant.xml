@@ -8,8 +8,8 @@
         <insert tableName="TENANT">
             <column name="ID" valueNumeric="0"/>
             <column name="TENANT_ID" value="00000000-0000-0000-0000-000000000000"/>
-            <column name="FK_CLIENT_ID" valueNumeric="0"/>
-            <column name="NAME" value="Public tenant"/>
+            <column name="FK_PARTICIPANT_ID" valueNumeric="0"/>
+            <column name="NAME" value="Mogami public tenant"/>
         </insert>
 
     </changeSet>

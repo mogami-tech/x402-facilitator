@@ -2,30 +2,30 @@
 <databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.4.xsd">
-    <changeSet author="straumat" id="1.1.6-table-payment_trace_step">
+    <changeSet author="straumat" id="1.1.6-table-payment_step">
 
-        <!-- Payment trace step table - Store payment trace steps -->
-        <createTable tableName="PAYMENT_TRACE_STEP"
-                     remarks="Payment trace step">
+        <!-- Payment step table - Store payment steps -->
+        <createTable tableName="PAYMENT_STEP"
+                     remarks="Payment step">
 
             <!-- Keys -->
             <column name="ID" type="BIGINT" remarks="Internal unique identifier">
-                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_PAYMENT_TRACE_STEP"/>
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_PAYMENT_STEP"/>
             </column>
-            <column name="PAYMENT_TRACE_STEP_ID" type="VARCHAR(255)" remarks="Payment trace step ID">
+            <column name="PAYMENT_STEP_ID" type="VARCHAR(255)" remarks="Payment step ID">
                 <constraints nullable="false" unique="true"
-                             uniqueConstraintName="UNIQUE_PAYMENT_TRACE_STEP_PAYMENT_TRACE_ID"/>
+                             uniqueConstraintName="UNIQUE_PAYMENT_STEP_PAYMENT_ID"/>
             </column>
 
             <!-- Foreign keys -->
             <column name="FK_TENANT_TENANT_ID" type="VARCHAR(255)" remarks="Tenant">
-                <constraints nullable="false" foreignKeyName="FK_TENANT_TENANT_ID_PAYMENT_TRACE"
+                <constraints nullable="false" foreignKeyName="FK_TENANT_TENANT_ID_PAYMENT_STEP"
                              referencedTableName="TENANT"
                              referencedColumnNames="TENANT_ID"/>
             </column>
-            <column name="FK_PAYMENT_TRACE_ID" type="BIGINT" remarks="Corresponding payment">
-                <constraints nullable="false" foreignKeyName="FK_PAYMENT_TRACE_ID_PAYMENT_TRACE"
-                             referencedTableName="PAYMENT_TRACE"
+            <column name="FK_PAYMENT_ID" type="BIGINT" remarks="Corresponding payment">
+                <constraints nullable="false" foreignKeyName="FK_PAYMENT_ID_PAYMENT"
+                             referencedTableName="PAYMENT"
                              referencedColumnNames="ID"/>
             </column>
 
@@ -42,20 +42,20 @@
         </createTable>
 
         <!-- Auto increment on the unique identifier -->
-        <addAutoIncrement tableName="PAYMENT_TRACE_STEP"
+        <addAutoIncrement tableName="PAYMENT_STEP"
                           columnName="ID"
                           columnDataType="BIGINT"
                           startWith="10"/>
 
-        <!-- Index on PAYMENT_TRACE_STEP.PAYMENT_TRACE_STEP_ID -->
-        <createIndex indexName="INDEX_PAYMENT_TRACE_STEP_PAYMENT_TRACE_STEP_ID"
-                     tableName="PAYMENT_TRACE_STEP">
-            <column name="PAYMENT_TRACE_STEP_ID"/>
+        <!-- Index on PAYMENT_STEP.PAYMENT_STEP_ID -->
+        <createIndex indexName="INDEX_PAYMENT_STEP_PAYMENT_STEP_ID"
+                     tableName="PAYMENT_STEP">
+            <column name="PAYMENT_STEP_ID"/>
         </createIndex>
 
         <!-- Index on TENANT -->
-        <createIndex indexName="INDEX_PAYMENT_TRACE_STEP_FK_TENANT_TENANT_ID"
-                     tableName="PAYMENT_TRACE_STEP">
+        <createIndex indexName="INDEX_PAYMENT_STEP_FK_TENANT_TENANT_ID"
+                     tableName="PAYMENT_STEP">
             <column name="FK_TENANT_TENANT_ID"/>
         </createIndex>
 

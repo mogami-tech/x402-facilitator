@@ -2,18 +2,18 @@
 <databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.4.xsd">
-    <changeSet author="straumat" id="1.1.6-table-payment_trace">
+    <changeSet author="straumat" id="1.1.6-table-payment">
 
-        <!-- Payment trace table - Store payment trace information -->
-        <createTable tableName="PAYMENT_TRACE"
-                     remarks="Payment trace">
+        <!-- Payment table - Store payment information -->
+        <createTable tableName="PAYMENT"
+                     remarks="Payment">
 
             <!-- Keys -->
             <column name="ID" type="BIGINT" remarks="Internal unique identifier">
-                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_PAYMENT_TRACE"/>
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_PAYMENT"/>
             </column>
-            <column name="PAYMENT_ID" type="VARCHAR(255)" remarks="Payment ID (Nonce usually)">
-                <constraints nullable="false"/>
+            <column name="PAYMENT_ID" type="VARCHAR(255)" remarks="Unique payment id (usually the nonce)">
+                <constraints nullable="false" unique="true" uniqueConstraintName="UNIQUE_PAYMENT_PAYMENT_ID"/>
             </column>
 
             <!-- Foreign keys -->
@@ -26,27 +26,27 @@
         </createTable>
 
         <!-- Auto increment on the unique identifier -->
-        <addAutoIncrement tableName="PAYMENT_TRACE"
+        <addAutoIncrement tableName="PAYMENT"
                           columnName="ID"
                           columnDataType="BIGINT"
                           startWith="10"/>
 
         <!-- Index on PAYMENT_TRACE.PAYMENT_ID -->
-        <createIndex indexName="INDEX_PAYMENT_TRACE_PAYMENT_ID"
-                     tableName="PAYMENT_TRACE">
+        <createIndex indexName="INDEX_PAYMENT_PAYMENT_ID"
+                     tableName="PAYMENT">
             <column name="PAYMENT_ID"/>
         </createIndex>
 
         <!-- Index on TENANT -->
-        <createIndex indexName="INDEX_PAYMENT_TRACE_FK_TENANT_TENANT_ID"
-                     tableName="PAYMENT_TRACE">
+        <createIndex indexName="INDEX_PAYMENT_FK_TENANT_TENANT_ID"
+                     tableName="PAYMENT">
             <column name="FK_TENANT_TENANT_ID"/>
         </createIndex>
 
         <!-- Unique constraint on PAYMENT.FK_TENANT_TENANT_ID and PAYMENT.PAYMENT_ID -->
-        <addUniqueConstraint tableName="PAYMENT_TRACE"
+        <addUniqueConstraint tableName="PAYMENT"
                              columnNames="FK_TENANT_TENANT_ID, PAYMENT_ID"
-                             constraintName="UNIQUE_PAYMENT_TRACE_FK_TENANT_TENANT_ID_PAYMENT_ID">
+                             constraintName="UNIQUE_PAYMENT_FK_TENANT_TENANT_ID_PAYMENT_ID">
         </addUniqueConstraint>
 
     </changeSet>

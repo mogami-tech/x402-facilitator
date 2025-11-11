@@ -2,12 +2,12 @@
 <databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.4.xsd">
-    <changeSet author="straumat" id="1.1.6-data-client">
+    <changeSet author="straumat" id="1.1.6-data-participant">
 
-        <!-- Mogami client - Used for public logs -->
-        <insert tableName="CLIENT">
+        <!-- Mogami participant - Used for public logs -->
+        <insert tableName="PARTICIPANT">
             <column name="ID" valueNumeric="0"/>
-            <column name="CLIENT_ID" value="00000000-0000-0000-0000-000000000000"/>
+            <column name="PARTICIPANT_ID" value="00000000-0000-0000-0000-000000000000"/>
             <column name="TYPE" value="CORPORATION"/>
             <column name="COMPANY_NAME" value="Mogami"/>
             <column name="EMAIL" value="contact@mogami.tech"/>
