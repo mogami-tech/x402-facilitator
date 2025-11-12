@@ -23,6 +23,7 @@ import java.util.List;
 import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.FetchType.EAGER;
 import static tech.mogami.commons.constant.BlockchainConstants.ATOMIC_AMOUNT_TYPE_PRECISION;
+import static tech.mogami.commons.payment.PaymentStatus.PENDING;
 
 /**
  * Represents a payment.
@@ -51,12 +52,12 @@ public class Payment extends BaseTenantEntity {
     private Address to;
 
     /** Asset amount (in atomic units). */
-    @Column(name = "ASSET_AMOUNT", precision = ATOMIC_AMOUNT_TYPE_PRECISION)
+    @Column(name = "ASSET_AMOUNT", precision = ATOMIC_AMOUNT_TYPE_PRECISION, nullable = false)
     private BigInteger assetAmount;
 
-    /** Asset name. */
-    @Column(name = "ASSET_NAME", nullable = false)
-    private String assetName;
+    /** Asset contract. */
+    @Column(name = "ASSET_CONTRACT", nullable = false)
+    private String assetContract;
 
     /** Network name. */
     @Column(name = "NETWORK_NAME", nullable = false)
@@ -65,7 +66,7 @@ public class Payment extends BaseTenantEntity {
     /** Payment status. */
     @Enumerated(STRING)
     @Column(name = "STATUS", nullable = false)
-    private PaymentStatus status;
+    private PaymentStatus status = PENDING;
 
     /** Payment steps associated with this payment. */
     @OneToMany(mappedBy = "payment", fetch = EAGER)
