@@ -11,10 +11,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import tech.mogami.commons.constant.EventType;
 import tech.mogami.facilitator.domain.util.BaseTenantEntity;
-
-import java.time.Instant;
 
 import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.FetchType.EAGER;
@@ -40,21 +37,25 @@ public class PaymentStep extends BaseTenantEntity {
     @JoinColumn(name = "FK_PAYMENT_ID", nullable = false)
     private Payment payment;
 
-    /** Payment step event type. */
+    /** Payment step type. */
     @Enumerated(STRING)
-    @Column(name = "EVENT_TYPE", nullable = false, updatable = false)
-    private EventType eventType;
+    @Column(name = "PAYMENT_STEP_TYPE", nullable = false, updatable = false)
+    private PaymentStepType paymentStepType;
 
-    /** Payment step payload. */
-    @Column(name = "PAYLOAD", nullable = false, updatable = false)
-    private String payload;
+    /** Request payload sent to the facilitator. */
+    @Column(name = "REQUEST_PAYLOAD", nullable = false, updatable = false)
+    private String requestPayload;
 
-    /** Payment step error message. */
+    /** Response payload sent by the facilitator. */
+    @Column(name = "RESPONSE_PAYLOAD", nullable = false, updatable = false)
+    private String responsePayload;
+
+    /** Optional error code returned by the facilitator. */
+    @Column(name = "ERROR_CODE")
+    private String errorCode;
+
+    /** Optional error message returned by the facilitator. */
     @Column(name = "ERROR_MESSAGE")
     private String errorMessage;
-
-    /** Payment step timestamp. */
-    @Column(name = "OCCURRED_AT", nullable = false, updatable = false)
-    private Instant timestamp;
 
 }

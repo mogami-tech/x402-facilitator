@@ -30,14 +30,20 @@
             </column>
 
             <!-- Data -->
-            <column name="EVENT_TYPE" type="VARCHAR(255)" remarks="Event type of the payment step">
+            <column name="PAYMENT_STEP_TYPE" type="VARCHAR(255)" remarks="Payment step type">
                 <constraints nullable="false"/>
             </column>
-            <column name="PAYLOAD" type="VARCHAR(8192)" remarks="Payment step payload in JSON format"/>
-            <column name="ERROR_MESSAGE" type="VARCHAR(255)" remarks="A specific error message, if any"/>
-            <column name="OCCURRED_AT" type="TIMESTAMP" remarks="The timestamp of the payment step">
+            <column name="REQUEST_PAYLOAD" type="VARCHAR(8192)" remarks="Request payload sent to the facilitator"/>
+            <column name="RESPONSE_PAYLOAD" type="VARCHAR(8192)" remarks="Response payload sent by the facilitator"/>
+            <column name="ERROR_CODE" type="VARCHAR(255)" remarks="Optional error code returned by the facilitator"/>
+            <column name="ERROR_MESSAGE" type="VARCHAR(255)"
+                    remarks="Optional error message returned by the facilitator"/>
+
+            <!-- Technical columns -->
+            <column name="CREATED_AT" type="TIMESTAMP" remarks="The timestamp of creation">
                 <constraints nullable="false"/>
             </column>
+            <column name="UPDATED_AT" type="TIMESTAMP" remarks="The timestamp of last update"/>
 
         </createTable>
 
