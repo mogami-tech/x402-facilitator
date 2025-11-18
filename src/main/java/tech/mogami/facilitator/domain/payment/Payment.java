@@ -56,14 +56,16 @@ public class Payment extends BaseTenantEntity {
     private BigInteger assetAmount;
 
     /** Asset contract. */
-    @Column(name = "ASSET_CONTRACT", nullable = false)
-    private String assetContract;
+    @ManyToOne(fetch = EAGER)
+    @JoinColumn(name = "FK_CONTRACT_ADDRESS_ID", nullable = false)
+    private Address assetContract;
 
     /** Network name. */
     @Column(name = "NETWORK_NAME", nullable = false)
     private String networkName;
 
     /** Payment status. */
+    @Builder.Default
     @Enumerated(STRING)
     @Column(name = "STATUS", nullable = false)
     private PaymentStatus status = PENDING;

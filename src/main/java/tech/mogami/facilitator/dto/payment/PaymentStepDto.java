@@ -1,5 +1,6 @@
 package tech.mogami.facilitator.dto.payment;
 
+import lombok.Builder;
 import tech.mogami.facilitator.domain.payment.PaymentStepType;
 
 /**
@@ -7,14 +8,17 @@ import tech.mogami.facilitator.domain.payment.PaymentStepType;
  *
  * @param paymentStepId   Unique payment step identifier
  * @param paymentStepType Type of the payment step
+ * @param nonce           Nonce associated with the payment step
  * @param requestPayload  Request payload sent to the facilitator
  * @param responsePayload Response payload sent by the facilitator
  * @param errorCode       Optional error code returned by the facilitator
  * @param errorMessage    Optional error message returned by the facilitator
  */
+@Builder
 public record PaymentStepDto(
         String paymentStepId,
         PaymentStepType paymentStepType,
+        String nonce,
         String requestPayload,
         String responsePayload,
         String errorCode,

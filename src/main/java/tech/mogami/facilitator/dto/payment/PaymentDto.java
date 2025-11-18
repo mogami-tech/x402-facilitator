@@ -1,5 +1,6 @@
 package tech.mogami.facilitator.dto.payment;
 
+import lombok.Builder;
 import lombok.Singular;
 import tech.mogami.commons.constant.network.Network;
 import tech.mogami.commons.payment.PaymentStatus;
@@ -20,6 +21,7 @@ import java.util.List;
  * @param status        Current status of the payment
  * @param steps         List of payment steps associated with this payment
  */
+@Builder
 public record PaymentDto(
         String paymentId,
         AddressDto fromAddress,

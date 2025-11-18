@@ -18,8 +18,8 @@
             </column>
 
             <!-- Foreign keys -->
-            <column name="FK_TENANT_TENANT_ID" type="VARCHAR(255)" remarks="Tenant">
-                <constraints nullable="false" foreignKeyName="PAYMENT_STEP_FK_TENANT_TENANT_ID"
+            <column name="FK_TENANT_ID" type="VARCHAR(255)" remarks="Tenant">
+                <constraints nullable="false" foreignKeyName="PAYMENT_STEP_FK_TENANT_ID"
                              referencedTableName="TENANT"
                              referencedColumnNames="TENANT_ID"/>
             </column>
@@ -60,9 +60,9 @@
         </createIndex>
 
         <!-- Index on TENANT -->
-        <createIndex indexName="INDEX_PAYMENT_STEP_FK_TENANT_TENANT_ID"
+        <createIndex indexName="INDEX_PAYMENT_STEP_FK_TENANT_ID"
                      tableName="PAYMENT_STEP">
-            <column name="FK_TENANT_TENANT_ID"/>
+            <column name="FK_TENANT_ID"/>
         </createIndex>
 
     </changeSet>

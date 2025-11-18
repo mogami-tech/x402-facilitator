@@ -1,4 +1,4 @@
-package tech.mogami.facilitator.service;
+package tech.mogami.facilitator.service.facilitator;
 
 import tech.mogami.commons.api.facilitator.verify.VerifyRequest;
 import tech.mogami.commons.api.facilitator.verify.VerifyResponse;

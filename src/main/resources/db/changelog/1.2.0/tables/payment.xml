@@ -17,25 +17,29 @@
             </column>
 
             <!-- Foreign keys -->
-            <column name="FK_TENANT_TENANT_ID" type="VARCHAR(255)" remarks="Tenant">
-                <constraints nullable="false" foreignKeyName="PAYMENT_FK_TENANT_TENANT_ID"
+            <column name="FK_TENANT_ID" type="VARCHAR(255)" remarks="Tenant">
+                <constraints nullable="false" foreignKeyName="PAYMENT_FK_TENANT_ID"
                              referencedTableName="TENANT"
                              referencedColumnNames="TENANT_ID"/>
             </column>
-            <column name="FK_ADDRESS_FROM_ADDRESS_ID" type="BIGINT" remarks="Source address">
-                <constraints nullable="false" foreignKeyName="PAYMENT_FK_ADDRESS_FROM_ADDRESS_ID"
-                             referencedTableName="ADDRESS"
-                             referencedColumnNames="ID"/>
-            </column>
-            <column name="FK_ADDRESS_TO_ADDRESS_ID" type="BIGINT" remarks="Destination address">
-                <constraints nullable="false" foreignKeyName="PAYMENT_FK_ADDRESS_TO_ADDRESS_ID"
-                             referencedTableName="ADDRESS"
-                             referencedColumnNames="ID"/>
-            </column>
 
             <!-- Data -->
+            <column name="FK_FROM_ADDRESS_ID" type="BIGINT" remarks="Source address">
+                <constraints nullable="false" foreignKeyName="PAYMENT_FK_FROM_ADDRESS_ID"
+                             referencedTableName="ADDRESS"
+                             referencedColumnNames="ID"/>
+            </column>
+            <column name="FK_TO_ADDRESS_ID" type="BIGINT" remarks="Destination address">
+                <constraints nullable="false" foreignKeyName="PAYMENT_FK_TO_ADDRESS_ID"
+                             referencedTableName="ADDRESS"
+                             referencedColumnNames="ID"/>
+            </column>
             <column name="ASSET_AMOUNT" type="NUMERIC(78, 0)" remarks="Asset amount (in atomic units)"/>
-            <column name="ASSET_CONTRACT" type="VARCHAR(42)" remarks="Asset contract"/>
+            <column name="FK_CONTRACT_ADDRESS_ID" type="BIGINT" remarks="Asset contract">
+                <constraints foreignKeyName="PAYMENT_FK_CONTRACT_ADDRESS_ID"
+                             referencedTableName="ADDRESS"
+                             referencedColumnNames="ID"/>
+            </column>
             <column name="NETWORK_NAME" type="varchar(50)" remarks="Network name (ex: base-sepolia)"/>
             <column name="STATUS" type="VARCHAR(50)" remarks="Payment status" defaultValue="PENDING">
                 <constraints nullable="false"/>
@@ -62,9 +66,25 @@
         </createIndex>
 
         <!-- Index on TENANT -->
-        <createIndex indexName="INDEX_PAYMENT_FK_TENANT_TENANT_ID"
+        <createIndex indexName="INDEX_PAYMENT_FK_TENANT_ID"
                      tableName="PAYMENT">
-            <column name="FK_TENANT_TENANT_ID"/>
+            <column name="FK_TENANT_ID"/>
+        </createIndex>
+
+        <!-- Index on FROM_ADDRESS -->
+        <createIndex indexName="INDEX_PAYMENT_FK_FROM_ADDRESS_ID"
+                     tableName="PAYMENT">
+            <column name="FK_FROM_ADDRESS_ID"/>
+        </createIndex>
+        <!-- Index on TO_ADDRESS -->
+        <createIndex indexName="INDEX_PAYMENT_FK_TO_ADDRESS_ID"
+                     tableName="PAYMENT">
+            <column name="FK_TO_ADDRESS_ID"/>
+        </createIndex>
+        <!-- Index on CONTRACT_ADDRESS -->
+        <createIndex indexName="INDEX_PAYMENT_FK_CONTRACT_ADDRESS_ID"
+                     tableName="PAYMENT">
+            <column name="FK_CONTRACT_ADDRESS_ID"/>
         </createIndex>
 
     </changeSet>

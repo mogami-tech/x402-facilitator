@@ -1,4 +1,4 @@
-package tech.mogami.facilitator.test.service;
+package tech.mogami.facilitator.test.service.facilitator;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -9,7 +9,7 @@ import tech.mogami.commons.api.facilitator.verify.VerifyRequest;
 import tech.mogami.commons.payment.PaymentPayload;
 import tech.mogami.commons.payment.PaymentRequirements;
 import tech.mogami.commons.payment.schemes.exact.ExactSchemePayload;
-import tech.mogami.facilitator.service.VerifyService;
+import tech.mogami.facilitator.service.facilitator.VerifyService;
 import tech.mogami.java.client.helper.X402PaymentHelper;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -24,7 +24,7 @@ import static tech.mogami.commons.test.BaseTestData.TEST_SERVER_WALLET_ADDRESS_1
 import static tech.mogami.commons.test.BaseTestData.TEST_SERVER_WALLET_ADDRESS_2;
 
 @SpringBootTest
-@DisplayName("Verify Service Tests")
+@DisplayName("Verify service tests")
 public class VerifyServiceTest {
 
     @Autowired

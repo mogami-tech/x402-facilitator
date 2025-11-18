@@ -21,7 +21,7 @@ import tech.mogami.commons.crypto.contract.FiatTokenV2_2;
 import tech.mogami.commons.payment.schemes.exact.ExactSchemePayload;
 import tech.mogami.facilitator.parameter.X402Parameters;
 import tech.mogami.facilitator.provider.web3j.GasService;
-import tech.mogami.facilitator.service.VerifyService;
+import tech.mogami.facilitator.service.facilitator.VerifyService;
 
 import java.math.BigInteger;
 import java.util.Map;

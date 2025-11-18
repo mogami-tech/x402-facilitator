@@ -23,7 +23,7 @@ public class BaseTenantEntity extends BaseEntity {
 
     /** Tenant. */
     @TenantId
-    @Column(name = "FK_TENANT_TENANT_ID", nullable = false, updatable = false)
+    @Column(name = "FK_TENANT_ID", nullable = false, updatable = false)
     private String tenantId;
 
     /** Entity creation date. */
