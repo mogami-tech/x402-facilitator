@@ -1,5 +1,6 @@
 package tech.mogami.facilitator.dto.payment;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import tech.mogami.facilitator.domain.payment.PaymentStepType;
 
@@ -17,11 +18,22 @@ import tech.mogami.facilitator.domain.payment.PaymentStepType;
 @Builder
 public record PaymentStepDto(
         String paymentStepId,
-        PaymentStepType paymentStepType,
-        String nonce,
+        @NotNull PaymentStepType paymentStepType,
+        @NotNull String nonce,
         String requestPayload,
         String responsePayload,
         String errorCode,
         String errorMessage
 ) {
+
+    /**
+     * Indicates if the payment step has an error.
+     *
+     * @return true if there is an error, false otherwise
+     */
+    public boolean hasError() {
+        return errorCode != null || errorMessage != null;
+    }
+
 }
+

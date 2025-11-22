@@ -25,12 +25,12 @@
 
             <!-- Data -->
             <column name="FK_FROM_ADDRESS_ID" type="BIGINT" remarks="Source address">
-                <constraints nullable="false" foreignKeyName="PAYMENT_FK_FROM_ADDRESS_ID"
+                <constraints foreignKeyName="PAYMENT_FK_FROM_ADDRESS_ID"
                              referencedTableName="ADDRESS"
                              referencedColumnNames="ID"/>
             </column>
             <column name="FK_TO_ADDRESS_ID" type="BIGINT" remarks="Destination address">
-                <constraints nullable="false" foreignKeyName="PAYMENT_FK_TO_ADDRESS_ID"
+                <constraints foreignKeyName="PAYMENT_FK_TO_ADDRESS_ID"
                              referencedTableName="ADDRESS"
                              referencedColumnNames="ID"/>
             </column>
