@@ -20,7 +20,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatExceptionOfType;
 import static tech.mogami.commons.constant.X402Error.INVALID_EXACT_EVM_PAYLOAD_SIGNATURE;
 import static tech.mogami.commons.constant.network.Networks.BASE_SEPOLIA;
+import static tech.mogami.commons.constant.network.base.BaseContracts.BASE_SEPOLIA_USDC_CONTRACT;
 import static tech.mogami.commons.payment.schemes.Schemes.EXACT_SCHEME;
+import static tech.mogami.commons.test.BaseTestData.TEST_CLIENT_WALLET_ADDRESS_1;
+import static tech.mogami.commons.test.BaseTestData.TEST_CLIENT_WALLET_ADDRESS_2;
 import static tech.mogami.facilitator.domain.payment.PaymentStepType.VERIFY;
 
 @SpringBootTest
@@ -66,6 +69,14 @@ public class PaymentServiceTest {
                 .satisfies(payment -> {
                     assertThat(payment.paymentId()).isEqualTo("NONCE_00001");
                     assertThat(payment.steps()).hasSize(2);
+
+                    // Raw values.
+                    assertThat(payment.paymentId()).isNotNull();
+                    assertThat(payment.fromAddress()).isNull();
+                    assertThat(payment.toAddress()).isNull();
+                    assertThat(payment.assetAmount()).isNull();
+                    assertThat(payment.assetContract()).isNull();
+                    assertThat(payment.network()).isNull();
                 });
         assertThat(paymentService.searchPaymentById("NONCE_00002")).isPresent().get()
                 .satisfies(payment -> {
@@ -88,8 +99,8 @@ public class PaymentServiceTest {
                                                 .signature("")
                                                 .authorization(
                                                         ExactSchemePayload.Authorization.builder()
-                                                                .from("0x2980bc24bBFB34DE1BBC91479Cb712ffbCE02F73")
-                                                                .to("0x2980bc24bBFB34DE1BBC91479Cb712ffbCE02F73")
+                                                                .from(TEST_CLIENT_WALLET_ADDRESS_1)
+                                                                .to(TEST_CLIENT_WALLET_ADDRESS_2)
                                                                 .value("1000")
                                                                 .validAfter("1747601321")
                                                                 .validBefore("1747601441")
@@ -109,7 +120,7 @@ public class PaymentServiceTest {
                                         .mimeType("")
                                         .payTo("0x2980bc24bBFB34DE1BBC91479Cb712ffbCE02F73")
                                         .maxTimeoutSeconds(60)
-                                        .asset("0x036CbD53842c5426634e7929541eC2318f3dCF7e")
+                                        .asset(BASE_SEPOLIA_USDC_CONTRACT)
                                         .extra("name", "USDC")
                                         .extra("version", "2")
                                         .build()
@@ -132,8 +143,14 @@ public class PaymentServiceTest {
                 .satisfies(payment -> {
                     assertThat(payment.paymentId()).isEqualTo("NONCE_00001");
                     assertThat(payment.steps()).hasSize(3);
+
+                    // Raw values.
                     assertThat(payment.paymentId()).isNotNull();
-                    assertThat(payment.fromAddress().address()).isEqualTo("0x2980bc24bBFB34DE1BBC91479Cb712ffbCE02F73");
+                    assertThat(payment.fromAddress().address()).isEqualTo(TEST_CLIENT_WALLET_ADDRESS_1);
+                    assertThat(payment.toAddress().address()).isEqualTo(TEST_CLIENT_WALLET_ADDRESS_2);
+                    assertThat(payment.assetAmount()).isEqualTo("1000");
+                    assertThat(payment.assetContract().address()).isEqualTo(BASE_SEPOLIA_USDC_CONTRACT);
+                    assertThat(payment.network().name()).isEqualTo(BASE_SEPOLIA.name());
                 });
 
 
