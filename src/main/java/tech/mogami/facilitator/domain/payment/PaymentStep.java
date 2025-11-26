@@ -58,4 +58,47 @@ public class PaymentStep extends BaseTenantEntity {
     @Column(name = "ERROR_MESSAGE")
     private String errorMessage;
 
+    /**
+     * Calculates the information score of the payment step.
+     *
+     * @return the score of the payment step
+     */
+    @SuppressWarnings("checkstyle:MagicNumber")
+    public final int informationScore() {
+        return switch (this.paymentStepType) {
+            case SETTLE -> {
+                if (this.hasNoError()) {
+                    yield 7;
+                } else {
+                    yield 5;
+                }
+            }
+            case VERIFY -> {
+                if (this.hasNoError()) {
+                    yield 3;
+                } else {
+                    yield 1;
+                }
+            }
+        };
+    }
+
+    /**
+     * Checks if the payment step has an error.
+     *
+     * @return true if there is an error, false otherwise.
+     */
+    public final boolean hasError() {
+        return this.errorCode != null || this.errorMessage != null;
+    }
+
+    /**
+     * Checks if the payment step has no error.
+     *
+     * @return true if there is no error, false otherwise.
+     */
+    public final boolean hasNoError() {
+        return !hasError();
+    }
+
 }

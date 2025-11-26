@@ -20,7 +20,7 @@ import static jakarta.persistence.InheritanceType.SINGLE_TABLE;
 @Entity
 @Inheritance(strategy = SINGLE_TABLE)
 @DiscriminatorColumn(name = "TYPE", discriminatorType = STRING)
-@Table(name = "CLIENT")
+@Table(name = "PARTICIPANT")
 @Getter
 @Setter
 @NoArgsConstructor

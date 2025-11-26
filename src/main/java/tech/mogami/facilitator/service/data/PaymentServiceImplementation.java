@@ -7,23 +7,20 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
+import tech.mogami.commons.api.facilitator.RequestCommonData;
 import tech.mogami.commons.api.facilitator.settle.SettleRequest;
 import tech.mogami.commons.api.facilitator.settle.SettleResponse;
 import tech.mogami.commons.api.facilitator.verify.VerifyRequest;
-import tech.mogami.commons.constant.network.Network;
-import tech.mogami.commons.constant.network.Networks;
-import tech.mogami.commons.payment.schemes.exact.ExactSchemePayload;
 import tech.mogami.commons.util.JsonUtil;
 import tech.mogami.facilitator.domain.payment.Payment;
 import tech.mogami.facilitator.domain.payment.PaymentStep;
-import tech.mogami.facilitator.dto.blockchain.AddressDto;
 import tech.mogami.facilitator.dto.payment.PaymentDto;
 import tech.mogami.facilitator.dto.payment.PaymentStepDto;
 import tech.mogami.facilitator.repository.AddressRepository;
 import tech.mogami.facilitator.repository.PaymentRepository;
 import tech.mogami.facilitator.util.base.BaseService;
 
-import java.math.BigInteger;
+import java.util.Comparator;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -59,8 +56,6 @@ public class PaymentServiceImplementation extends BaseService implements Payment
         // We save the information in database =========================================================================
         // We get or create the payment, and we add the step
         final Payment payment = getOrCreatePayment(paymentStep.nonce());
-
-        // We add the new payment step
         payment.addStep(PaymentStep.builder()
                 .paymentStepId(UUID.randomUUID().toString())
                 .payment(payment)
@@ -70,98 +65,100 @@ public class PaymentServiceImplementation extends BaseService implements Payment
                 .errorCode(paymentStep.errorCode())
                 .errorMessage(paymentStep.errorMessage())
                 .build());
+        paymentRepository.save(payment);
+        log.info("Payment step {} saved", paymentStep);
+
+
+        paymentRepository.findByPaymentId(payment.getPaymentId())
+                .stream()
+                .peek(payment1 -> System.out.println("=> Displaying payment: " + payment1.getPaymentId()))
+                .map(Payment::getSteps)
+                .forEach(steps1 -> steps1.forEach(step1 -> {
+                    System.out.println("==> step in payment: " + step1.getId());
+                    System.out.println("==> step in payment: " + step1.getPaymentStepId());
+                    System.out.println("==> step in payment: " + step1.getRequestPayload());
+                    System.out.println();
+                }));
+
+        payment.getSteps().forEach(step -> {
+            System.out.println("=> Step score:" + step.informationScore());
+            System.out.println("=> Step date:" + step.getCreatedAt());
+        });
 
         // We try to find the most useful step by following a specific order ===========================================
+        // The order is:
         // - The latest successful payment with step = SETTLE
-        Optional<PaymentStep> usefulPaymentStep = payment.getSteps().stream()
-                .filter(step -> step.getPaymentStepType() == SETTLE)
-                .filter(step -> step.getErrorCode() == null && step.getErrorMessage() == null)
-                .reduce((first, second) -> second);
         // - The latest failed payment with step = SETTLE
-        if (usefulPaymentStep.isEmpty()) {
-            usefulPaymentStep = payment.getSteps().stream()
-                    .filter(step -> step.getPaymentStepType() == SETTLE)
-                    .filter(step -> step.getErrorCode() != null || step.getErrorMessage() != null)
-                    .reduce((first, second) -> second);
-        }
         // - The latest successful payment with step = VERIFY
-        if (usefulPaymentStep.isEmpty()) {
-            usefulPaymentStep = payment.getSteps().stream()
-                    .filter(step -> step.getPaymentStepType() == VERIFY)
-                    .filter(step -> step.getErrorCode() == null && step.getErrorMessage() == null)
-                    .reduce((first, second) -> second);
-        }
         // - The latest failed payment with step = VERIFY
-        if (usefulPaymentStep.isEmpty()) {
-            usefulPaymentStep = payment.getSteps().stream()
-                    .filter(step -> step.getPaymentStepType() == VERIFY)
-                    .filter(step -> step.getErrorCode() != null || step.getErrorMessage() != null)
-                    .reduce((first, second) -> second);
-        }
+        Optional<PaymentStep> usefulPaymentStep = payment.getSteps().stream()
+                .max(Comparator.comparingInt(PaymentStep::informationScore)
+                        .thenComparing(PaymentStep::getCreatedAt)
+                );
 
         // With the one found, we are going to retrieve the data =======================================================
         usefulPaymentStep.ifPresentOrElse(step -> {
-            log.debug("Most useful payment step found: {}", step.getPaymentStepId());
-            VerifyRequest verifyRequest = null;
-            SettleRequest settleRequest = null;
+            log.info("Most useful payment step found: {}", step.getPaymentStepId());
+            RequestCommonData request = null;
             SettleResponse settleResponse = null;
-            ExactSchemePayload payload = null;
 
+            // We retrieve the JSON data ===============================================================================
+            if (step.getPaymentStepType() == VERIFY) {
+                try {
+                    System.out.println("===> step id: " + step.getId());
+                    System.out.println("===> step payment id: " + step.getPaymentStepId());
+                    System.out.println("===> step payload: " + step.getRequestPayload());
+                    request = JsonUtil.fromJson(step.getRequestPayload(), VerifyRequest.class);
+                } catch (IllegalArgumentException e) {
+                    log.error("Failed to parse verify request payload for payment step: {}", step.getPaymentStepId(), e);
+                }
+            }
             if (step.getPaymentStepType() == SETTLE) {
                 try {
-                    settleRequest = JsonUtil.fromJson(step.getRequestPayload(), SettleRequest.class);
-                    payload = (ExactSchemePayload) settleRequest.paymentPayload().payload();
+                    request = JsonUtil.fromJson(step.getRequestPayload(), SettleRequest.class);
                 } catch (IllegalArgumentException e) {
-                    log.debug("Failed to parse settle request payload for payment step: {}", step.getPaymentStepId(), e);
+                    log.error("Failed to parse settle request payload for payment step: {}", step.getPaymentStepId(), e);
                 }
                 try {
                     settleResponse = JsonUtil.fromJson(step.getResponsePayload(), SettleResponse.class);
                 } catch (IllegalArgumentException e) {
-                    log.debug("Failed to parse settle response payload for payment step: {}", step.getPaymentStepId(), e);
-                }
-            }
-            if (step.getPaymentStepType() == VERIFY) {
-                try {
-                    verifyRequest = JsonUtil.fromJson(step.getRequestPayload(), VerifyRequest.class);
-                    payload = (ExactSchemePayload) verifyRequest.paymentPayload().payload();
-                } catch (IllegalArgumentException e) {
-                    log.debug("Failed to parse verify request payload for payment step: {}", step.getPaymentStepId(), e);
+                    log.error("Failed to parse settle response payload for payment step: {}", step.getPaymentStepId(), e);
                 }
             }
 
             // We update the payment ===================================================================================
-            AddressDto assetContract = null;
-            Network network = null;
-            if (settleRequest != null && settleRequest.paymentRequirements() != null) {
-                assetContract = participantService.getOrCreateAddress(settleRequest.paymentRequirements().asset());
-                network = Networks.findByName(settleRequest.paymentPayload().network()).orElse(null);
-            } else if (verifyRequest != null && verifyRequest.paymentRequirements() != null) {
-                assetContract = participantService.getOrCreateAddress(verifyRequest.paymentRequirements().asset());
-                network = Networks.findByName(verifyRequest.paymentPayload().network()).orElse(null);
+            if (request != null) {
+                request.getFromAddress().ifPresent(addressAsString -> {
+                    participantService.getOrCreateAddress(addressAsString);
+                    addressRepository.findByAddress(addressAsString).ifPresent(payment::setFrom);
+                });
+                request.getToAddress().ifPresent(addressAsString -> {
+                    participantService.getOrCreateAddress(addressAsString);
+                    addressRepository.findByAddress(addressAsString).ifPresent(payment::setTo);
+                });
+                request.getAssetAmount().ifPresent(payment::setAssetAmount);
+                request.getAssetContract().ifPresent(addressAsString -> {
+                    participantService.getOrCreateAddress(addressAsString);
+                    addressRepository.findByAddress(addressAsString).ifPresent(payment::setAssetContract);
+                });
+                request.getNetwork().ifPresent(networkValue -> payment.setNetworkName(networkValue.name()));
             }
 
-            if (payload != null) {
-                payment.setFrom(ADDRESS_MAPPER.toEntity(participantService.getOrCreateAddress(payload.authorization().from())));
-                payment.setTo(ADDRESS_MAPPER.toEntity(participantService.getOrCreateAddress(payload.authorization().to())));
-                payment.setAssetContract(ADDRESS_MAPPER.toEntity(assetContract));
-                payment.setAssetAmount(new BigInteger(payload.authorization().value()));
-                if (network != null) {
-                    payment.setNetworkName(network.name());
-                }
-                // Searching for success in settle response to set the status
-                if (settleResponse != null) {
-                    if (settleResponse.success()) {
-                        payment.setStatus(COMPLETED);
-                    } else {
-                        payment.setStatus(FAILED);
-                    }
+            // Searching for a settle response to set the status =======================================================
+            if (settleResponse != null) {
+                if (settleResponse.success()) {
+                    payment.setStatus(COMPLETED);
+                } else {
+                    payment.setStatus(FAILED);
                 }
             }
+
+            // Save the payment ========================================================================================
+            paymentRepository.save(payment);
+            log.info("Payment {} updated", payment.getPaymentId());
+
         }, () -> log.error("No useful payment step found for payment: {}", payment.getPaymentId()));
 
-        // Save the payment ============================================================================================
-        paymentRepository.save(payment);
-        log.info("Payment {} updated", payment.getPaymentId());
     }
 
     @Override
@@ -170,6 +167,7 @@ public class PaymentServiceImplementation extends BaseService implements Payment
         if (StringUtils.isBlank(paymentId)) {
             return Optional.empty();
         } else {
+            System.out.println("=> Displaying " + paymentRepository.findByPaymentId(paymentId));
             return paymentRepository.findByPaymentId(paymentId)
                     .map(PAYMENT_MAPPER::toDto);
         }

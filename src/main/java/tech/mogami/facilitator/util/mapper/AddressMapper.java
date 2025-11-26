@@ -12,6 +12,7 @@ public interface AddressMapper {
 
     AddressDto toDto(Address address);
 
+    //@Mapping(target = "id", source = "id")
     @Mapping(target = "participant", ignore = true)
     Address toEntity(AddressDto dto);
 
