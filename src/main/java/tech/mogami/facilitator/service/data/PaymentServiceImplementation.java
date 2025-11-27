@@ -105,9 +105,6 @@ public class PaymentServiceImplementation extends BaseService implements Payment
             // We retrieve the JSON data ===============================================================================
             if (step.getPaymentStepType() == VERIFY) {
                 try {
-                    System.out.println("===> step id: " + step.getId());
-                    System.out.println("===> step payment id: " + step.getPaymentStepId());
-                    System.out.println("===> step payload: " + step.getRequestPayload());
                     request = JsonUtil.fromJson(step.getRequestPayload(), VerifyRequest.class);
                 } catch (IllegalArgumentException e) {
                     log.error("Failed to parse verify request payload for payment step: {}", step.getPaymentStepId(), e);

@@ -7,7 +7,10 @@ import tech.mogami.commons.payment.PaymentStatus;
 import tech.mogami.facilitator.dto.blockchain.AddressDto;
 
 import java.math.BigInteger;
+import java.text.NumberFormat;
 import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
 
 /**
  * Payment data transfer object.
@@ -32,4 +35,48 @@ public record PaymentDto(
         PaymentStatus status,
         @Singular List<PaymentStepDto> steps
 ) {
+
+    /**
+     * Get the formatted from address.
+     *
+     * @return the formatted from address
+     */
+    public String formattedFromAddress() {
+        return Optional.ofNullable(fromAddress)
+                .map(AddressDto::address)
+                .orElse(null);
+    }
+
+    /**
+     * Get the formatted to address.
+     *
+     * @return the formatted to address
+     */
+    public String formattedToAddress() {
+        return Optional.ofNullable(toAddress)
+                .map(AddressDto::address)
+                .orElse(null);
+    }
+
+    /**
+     * Get the formatted asset amount with symbol based on the locale.
+     *
+     * @param locale the locale for formatting
+     * @return the formatted asset amount with symbol
+     */
+    public String formattedAmount(final Locale locale) {
+        if (assetAmount == null || assetContract == null || network == null) {
+            return null;
+        }
+
+        // Manage number formatting based on locale if needed.
+        final NumberFormat nf = NumberFormat.getNumberInstance(locale);
+        nf.setGroupingUsed(true);
+
+        // We try to find if the asset contract used is registered in our network object.
+        return network.findDeployedAsset(assetContract.address())
+                .map(asset -> nf.format(asset.fromAtomic(assetAmount)) + " " + asset.asset().symbol())
+                .orElseGet(() -> nf.format(assetAmount));
+    }
+
 }

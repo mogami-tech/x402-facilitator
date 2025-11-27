@@ -16,6 +16,8 @@ import tech.mogami.facilitator.dto.payment.PaymentStepDto;
 import tech.mogami.facilitator.repository.PaymentRepository;
 import tech.mogami.facilitator.service.data.PaymentService;
 
+import java.util.Locale;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatExceptionOfType;
 import static tech.mogami.commons.constant.X402Error.INVALID_EXACT_EVM_PAYLOAD_SIGNATURE;
@@ -77,6 +79,12 @@ public class PaymentServiceTest {
                     assertThat(payment.assetAmount()).isNull();
                     assertThat(payment.assetContract()).isNull();
                     assertThat(payment.network()).isNull();
+
+                    // Formatted values.
+                    assertThat(payment.formattedFromAddress()).isNull();
+                    assertThat(payment.formattedToAddress()).isNull();
+                    assertThat(payment.formattedAmount(Locale.ENGLISH)).isNull();
+                    assertThat(payment.formattedAmount(Locale.FRENCH)).isNull();
                 });
         assertThat(paymentService.searchPaymentById("NONCE_00002")).isPresent().get()
                 .satisfies(payment -> {
@@ -101,7 +109,7 @@ public class PaymentServiceTest {
                                                         ExactSchemePayload.Authorization.builder()
                                                                 .from(TEST_CLIENT_WALLET_ADDRESS_1)
                                                                 .to(TEST_CLIENT_WALLET_ADDRESS_2)
-                                                                .value("1000")
+                                                                .value("1500500000")
                                                                 .validAfter("1747601321")
                                                                 .validBefore("1747601441")
                                                                 .nonce("0xa5f2264bcb079c96f07d9fe1378f5f846e3acd5ea29024d740cec881e2e85fe6")
@@ -148,9 +156,15 @@ public class PaymentServiceTest {
                     assertThat(payment.paymentId()).isNotNull();
                     assertThat(payment.fromAddress().address()).isEqualTo(TEST_CLIENT_WALLET_ADDRESS_1);
                     assertThat(payment.toAddress().address()).isEqualTo(TEST_CLIENT_WALLET_ADDRESS_2);
-                    assertThat(payment.assetAmount()).isEqualTo("1000");
+                    assertThat(payment.assetAmount()).isEqualTo("1500500000");
                     assertThat(payment.assetContract().address()).isEqualTo(BASE_SEPOLIA_USDC_CONTRACT);
                     assertThat(payment.network().name()).isEqualTo(BASE_SEPOLIA.name());
+
+                    // Formatted values.
+                    assertThat(payment.formattedFromAddress()).isEqualTo(TEST_CLIENT_WALLET_ADDRESS_1);
+                    assertThat(payment.formattedToAddress()).isEqualTo(TEST_CLIENT_WALLET_ADDRESS_2);
+                    assertThat(payment.formattedAmount(Locale.ENGLISH)).isEqualTo("1,500.5 USDC");
+                    assertThat(payment.formattedAmount(Locale.FRENCH).replace("\u202F", " ")).isEqualTo("1 500,5 USDC");
                 });
 
 

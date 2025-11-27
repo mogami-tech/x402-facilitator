@@ -16,7 +16,7 @@ import static org.mapstruct.NullValuePropertyMappingStrategy.IGNORE;
 public interface PaymentMapper {
 
     @Named("networkFromName")
-    static Network mapNetworkFromName(String name) {
+    static Network mapNetworkFromName(final String name) {
         return Networks.findByName(name).orElse(null);
     }
 
