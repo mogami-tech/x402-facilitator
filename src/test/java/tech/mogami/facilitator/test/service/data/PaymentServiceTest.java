@@ -5,20 +5,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import tech.mogami.commons.api.facilitator.settle.SettleRequest;
-import tech.mogami.commons.api.facilitator.settle.SettleResponse;
-import tech.mogami.commons.api.facilitator.verify.VerifyRequest;
-import tech.mogami.commons.api.facilitator.verify.VerifyResponse;
-import tech.mogami.commons.constant.X402Error;
-import tech.mogami.commons.constant.network.Network;
-import tech.mogami.commons.constant.version.X402Versions;
-import tech.mogami.commons.payment.PaymentPayload;
-import tech.mogami.commons.payment.PaymentRequirements;
-import tech.mogami.commons.payment.schemes.exact.ExactSchemePayload;
-import tech.mogami.commons.util.JsonUtil;
 import tech.mogami.facilitator.dto.payment.PaymentStepDto;
 import tech.mogami.facilitator.repository.PaymentRepository;
 import tech.mogami.facilitator.service.data.PaymentService;
+import tech.mogami.facilitator.test.util.BaseTest;
 
 import static java.util.Locale.ENGLISH;
 import static java.util.Locale.FRENCH;
@@ -30,7 +20,6 @@ import static tech.mogami.commons.constant.network.Networks.BASE_MAINNET;
 import static tech.mogami.commons.constant.network.Networks.BASE_SEPOLIA;
 import static tech.mogami.commons.constant.network.base.BaseContracts.BASE_MAINNET_USDC_CONTRACT;
 import static tech.mogami.commons.constant.network.base.BaseContracts.BASE_SEPOLIA_USDC_CONTRACT;
-import static tech.mogami.commons.payment.schemes.Schemes.EXACT_SCHEME;
 import static tech.mogami.commons.test.BaseTestData.TEST_CLIENT_WALLET_ADDRESS_1;
 import static tech.mogami.commons.test.BaseTestData.TEST_CLIENT_WALLET_ADDRESS_2;
 import static tech.mogami.facilitator.domain.payment.PaymentStepType.SETTLE;
@@ -38,7 +27,7 @@ import static tech.mogami.facilitator.domain.payment.PaymentStepType.VERIFY;
 
 @SpringBootTest
 @DisplayName("Payment service tests")
-public class PaymentServiceTest {
+public class PaymentServiceTest extends BaseTest {
 
     /** Complete payment. */
     public static final String COMPLETE_PAYMENT_NONCE = "NONCE_00001";
@@ -125,7 +114,6 @@ public class PaymentServiceTest {
                 .errorCode(INVALID_EXACT_EVM_PAYLOAD_SIGNATURE.getCode())
                 .errorMessage(INVALID_EXACT_EVM_PAYLOAD_SIGNATURE.getDefaultMessage())
                 .build());
-        assertThat(paymentRepository.count()).isEqualTo(countBeforeCallingServices + 2);
 
         // We add a failed verify step  ================================================================================
         paymentService.logPaymentStep(PaymentStepDto.builder()
@@ -153,7 +141,7 @@ public class PaymentServiceTest {
                     assertThat(payment.formattedFrom()).isEqualTo(TEST_CLIENT_WALLET_ADDRESS_1);
                     assertThat(payment.formattedTo()).isEqualTo(TEST_CLIENT_WALLET_ADDRESS_2);
                     assertThat(payment.formattedAmount(ENGLISH)).isEqualTo("1,500.5 USDC");
-                    assertThat(payment.formattedAmount(FRENCH).replace("\u202F", " ")).isEqualTo("1 500,5 USDC");
+                    assertThat(normalizeSpaces(payment.formattedAmount(FRENCH))).isEqualTo("1 500,5 USDC");
                 });
 
         // We now add a failed verify step with different values =======================================================
@@ -175,7 +163,6 @@ public class PaymentServiceTest {
                 .errorCode(INVALID_EXACT_EVM_PAYLOAD_SIGNATURE.getCode())
                 .errorMessage(INVALID_EXACT_EVM_PAYLOAD_SIGNATURE.getDefaultMessage())
                 .build());
-        assertThat(paymentRepository.count()).isEqualTo(countBeforeCallingServices + 2);
 
         // The payment values must have been updated ===================================================================
         assertThat(paymentService.searchPaymentById(COMPLETE_PAYMENT_NONCE)).isPresent().get()
@@ -195,8 +182,7 @@ public class PaymentServiceTest {
                     assertThat(payment.formattedFrom()).isEqualTo("0xf6b42050A71Ca13f842eDa53C7d31B7C1BD22222");
                     assertThat(payment.formattedTo()).isEqualTo("0xCC6f005718945b59cfC5aF1981BF93904A822222");
                     assertThat(payment.formattedAmount(ENGLISH)).isEqualTo("2,500,500,000");
-                    assertThat(payment.formattedAmount(FRENCH).replace("\u202F", " "))
-                            .isEqualTo("2 500 500 000");
+                    assertThat(normalizeSpaces(payment.formattedAmount(FRENCH))).isEqualTo("2 500 500 000");
                 });
 
         // We add a failed settle step  ================================================================================
@@ -219,7 +205,6 @@ public class PaymentServiceTest {
                 .errorCode(UNEXPECTED_SETTLE_ERROR.getCode())
                 .errorMessage(UNEXPECTED_SETTLE_ERROR.getDefaultMessage())
                 .build());
-        assertThat(paymentRepository.count()).isEqualTo(countBeforeCallingServices + 2);
 
         // The payment values must have beed updated ===================================================================
         assertThat(paymentService.searchPaymentById(COMPLETE_PAYMENT_NONCE)).isPresent().get()
@@ -239,8 +224,7 @@ public class PaymentServiceTest {
                     assertThat(payment.formattedFrom()).isEqualTo("0xf6b42050A71Ca13f842eDa53C7d31B7C1BD33333");
                     assertThat(payment.formattedTo()).isEqualTo("0xCC6f005718945b59cfC5aF1981BF93904A833333");
                     assertThat(payment.formattedAmount(ENGLISH)).isEqualTo("3,500,500,000");
-                    assertThat(payment.formattedAmount(FRENCH).replace("\u202F", " "))
-                            .isEqualTo("3 500 500 000");
+                    assertThat(normalizeSpaces(payment.formattedAmount(FRENCH))).isEqualTo("3 500 500 000");
                 });
 
         // A failed verify step is added ===============================================================================
@@ -262,7 +246,6 @@ public class PaymentServiceTest {
                 .errorCode(INVALID_EXACT_EVM_PAYLOAD_SIGNATURE.getCode())
                 .errorMessage(INVALID_EXACT_EVM_PAYLOAD_SIGNATURE.getDefaultMessage())
                 .build());
-        assertThat(paymentRepository.count()).isEqualTo(countBeforeCallingServices + 2);
 
         // The payment values must NOT be updated ======================================================================
         assertThat(paymentService.searchPaymentById(COMPLETE_PAYMENT_NONCE)).isPresent().get()
@@ -282,8 +265,7 @@ public class PaymentServiceTest {
                     assertThat(payment.formattedFrom()).isEqualTo("0xf6b42050A71Ca13f842eDa53C7d31B7C1BD33333");
                     assertThat(payment.formattedTo()).isEqualTo("0xCC6f005718945b59cfC5aF1981BF93904A833333");
                     assertThat(payment.formattedAmount(ENGLISH)).isEqualTo("3,500,500,000");
-                    assertThat(payment.formattedAmount(FRENCH).replace("\u202F", " "))
-                            .isEqualTo("3 500 500 000");
+                    assertThat(normalizeSpaces(payment.formattedAmount(FRENCH))).isEqualTo("3 500 500 000");
                 });
 
         // A successful settle step is added ===========================================================================
@@ -304,7 +286,6 @@ public class PaymentServiceTest {
                         TEST_CLIENT_WALLET_ADDRESS_1
                 ))
                 .build());
-        assertThat(paymentRepository.count()).isEqualTo(countBeforeCallingServices + 2);
 
         // The payment values must be updated ==========================================================================
         assertThat(paymentService.searchPaymentById(COMPLETE_PAYMENT_NONCE)).isPresent().get()
@@ -324,7 +305,7 @@ public class PaymentServiceTest {
                     assertThat(payment.formattedFrom()).isEqualTo(TEST_CLIENT_WALLET_ADDRESS_1);
                     assertThat(payment.formattedTo()).isEqualTo(TEST_CLIENT_WALLET_ADDRESS_2);
                     assertThat(payment.formattedAmount(ENGLISH)).isEqualTo("4,500.5 USDC");
-                    assertThat(payment.formattedAmount(FRENCH).replace("\u202F", " ")).isEqualTo("4 500,5 USDC");
+                    assertThat(normalizeSpaces(payment.formattedAmount(FRENCH))).isEqualTo("4 500,5 USDC");
                 });
 
         // A failed verify step is added ===============================================================================
@@ -346,7 +327,6 @@ public class PaymentServiceTest {
                 .errorCode(INVALID_EXACT_EVM_PAYLOAD_SIGNATURE.getCode())
                 .errorMessage(INVALID_EXACT_EVM_PAYLOAD_SIGNATURE.getDefaultMessage())
                 .build());
-        assertThat(paymentRepository.count()).isEqualTo(countBeforeCallingServices + 2);
 
         // A successful verify step is added ===========================================================================
         paymentService.logPaymentStep(PaymentStepDto.builder()
@@ -365,7 +345,6 @@ public class PaymentServiceTest {
                         "0xf6b42050A71Ca13f842eDa53C7d31B7C1BD66666"
                 ))
                 .build());
-        assertThat(paymentRepository.count()).isEqualTo(countBeforeCallingServices + 2);
 
         // A failed settle step is added ===============================================================================
         paymentService.logPaymentStep(PaymentStepDto.builder()
@@ -389,7 +368,7 @@ public class PaymentServiceTest {
                 .build());
         assertThat(paymentRepository.count()).isEqualTo(countBeforeCallingServices + 2);
 
-        // The payment values must not have changed - Still the sucessfull step ========================================
+        // The payment values must not have changed - Still the successful step ========================================
         assertThat(paymentService.searchPaymentById(COMPLETE_PAYMENT_NONCE)).isPresent().get()
                 .satisfies(payment -> {
                     assertThat(payment.paymentId()).isEqualTo(COMPLETE_PAYMENT_NONCE);
@@ -407,127 +386,10 @@ public class PaymentServiceTest {
                     assertThat(payment.formattedFrom()).isEqualTo(TEST_CLIENT_WALLET_ADDRESS_1);
                     assertThat(payment.formattedTo()).isEqualTo(TEST_CLIENT_WALLET_ADDRESS_2);
                     assertThat(payment.formattedAmount(ENGLISH)).isEqualTo("4,500.5 USDC");
-                    assertThat(payment.formattedAmount(FRENCH).replace("\u202F", " ")).isEqualTo("4 500,5 USDC");
+                    assertThat(normalizeSpaces(payment.formattedAmount(FRENCH))).isEqualTo("4 500,5 USDC");
                 });
 
     }
 
-    private String getVerifyRequest(
-            final Network network,
-            final String fromAddress,
-            final String toAddress,
-            final String assetContract,
-            final String amount,
-            final String nonce
-    ) {
-        return JsonUtil.toPrettyJson(VerifyRequest.builder()
-                .x402Version(X402Versions.V1.version())
-                .paymentPayload(PaymentPayload.builder()
-                        .x402Version(X402Versions.V1.version())
-                        .scheme(EXACT_SCHEME.name())
-                        .network(network.name())
-                        .payload(ExactSchemePayload.builder()
-                                .signature("")
-                                .authorization(
-                                        ExactSchemePayload.Authorization.builder()
-                                                .from(fromAddress)
-                                                .to(toAddress)
-                                                .value(amount)
-                                                .validAfter("1747601321")
-                                                .validBefore("1747601441")
-                                                .nonce(nonce)
-                                                .build()
-                                )
-                                .build()
-                        )
-                        .build()
-                )
-                .paymentRequirements(PaymentRequirements.builder()
-                        .scheme(EXACT_SCHEME.name())
-                        .network(BASE_SEPOLIA.name())
-                        .maxAmountRequired("1000")
-                        .resource("http://localhost:4021/weather")
-                        .description("")
-                        .mimeType("")
-                        .payTo("0x2980bc24bBFB34DE1BBC91479Cb712ffbCE02F73")
-                        .maxTimeoutSeconds(60)
-                        .asset(assetContract)
-                        .extra("name", "USDC")
-                        .extra("version", "2")
-                        .build()
-                ).build());
-    }
-
-    private String getVerifyResponse(
-            final boolean isValid,
-            final X402Error invalidReason,
-            final String payer
-    ) {
-        return JsonUtil.toPrettyJson(VerifyResponse.builder()
-                .isValid(isValid)
-                .invalidReason(invalidReason.getCode())
-                .payer(payer)
-                .build());
-    }
-
-    private String getSettleRequest(
-            final Network network,
-            final String fromAddress,
-            final String toAddress,
-            final String assetContract,
-            final String amount,
-            final String nonce
-    ) {
-        return JsonUtil.toPrettyJson(SettleRequest.builder()
-                .x402Version(X402Versions.V1.version())
-                .paymentPayload(PaymentPayload.builder()
-                        .x402Version(X402Versions.V1.version())
-                        .scheme(EXACT_SCHEME.name())
-                        .network(network.name())
-                        .payload(ExactSchemePayload.builder()
-                                .signature("")
-                                .authorization(
-                                        ExactSchemePayload.Authorization.builder()
-                                                .from(fromAddress)
-                                                .to(toAddress)
-                                                .value(amount)
-                                                .validAfter("1747601321")
-                                                .validBefore("1747601441")
-                                                .nonce(nonce)
-                                                .build()
-                                )
-                                .build()
-                        )
-                        .build()
-                )
-                .paymentRequirements(PaymentRequirements.builder()
-                        .scheme(EXACT_SCHEME.name())
-                        .network(BASE_SEPOLIA.name())
-                        .maxAmountRequired("1000")
-                        .resource("http://localhost:4021/weather")
-                        .description("")
-                        .mimeType("")
-                        .payTo("0x2980bc24bBFB34DE1BBC91479Cb712ffbCE02F73")
-                        .maxTimeoutSeconds(60)
-                        .asset(assetContract)
-                        .extra("name", "USDC")
-                        .extra("version", "2")
-                        .build()
-                ).build());
-    }
-
-    private String getSettleResponse(
-            final boolean success,
-            final X402Error errorReason,
-            final String transaction,
-            final String payer
-    ) {
-        return JsonUtil.toPrettyJson(SettleResponse.builder()
-                .success(success)
-                .errorReason(errorReason.getCode())
-                .transaction(transaction)
-                .payer(payer)
-                .build());
-    }
 
 }

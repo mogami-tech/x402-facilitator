@@ -68,24 +68,6 @@ public class PaymentServiceImplementation extends BaseService implements Payment
         paymentRepository.save(payment);
         log.info("Payment step {} saved", paymentStep);
 
-        // TODO Remove this.
-        paymentRepository.findByPaymentId(payment.getPaymentId())
-                .stream()
-                .peek(payment1 -> System.out.println("=> Displaying payment: " + payment1.getPaymentId()))
-                .map(Payment::getSteps)
-                .forEach(steps1 -> steps1.forEach(step1 -> {
-                    System.out.println("==> step in payment: " + step1.getId());
-                    System.out.println("==> step in payment: " + step1.getPaymentStepId());
-                    System.out.println("==> step in payment: " + step1.getRequestPayload());
-                    System.out.println();
-                }));
-
-        payment.getSteps().forEach(step -> {
-            System.out.println("=> Step :" + step.informationScore());
-            System.out.println("=> Step score:" + step.informationScore());
-            System.out.println("=> Step date:" + step.getCreatedAt());
-        });
-
         // We try to find the most useful step by following a specific order ===========================================
         // The order is:
         // - The latest successful payment with step = SETTLE
@@ -165,7 +147,6 @@ public class PaymentServiceImplementation extends BaseService implements Payment
         if (StringUtils.isBlank(paymentId)) {
             return Optional.empty();
         } else {
-            System.out.println("=> Displaying " + paymentRepository.findByPaymentId(paymentId));
             return paymentRepository.findByPaymentId(paymentId)
                     .map(PAYMENT_MAPPER::toDto);
         }

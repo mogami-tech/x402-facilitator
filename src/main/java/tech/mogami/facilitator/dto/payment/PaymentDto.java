@@ -7,6 +7,7 @@ import tech.mogami.commons.payment.PaymentStatus;
 import tech.mogami.facilitator.dto.blockchain.AddressDto;
 
 import java.math.BigInteger;
+import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.List;
 import java.util.Locale;
@@ -48,9 +49,9 @@ public record PaymentDto(
     }
 
     /**
-     * Get the formatted to "to".
+     * Get the formatted to address.
      *
-     * @return the formatted to "to"
+     * @return the formatted to address
      */
     public String formattedTo() {
         return Optional.ofNullable(toAddress)
@@ -70,7 +71,7 @@ public record PaymentDto(
         }
 
         // Manage number formatting based on locale if needed.
-        final NumberFormat nf = NumberFormat.getNumberInstance(locale);
+        final NumberFormat nf = DecimalFormat.getNumberInstance(locale);
         nf.setGroupingUsed(true);
 
         // We try to find if the asset contract used is registered in our network object.
