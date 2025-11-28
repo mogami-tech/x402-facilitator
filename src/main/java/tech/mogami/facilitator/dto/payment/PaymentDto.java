@@ -37,22 +37,22 @@ public record PaymentDto(
 ) {
 
     /**
-     * Get the formatted from address.
+     * Get the formatted "from".
      *
-     * @return the formatted from address
+     * @return the formatted "from"
      */
-    public String formattedFromAddress() {
+    public String formattedFrom() {
         return Optional.ofNullable(fromAddress)
                 .map(AddressDto::address)
                 .orElse(null);
     }
 
     /**
-     * Get the formatted to address.
+     * Get the formatted to "to".
      *
-     * @return the formatted to address
+     * @return the formatted to "to"
      */
-    public String formattedToAddress() {
+    public String formattedTo() {
         return Optional.ofNullable(toAddress)
                 .map(AddressDto::address)
                 .orElse(null);

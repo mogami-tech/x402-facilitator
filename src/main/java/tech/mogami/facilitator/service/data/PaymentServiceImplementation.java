@@ -68,7 +68,7 @@ public class PaymentServiceImplementation extends BaseService implements Payment
         paymentRepository.save(payment);
         log.info("Payment step {} saved", paymentStep);
 
-
+        // TODO Remove this.
         paymentRepository.findByPaymentId(payment.getPaymentId())
                 .stream()
                 .peek(payment1 -> System.out.println("=> Displaying payment: " + payment1.getPaymentId()))
@@ -81,6 +81,7 @@ public class PaymentServiceImplementation extends BaseService implements Payment
                 }));
 
         payment.getSteps().forEach(step -> {
+            System.out.println("=> Step :" + step.informationScore());
             System.out.println("=> Step score:" + step.informationScore());
             System.out.println("=> Step date:" + step.getCreatedAt());
         });
