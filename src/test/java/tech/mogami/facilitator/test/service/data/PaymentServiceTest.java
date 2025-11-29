@@ -5,6 +5,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+import tech.mogami.facilitator.batch.PaymentBatch;
 import tech.mogami.facilitator.dto.payment.PaymentStepDto;
 import tech.mogami.facilitator.repository.PaymentRepository;
 import tech.mogami.facilitator.service.data.PaymentService;
@@ -26,6 +28,7 @@ import static tech.mogami.facilitator.domain.payment.PaymentStepType.SETTLE;
 import static tech.mogami.facilitator.domain.payment.PaymentStepType.VERIFY;
 
 @SpringBootTest
+@ActiveProfiles({"scheduler-disabled"})
 @DisplayName("Payment service tests")
 public class PaymentServiceTest extends BaseTest {
 
@@ -40,6 +43,9 @@ public class PaymentServiceTest extends BaseTest {
 
     @Autowired
     private PaymentService paymentService;
+
+    @Autowired
+    private PaymentBatch paymentBatch;
 
     @Test
     @DisplayName("Test payment step log creation")
@@ -70,6 +76,7 @@ public class PaymentServiceTest extends BaseTest {
         assertThat(paymentRepository.count()).isEqualTo(countBeforeCallingServices + 2);
 
         // Testing what we have created ================================================================================
+        paymentBatch.updatePayments();
         assertThat(paymentService.searchPaymentById(COMPLETE_PAYMENT_NONCE)).isPresent().get()
                 .satisfies(payment -> {
                     assertThat(payment.paymentId()).isEqualTo(COMPLETE_PAYMENT_NONCE);
@@ -124,6 +131,7 @@ public class PaymentServiceTest extends BaseTest {
                 .build());
 
         // We now check the value we can get from the payment step =====================================================
+        paymentBatch.updatePayments();
         assertThat(paymentService.searchPaymentById(COMPLETE_PAYMENT_NONCE)).isPresent().get()
                 .satisfies(payment -> {
                     assertThat(payment.paymentId()).isEqualTo(COMPLETE_PAYMENT_NONCE);
@@ -131,6 +139,7 @@ public class PaymentServiceTest extends BaseTest {
 
                     // Raw values.
                     assertThat(payment.paymentId()).isNotNull();
+                    assertThat(payment.fromAddress()).isNotNull();
                     assertThat(payment.fromAddress().address()).isEqualTo(TEST_CLIENT_WALLET_ADDRESS_1);
                     assertThat(payment.toAddress().address()).isEqualTo(TEST_CLIENT_WALLET_ADDRESS_2);
                     assertThat(payment.assetAmount()).isEqualTo("1500500000");
@@ -165,6 +174,7 @@ public class PaymentServiceTest extends BaseTest {
                 .build());
 
         // The payment values must have been updated ===================================================================
+        paymentBatch.updatePayments();
         assertThat(paymentService.searchPaymentById(COMPLETE_PAYMENT_NONCE)).isPresent().get()
                 .satisfies(payment -> {
                     assertThat(payment.paymentId()).isEqualTo(COMPLETE_PAYMENT_NONCE);
@@ -207,6 +217,7 @@ public class PaymentServiceTest extends BaseTest {
                 .build());
 
         // The payment values must have beed updated ===================================================================
+        paymentBatch.updatePayments();
         assertThat(paymentService.searchPaymentById(COMPLETE_PAYMENT_NONCE)).isPresent().get()
                 .satisfies(payment -> {
                     assertThat(payment.paymentId()).isEqualTo(COMPLETE_PAYMENT_NONCE);
@@ -288,6 +299,7 @@ public class PaymentServiceTest extends BaseTest {
                 .build());
 
         // The payment values must be updated ==========================================================================
+        paymentBatch.updatePayments();
         assertThat(paymentService.searchPaymentById(COMPLETE_PAYMENT_NONCE)).isPresent().get()
                 .satisfies(payment -> {
                     assertThat(payment.paymentId()).isEqualTo(COMPLETE_PAYMENT_NONCE);
@@ -369,6 +381,7 @@ public class PaymentServiceTest extends BaseTest {
         assertThat(paymentRepository.count()).isEqualTo(countBeforeCallingServices + 2);
 
         // The payment values must not have changed - Still the successful step ========================================
+        paymentBatch.updatePayments();
         assertThat(paymentService.searchPaymentById(COMPLETE_PAYMENT_NONCE)).isPresent().get()
                 .satisfies(payment -> {
                     assertThat(payment.paymentId()).isEqualTo(COMPLETE_PAYMENT_NONCE);

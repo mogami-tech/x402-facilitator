@@ -59,31 +59,6 @@ public class PaymentStep extends BaseTenantEntity {
     private String errorMessage;
 
     /**
-     * Calculates the information score of the payment step.
-     *
-     * @return the score of the payment step
-     */
-    @SuppressWarnings("checkstyle:MagicNumber")
-    public final int informationScore() {
-        return switch (this.paymentStepType) {
-            case SETTLE -> {
-                if (this.hasNoError()) {
-                    yield 7;
-                } else {
-                    yield 5;
-                }
-            }
-            case VERIFY -> {
-                if (this.hasNoError()) {
-                    yield 3;
-                } else {
-                    yield 1;
-                }
-            }
-        };
-    }
-
-    /**
      * Checks if the payment step has an error.
      *
      * @return true if there is an error, false otherwise.
