@@ -17,6 +17,7 @@ import tech.mogami.facilitator.repository.AddressRepository;
 import tech.mogami.facilitator.repository.PaymentRepository;
 import tech.mogami.facilitator.service.data.ParticipantService;
 
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -61,107 +62,105 @@ public class PaymentBatch {
     @Transactional
     public void updatePayments() {
         paymentRepository.paymentsToUpdate(PageRequest.of(0, DEFAULT_BATCH_SIZE))
-                .forEach(this::updatePayment);
-    }
+                .stream()
+                // We retrieve the payment =============================================================================
+                .map(paymentRepository::findByPaymentId)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                // We determine the steps to process ===================================================================
+                .map(payment -> {
+                    // Do we have steps of SETTLE type? and is there a successful one among them? ======================
+                    LinkedList<PaymentStep> verifySteps = payment.getSteps().stream()
+                            .filter(step -> step.getPaymentStepType() == VERIFY)
+                            .collect(Collectors.toCollection(LinkedList::new));
+                    Optional<PaymentStep> successfulVerifyStep = verifySteps.stream()
+                            .filter(PaymentStep::hasNoError)
+                            .findFirst();
+                    LinkedList<PaymentStep> settleSteps = payment.getSteps().stream()
+                            .filter(step -> step.getPaymentStepType() == SETTLE)
+                            .collect(Collectors.toCollection(LinkedList::new));
+                    Optional<PaymentStep> successfulSettleStep = settleSteps.stream()
+                            .filter(PaymentStep::hasNoError)
+                            .findFirst();
 
-    /**
-     * Update payment data based on its payment steps.
-     *
-     * @param paymentId the unique identifier of the payment
-     */
-    public void updatePayment(final String paymentId) {
-        Payment payment = paymentRepository.findByPaymentId(paymentId)
-                .orElseThrow(() -> new IllegalStateException("Payment with paymentId " + paymentId + " not found"));
+                    // Choose the steps to process =====================================================================
+                    LinkedList<PaymentStep> stepsToProcess = new LinkedList<>();
+                    if (settleSteps.isEmpty()) {
+                        // No SETTLE steps, we treat VERIFY steps.
+                        successfulVerifyStep.ifPresentOrElse(
+                                // We have a successful VERIFY step, we treat only it.
+                                stepsToProcess::add,
+                                // No successful VERIFY step, we treat all of them.
+                                () -> stepsToProcess.addAll(verifySteps)
+                        );
+                    } else {
+                        // We have SETTLE steps, we treat them.
+                        successfulSettleStep.ifPresentOrElse(
+                                // We have a successful SETTLE step, we treat only it.
+                                stepsToProcess::add,
+                                // No successful SETTLE step, we treat all of them.
+                                () -> stepsToProcess.addAll(settleSteps)
+                        );
+                    }
+                    return stepsToProcess;
+                })
+                // We process the steps ================================================================================
+                .flatMap(Collection::stream)
+                .forEach(step -> {
+                    Payment payment = step.getPayment();
+                    RequestCommonData request = null;
+                    SettleResponse settleResponse = null;
 
-        // Do we have steps of SETTLE type? and is there a successful one among them?
-        LinkedList<PaymentStep> verifySteps = payment.getSteps().stream()
-                .filter(step -> step.getPaymentStepType() == VERIFY)
-                .collect(Collectors.toCollection(LinkedList::new));
-        Optional<PaymentStep> successfulVerifyStep = verifySteps.stream()
-                .filter(PaymentStep::hasNoError)
-                .findFirst();
-        LinkedList<PaymentStep> settleSteps = payment.getSteps().stream()
-                .filter(step -> step.getPaymentStepType() == SETTLE)
-                .collect(Collectors.toCollection(LinkedList::new));
-        Optional<PaymentStep> successfulSettleStep = settleSteps.stream()
-                .filter(PaymentStep::hasNoError)
-                .findFirst();
+                    // We retrieve the JSON data =======================================================================
+                    if (step.getPaymentStepType() == VERIFY) {
+                        try {
+                            request = JsonUtil.fromJson(step.getRequestPayload(), VerifyRequest.class);
+                        } catch (IllegalArgumentException e) {
+                            log.debug("Failed to parse verify request for paymentId: {}", step.getPaymentStepId(), e);
+                        }
+                    }
+                    if (step.getPaymentStepType() == SETTLE) {
+                        try {
+                            request = JsonUtil.fromJson(step.getRequestPayload(), SettleRequest.class);
+                        } catch (IllegalArgumentException e) {
+                            log.debug("Failed to parse settle request payload for paymentId: {}", step.getPaymentStepId(), e);
+                        }
+                        try {
+                            settleResponse = JsonUtil.fromJson(step.getResponsePayload(), SettleResponse.class);
+                        } catch (IllegalArgumentException e) {
+                            log.debug("Failed to parse settle response payload  for paymentId: {}", step.getPaymentStepId(), e);
+                        }
+                    }
 
-        // Steps to process.
-        LinkedList<PaymentStep> stepsToProcess = new LinkedList<>();
-        if (settleSteps.isEmpty()) {
-            // No SETTLE steps, we treat VERIFY steps.
-            successfulVerifyStep.ifPresentOrElse(
-                    // We have a successful VERIFY step, we treat only it.
-                    stepsToProcess::add,
-                    // No successful VERIFY step, we treat all of them.
-                    () -> stepsToProcess.addAll(verifySteps)
-            );
-        } else {
-            // We have SETTLE steps, we treat them.
-            successfulSettleStep.ifPresentOrElse(
-                    // We have a successful SETTLE step, we treat only it.
-                    stepsToProcess::add,
-                    // No successful SETTLE step, we treat all of them.
-                    () -> stepsToProcess.addAll(settleSteps)
-            );
-        }
+                    // We update the payment ===========================================================================
+                    if (request != null) {
+                        request.getFromAddress().ifPresent(addressAsString -> {
+                            participantService.getOrCreateAddress(addressAsString);
+                            addressRepository.findByAddress(addressAsString).ifPresent(payment::setFrom);
+                        });
+                        request.getToAddress().ifPresent(addressAsString -> {
+                            participantService.getOrCreateAddress(addressAsString);
+                            addressRepository.findByAddress(addressAsString).ifPresent(payment::setTo);
+                        });
+                        request.getAssetAmount().ifPresent(payment::setAssetAmount);
+                        request.getAssetContract().ifPresent(addressAsString -> {
+                            participantService.getOrCreateAddress(addressAsString);
+                            addressRepository.findByAddress(addressAsString).ifPresent(payment::setAssetContract);
+                        });
+                        request.getNetwork().ifPresent(networkValue -> payment.setNetworkName(networkValue.name()));
+                    }
+                    if (settleResponse != null) {
+                        if (settleResponse.success()) {
+                            payment.setStatus(COMPLETED);
+                        } else {
+                            payment.setStatus(FAILED);
+                        }
+                    }
 
-        // Now the process.
-        stepsToProcess.forEach(step -> {
-            RequestCommonData request = null;
-            SettleResponse settleResponse = null;
-
-            // We retrieve the JSON data ===============================================================================
-            if (step.getPaymentStepType() == VERIFY) {
-                try {
-                    request = JsonUtil.fromJson(step.getRequestPayload(), VerifyRequest.class);
-                } catch (IllegalArgumentException e) {
-                    log.debug("Failed to parse verify request for paymentId: {}", step.getPaymentStepId(), e);
-                }
-            }
-            if (step.getPaymentStepType() == SETTLE) {
-                try {
-                    request = JsonUtil.fromJson(step.getRequestPayload(), SettleRequest.class);
-                } catch (IllegalArgumentException e) {
-                    log.debug("Failed to parse settle request payload for paymentId: {}", step.getPaymentStepId(), e);
-                }
-                try {
-                    settleResponse = JsonUtil.fromJson(step.getResponsePayload(), SettleResponse.class);
-                } catch (IllegalArgumentException e) {
-                    log.debug("Failed to parse settle response payload  for paymentId: {}", step.getPaymentStepId(), e);
-                }
-            }
-
-            // We update the payment ===================================================================================
-            if (request != null) {
-                request.getFromAddress().ifPresent(addressAsString -> {
-                    participantService.getOrCreateAddress(addressAsString);
-                    addressRepository.findByAddress(addressAsString).ifPresent(payment::setFrom);
+                    // Save the payment ================================================================================
+                    paymentRepository.save(payment);
+                    log.info("Payment with paymentId {} updated", payment.getPaymentId());
                 });
-                request.getToAddress().ifPresent(addressAsString -> {
-                    participantService.getOrCreateAddress(addressAsString);
-                    addressRepository.findByAddress(addressAsString).ifPresent(payment::setTo);
-                });
-                request.getAssetAmount().ifPresent(payment::setAssetAmount);
-                request.getAssetContract().ifPresent(addressAsString -> {
-                    participantService.getOrCreateAddress(addressAsString);
-                    addressRepository.findByAddress(addressAsString).ifPresent(payment::setAssetContract);
-                });
-                request.getNetwork().ifPresent(networkValue -> payment.setNetworkName(networkValue.name()));
-            }
-            if (settleResponse != null) {
-                if (settleResponse.success()) {
-                    payment.setStatus(COMPLETED);
-                } else {
-                    payment.setStatus(FAILED);
-                }
-            }
-
-            // Save the payment ========================================================================================
-            paymentRepository.save(payment);
-            log.info("Payment with paymentId {} updated", payment.getPaymentId());
-        });
     }
 
 }
