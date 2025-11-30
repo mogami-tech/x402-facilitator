@@ -35,12 +35,6 @@
                           columnDataType="BIGINT"
                           startWith="10"/>
 
-        <!-- Index on TENANT_API_KEY.API_KEY_HASH -->
-        <createIndex indexName="INDEX_TENANT_API_KEY_API_KEY_HASH"
-                     tableName="TENANT_API_KEY">
-            <column name="API_KEY_HASH"/>
-        </createIndex>
-
         <!-- Index on TENANT_API_KEY.FK_TENANT_ID -->
         <createIndex indexName="INDEX_TENANT_API_KEY_FK_TENANT_ID"
                      tableName="TENANT_API_KEY">

@@ -33,12 +33,6 @@
                           columnDataType="BIGINT"
                           startWith="10"/>
 
-        <!-- Index on TENANT.TENANT_ID -->
-        <createIndex indexName="INDEX_TENANT_TENANT_ID"
-                     tableName="TENANT">
-            <column name="TENANT_ID"/>
-        </createIndex>
-
         <!-- Index on TENANT.FK_PARTICIPANT_ID -->
         <createIndex indexName="INDEX_TENANT_FK_PARTICIPANT_ID"
                      tableName="TENANT">

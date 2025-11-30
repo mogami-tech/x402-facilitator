@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import tech.mogami.facilitator.domain.payment.Payment;
-import tech.mogami.facilitator.domain.payment.PaymentStep;
 import tech.mogami.facilitator.dto.payment.PaymentDto;
 import tech.mogami.facilitator.dto.payment.PaymentStepDto;
 import tech.mogami.facilitator.repository.AddressRepository;
@@ -16,7 +15,6 @@ import tech.mogami.facilitator.repository.PaymentRepository;
 import tech.mogami.facilitator.util.base.BaseService;
 
 import java.util.Optional;
-import java.util.UUID;
 
 /**
  * {@link PaymentService} implementation.
@@ -38,21 +36,14 @@ public class PaymentServiceImplementation extends BaseService implements Payment
     /** Participant service. */
     private final ParticipantService participantService;
 
+    /** Participant step service. */
+    private final PaymentServiceAsyncImplementation paymentStepService;
+
     @Override
     public void logPaymentStep(final PaymentStepDto paymentStep) {
         log.info("Logging payment step: {}", paymentStep);
         final Payment payment = getOrCreatePayment(paymentStep.nonce());
-        payment.addStep(PaymentStep.builder()
-                .paymentStepId(UUID.randomUUID().toString())
-                .payment(payment)
-                .paymentStepType(paymentStep.paymentStepType())
-                .requestPayload(paymentStep.requestPayload())
-                .responsePayload(paymentStep.responsePayload())
-                .errorCode(paymentStep.errorCode())
-                .errorMessage(paymentStep.errorMessage())
-                .build());
-        paymentRepository.save(payment);
-        log.info("Payment step {} added to log", paymentStep);
+        paymentStepService.logPaymentStep(payment.getPaymentId(), paymentStep);
     }
 
     @Override

@@ -59,12 +59,6 @@
                           columnDataType="BIGINT"
                           startWith="10"/>
 
-        <!-- Index on PAYMENT_TRACE.PAYMENT_ID -->
-        <createIndex indexName="INDEX_PAYMENT_PAYMENT_ID"
-                     tableName="PAYMENT">
-            <column name="PAYMENT_ID"/>
-        </createIndex>
-
         <!-- Index on TENANT -->
         <createIndex indexName="INDEX_PAYMENT_FK_TENANT_ID"
                      tableName="PAYMENT">

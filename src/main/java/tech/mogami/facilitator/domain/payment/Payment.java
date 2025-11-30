@@ -73,7 +73,7 @@ public class Payment extends BaseTenantEntity {
     private PaymentStatus status = PENDING;
 
     /** Payment steps associated with this payment. */
-    @OneToMany(mappedBy = "payment", fetch = EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "payment", fetch = EAGER, cascade = CascadeType.ALL)
     @OrderBy("createdAt ASC")
     private List<PaymentStep> steps;
 

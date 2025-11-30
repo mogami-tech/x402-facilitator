@@ -19,6 +19,9 @@ databaseChangeLog:
   - include:
       file:
         db/changelog/1.2.0/tables/payment_step.xml
+  - include:
+      file:
+        db/changelog/1.2.0/tables/queue_payment.xml
 
   # 1.2.0 Data =========================================================================================================
   - include:

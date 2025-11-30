@@ -49,11 +49,5 @@
             <column name="TYPE"/>
         </createIndex>
 
-        <!-- Index on PARTICIPANT.PARTICIPANT_ID -->
-        <createIndex indexName="INDEX_PARTICIPANT_PARTICIPANT_ID"
-                     tableName="PARTICIPANT">
-            <column name="PARTICIPANT_ID"/>
-        </createIndex>
-
     </changeSet>
 </databaseChangeLog>

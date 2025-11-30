@@ -12,6 +12,8 @@ import tech.mogami.facilitator.repository.PaymentRepository;
 import tech.mogami.facilitator.service.data.PaymentService;
 import tech.mogami.facilitator.test.util.BaseTest;
 
+import java.time.Duration;
+
 import static java.util.Locale.ENGLISH;
 import static java.util.Locale.FRENCH;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -49,7 +51,9 @@ public class PaymentServiceTest extends BaseTest {
 
     @Test
     @DisplayName("Test payment step log creation")
-    public void testCreatePaymentStepLog() {
+    public void testCreatePaymentStepLog() throws InterruptedException {
+        final long countBeforeCallingServices = paymentRepository.count();
+
         // Invalid payment step should be refused ======================================================================
         assertThatExceptionOfType(ConstraintViolationException.class)
                 .isThrownBy(() -> paymentService.logPaymentStep(null));
@@ -61,7 +65,6 @@ public class PaymentServiceTest extends BaseTest {
                 .isThrownBy(() -> paymentService.logPaymentStep(PaymentStepDto.builder().nonce("RANDOM_NONCE").build()));
 
         // Calling the service several times with the same nonce =======================================================
-        final long countBeforeCallingServices = paymentRepository.count();
         paymentService.logPaymentStep(PaymentStepDto.builder()
                 .paymentStepType(VERIFY)
                 .nonce(COMPLETE_PAYMENT_NONCE)
@@ -73,9 +76,11 @@ public class PaymentServiceTest extends BaseTest {
                 .nonce(COMPLETE_PAYMENT_NONCE)
                 .errorCode("invalid_json")
                 .build());
+        Thread.sleep(Duration.ofSeconds(3).toMillis());
         assertThat(paymentRepository.count()).isEqualTo(countBeforeCallingServices + 2);
 
         // Testing what we have created ================================================================================
+        Thread.sleep(Duration.ofSeconds(3).toMillis());
         paymentBatch.updatePayments();
         assertThat(paymentService.searchPaymentById(COMPLETE_PAYMENT_NONCE)).isPresent().get()
                 .satisfies(payment -> {
@@ -131,6 +136,7 @@ public class PaymentServiceTest extends BaseTest {
                 .build());
 
         // We now check the value we can get from the payment step =====================================================
+        Thread.sleep(Duration.ofSeconds(3).toMillis());
         paymentBatch.updatePayments();
         assertThat(paymentService.searchPaymentById(COMPLETE_PAYMENT_NONCE)).isPresent().get()
                 .satisfies(payment -> {
@@ -174,6 +180,7 @@ public class PaymentServiceTest extends BaseTest {
                 .build());
 
         // The payment values must have been updated ===================================================================
+        Thread.sleep(Duration.ofSeconds(3).toMillis());
         paymentBatch.updatePayments();
         assertThat(paymentService.searchPaymentById(COMPLETE_PAYMENT_NONCE)).isPresent().get()
                 .satisfies(payment -> {
@@ -217,6 +224,7 @@ public class PaymentServiceTest extends BaseTest {
                 .build());
 
         // The payment values must have beed updated ===================================================================
+        Thread.sleep(Duration.ofSeconds(3).toMillis());
         paymentBatch.updatePayments();
         assertThat(paymentService.searchPaymentById(COMPLETE_PAYMENT_NONCE)).isPresent().get()
                 .satisfies(payment -> {
@@ -259,6 +267,8 @@ public class PaymentServiceTest extends BaseTest {
                 .build());
 
         // The payment values must NOT be updated ======================================================================
+        Thread.sleep(Duration.ofSeconds(3).toMillis());
+        paymentBatch.updatePayments();
         assertThat(paymentService.searchPaymentById(COMPLETE_PAYMENT_NONCE)).isPresent().get()
                 .satisfies(payment -> {
                     assertThat(payment.paymentId()).isEqualTo(COMPLETE_PAYMENT_NONCE);
@@ -299,6 +309,7 @@ public class PaymentServiceTest extends BaseTest {
                 .build());
 
         // The payment values must be updated ==========================================================================
+        Thread.sleep(Duration.ofSeconds(3).toMillis());
         paymentBatch.updatePayments();
         assertThat(paymentService.searchPaymentById(COMPLETE_PAYMENT_NONCE)).isPresent().get()
                 .satisfies(payment -> {
@@ -381,6 +392,7 @@ public class PaymentServiceTest extends BaseTest {
         assertThat(paymentRepository.count()).isEqualTo(countBeforeCallingServices + 2);
 
         // The payment values must not have changed - Still the successful step ========================================
+        Thread.sleep(Duration.ofSeconds(3).toMillis());
         paymentBatch.updatePayments();
         assertThat(paymentService.searchPaymentById(COMPLETE_PAYMENT_NONCE)).isPresent().get()
                 .satisfies(payment -> {

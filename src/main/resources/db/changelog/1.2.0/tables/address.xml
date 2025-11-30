@@ -31,12 +31,6 @@
                           columnDataType="BIGINT"
                           startWith="1"/>
 
-        <!-- Index on ADDRESS -->
-        <createIndex indexName="INDEX_ADDRESS_ADDRESS"
-                     tableName="ADDRESS">
-            <column name="ADDRESS"/>
-        </createIndex>
-
         <!-- Index on FK_PARTICIPANT_ID -->
         <createIndex indexName="INDEX_ADDRESS_FK_PARTICIPANT_ID"
                      tableName="ADDRESS">

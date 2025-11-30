@@ -53,12 +53,6 @@
                           columnDataType="BIGINT"
                           startWith="10"/>
 
-        <!-- Index on PAYMENT_STEP.PAYMENT_STEP_ID -->
-        <createIndex indexName="INDEX_PAYMENT_STEP_PAYMENT_STEP_ID"
-                     tableName="PAYMENT_STEP">
-            <column name="PAYMENT_STEP_ID"/>
-        </createIndex>
-
         <!-- Index on TENANT -->
         <createIndex indexName="INDEX_PAYMENT_STEP_FK_TENANT_ID"
                      tableName="PAYMENT_STEP">
