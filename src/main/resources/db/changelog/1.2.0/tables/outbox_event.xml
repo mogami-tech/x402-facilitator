@@ -10,6 +10,9 @@
             <column name="ID" type="BIGINT" remarks="Internal unique identifier">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="PK_OUTBOX_EVENT"/>
             </column>
+            <column name="EVENT_ID" type="VARCHAR(255)" remarks="Unique event id">
+                <constraints nullable="false" unique="true" uniqueConstraintName="UNIQUE_OUTBOX_EVENT_EVENT_ID"/>
+            </column>
             <column name="EVENT_TYPE" type="VARCHAR(20)" remarks="Event type">
                 <constraints nullable="false"/>
             </column>

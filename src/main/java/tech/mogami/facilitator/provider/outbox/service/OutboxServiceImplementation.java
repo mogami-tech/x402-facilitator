@@ -17,6 +17,7 @@ import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.time.Instant;
 import java.util.List;
+import java.util.UUID;
 
 import static tech.mogami.facilitator.domain.platform.outbox.OutboxEventStatus.DONE;
 import static tech.mogami.facilitator.domain.platform.outbox.OutboxEventStatus.ERROR;
@@ -54,7 +55,10 @@ public class OutboxServiceImplementation implements OutboxService {
     @Override
     @Transactional
     public void publish(final OutboxEventMessage<?> message) {
+        final String eventId = UUID.randomUUID().toString();
+        log.debug("Publishing outbox event: eventId={}, eventType={}", eventId, message.type());
         outboxEventRepository.save(OutboxEvent.builder()
+                .eventId(eventId)
                 .eventType(message.type())
                 .payload(JsonUtil.toJson(message))
                 .build());

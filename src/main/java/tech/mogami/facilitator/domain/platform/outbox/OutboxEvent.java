@@ -37,6 +37,10 @@ public class OutboxEvent {
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
+    /** Unique event id. */
+    @Column(name = "EVENT_ID", nullable = false, unique = true, updatable = false)
+    private String eventId;
+
     /** Type of the outbox event. */
     @Enumerated(STRING)
     @Column(name = "EVENT_TYPE", nullable = false, updatable = false)
