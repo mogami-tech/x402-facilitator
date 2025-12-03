@@ -19,6 +19,7 @@ import tech.mogami.facilitator.domain.payment.PaymentStepType;
 public record PaymentStepDto(
         String paymentStepId,
         @NotNull PaymentStepType paymentStepType,
+        // TODO Delete nonce.
         @NotNull String nonce,
         String requestPayload,
         String responsePayload,
@@ -34,7 +35,6 @@ public record PaymentStepDto(
     public boolean hasError() {
         return errorCode != null || errorMessage != null;
     }
-
 
 }
 

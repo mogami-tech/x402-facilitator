@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import tech.mogami.commons.payment.PaymentStatus;
 import tech.mogami.facilitator.domain.blockchain.Address;
-import tech.mogami.facilitator.domain.util.BaseTenantEntity;
+import tech.mogami.facilitator.domain.platform.base.BaseTenantEntity;
 
 import java.math.BigInteger;
 import java.util.LinkedList;

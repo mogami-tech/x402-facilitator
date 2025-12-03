@@ -9,7 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import tech.mogami.facilitator.domain.util.BaseEntity;
+import tech.mogami.facilitator.domain.platform.base.BaseEntity;
 
 import static jakarta.persistence.DiscriminatorType.STRING;
 import static jakarta.persistence.InheritanceType.SINGLE_TABLE;

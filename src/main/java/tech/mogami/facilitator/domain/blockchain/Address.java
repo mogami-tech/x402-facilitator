@@ -12,7 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import tech.mogami.facilitator.domain.participant.Participant;
-import tech.mogami.facilitator.domain.util.BaseEntity;
+import tech.mogami.facilitator.domain.platform.base.BaseEntity;
 
 import static jakarta.persistence.FetchType.EAGER;
 import static lombok.AccessLevel.PACKAGE;

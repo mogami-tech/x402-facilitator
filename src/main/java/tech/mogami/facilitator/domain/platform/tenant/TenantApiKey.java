@@ -1,4 +1,4 @@
-package tech.mogami.facilitator.domain.tenant;
+package tech.mogami.facilitator.domain.platform.tenant;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -11,7 +11,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
-import tech.mogami.facilitator.domain.util.BaseEntity;
+import tech.mogami.facilitator.domain.platform.base.BaseEntity;
 
 import java.time.LocalDateTime;
 

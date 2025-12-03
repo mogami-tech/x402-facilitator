@@ -1,1 +1,0 @@
-package tech.mogami.facilitator.domain.util;

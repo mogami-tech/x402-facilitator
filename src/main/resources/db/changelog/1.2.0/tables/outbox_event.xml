@@ -1,0 +1,44 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.4.xsd">
+    <changeSet author="straumat" id="1.2.0-table-outbox_event">
+
+        <createTable tableName="OUTBOX_EVENT"
+                     remarks="Table for the outbox pattern to ensure reliable message delivery">
+
+            <column name="ID" type="BIGINT" remarks="Internal unique identifier">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_OUTBOX_EVENT"/>
+            </column>
+            <column name="EVENT_TYPE" type="VARCHAR(20)" remarks="Event type">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PAYLOAD" type="VARCHAR(8192)" remarks="Event payload">
+                <constraints nullable="false"/>
+            </column>
+            <column name="EVENT_STATUS" type="VARCHAR(20)" remarks="Event status">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ERROR_MESSAGE" type="VARCHAR(255)" remarks="Error message if EVENT_STATUS is ERROR"/>
+            <column name="CREATED_AT" type="TIMESTAMP" remarks="The timestamp of creation">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PROCESSED_AT" type="TIMESTAMP" remarks="The timestamp of process"/>
+
+        </createTable>
+
+        <!-- Auto increment on the unique identifier -->
+        <addAutoIncrement tableName="OUTBOX_EVENT"
+                          columnName="ID"
+                          columnDataType="BIGINT"
+                          startWith="1"/>
+
+        <!-- Index on EVENT_STATUS and CREATED_AT -->
+        <createIndex indexName="INDEX_OUTBOX_EVENT_STATUS_AND_CREATED_AT"
+                     tableName="OUTBOX_EVENT">
+            <column name="EVENT_STATUS"/>
+            <column name="CREATED_AT"/>
+        </createIndex>
+
+    </changeSet>
+</databaseChangeLog>

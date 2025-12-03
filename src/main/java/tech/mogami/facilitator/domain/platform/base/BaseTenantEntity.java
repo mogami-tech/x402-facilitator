@@ -1,4 +1,4 @@
-package tech.mogami.facilitator.domain.util;
+package tech.mogami.facilitator.domain.platform.base;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
