@@ -16,6 +16,7 @@ public interface OutboxEventMessage<T> {
      * @return the OutboxEventType
      */
     @JsonIgnore
+    @SuppressWarnings("SameReturnValue")
     OutboxEventType type();
 
     /**
@@ -24,7 +25,7 @@ public interface OutboxEventMessage<T> {
      * @return the Class of the payload type
      */
     @JsonIgnore
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"SameReturnValue", "unchecked"})
     default Class<T> payloadType() {
         return (Class<T>) this.getClass();
     }

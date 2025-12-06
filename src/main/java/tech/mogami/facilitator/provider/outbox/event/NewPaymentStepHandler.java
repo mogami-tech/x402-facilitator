@@ -1,10 +1,10 @@
 package tech.mogami.facilitator.provider.outbox.event;
 
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 import tech.mogami.commons.api.facilitator.RequestCommonData;
 import tech.mogami.commons.api.facilitator.settle.SettleRequest;
 import tech.mogami.commons.api.facilitator.settle.SettleResponse;
@@ -14,6 +14,7 @@ import tech.mogami.facilitator.domain.payment.Payment;
 import tech.mogami.facilitator.domain.payment.PaymentStep;
 import tech.mogami.facilitator.domain.platform.outbox.OutboxEventType;
 import tech.mogami.facilitator.provider.outbox.handler.OutboxEventHandler;
+import tech.mogami.facilitator.provider.outbox.handler.OutboxEventHandlerResult;
 import tech.mogami.facilitator.repository.AddressRepository;
 import tech.mogami.facilitator.repository.PaymentRepository;
 import tech.mogami.facilitator.repository.PaymentStepRepository;
@@ -25,7 +26,6 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static org.springframework.transaction.annotation.Propagation.REQUIRES_NEW;
 import static tech.mogami.commons.payment.PaymentStatus.COMPLETED;
 import static tech.mogami.commons.payment.PaymentStatus.FAILED;
 import static tech.mogami.facilitator.domain.payment.PaymentStepType.SETTLE;
@@ -59,25 +59,32 @@ public class NewPaymentStepHandler implements OutboxEventHandler<NewPaymentStepM
     }
 
     @Override
-    @Transactional
-    public void handle(final NewPaymentStepMessage payload) {
+    public OutboxEventHandlerResult handle(final NewPaymentStepMessage payload) {
         log.info("Handling new payment step for paymentId: {}", payload.paymentId());
 
-        // We retrieve the payment and ass the payment step ============================================================
-        final Payment payment = getOrCreatePayment(payload.paymentId());
-        log.info("New payment step for paymentId: {}", payload.paymentId());
+        // We retrieve the payment and add the payment step ============================================================
+        Payment payment;
+        try {
+            payment = getOrCreatePayment(payload.paymentId());
+            log.info("New payment step {} with id: {}", payload.paymentId(), payment.getId());
 
-        final String paymentStepId = UUID.randomUUID().toString();
-        paymentStepRepository.save(PaymentStep.builder()
-                .paymentStepId(paymentStepId)
-                .payment(payment)
-                .paymentStepType(payload.paymentStepType())
-                .requestPayload(payload.requestPayload())
-                .responsePayload(payload.responsePayload())
-                .errorCode(payload.errorCode())
-                .errorMessage(payload.errorMessage())
-                .build());
-        log.info("Payment step persisted for payment {} with paymentStepId {}", payload.paymentId(), paymentStepId);
+            final PaymentStep paymentStep = PaymentStep.builder()
+                    .paymentStepId(UUID.randomUUID().toString())
+                    .payment(payment)
+                    .paymentStepType(payload.paymentStepType())
+                    .requestPayload(payload.requestPayload())
+                    .responsePayload(payload.responsePayload())
+                    .errorCode(payload.errorCode())
+                    .errorMessage(payload.errorMessage())
+                    .build();
+            payment.addStep(paymentStep);
+            log.info("Payment step persisted for payment {} with paymentStepId {}", payload.paymentId(), paymentStep.getPaymentStepId());
+            paymentStepRepository.save(paymentStep);
+
+        } catch (Exception e) {
+            log.error("Error handling NEW_PAYMENT_STEP: {}", e.getMessage(), e);
+            return OutboxEventHandlerResult.error(e.getMessage());
+        }
 
         // We determine the steps to treat =============================================================================
         getStepsToProcess(payment.getSteps())
@@ -119,28 +126,28 @@ public class NewPaymentStepHandler implements OutboxEventHandler<NewPaymentStepM
                         }
                     }
                 });
+        return OutboxEventHandlerResult.ok();
     }
 
     /**
      * Retrieves an existing payment by nonce or creates a new one if it doesn't exist.
      *
-     * @param nonce the payment nonce
+     * @param paymentId the payment nonce
      * @return the existing or newly created Payment
      */
-    @Transactional(propagation = REQUIRES_NEW)
-    public Payment getOrCreatePayment(final String nonce) {
-        log.info("Creating or retrieving payment with paymentId: {}", nonce);
+    public Payment getOrCreatePayment(final @NonNull String paymentId) {
+        log.info("Creating or retrieving payment with paymentId: {}", paymentId);
         // We try to find the payment.
-        return paymentRepository.findByPaymentId(nonce)
+        return paymentRepository.findByPaymentId(paymentId)
                 // If not found, we create it.
                 .orElseGet(() -> {
                     try {
-                        return paymentRepository.save(Payment.builder()
-                                .paymentId(nonce)
+                        return paymentRepository.saveAndFlush(Payment.builder()
+                                .paymentId(paymentId)
                                 .build());
                     } catch (DataIntegrityViolationException e) {
                         // Seems someone else created it in between, so we try again to find it.
-                        return paymentRepository.findByPaymentId(nonce)
+                        return paymentRepository.findByPaymentId(paymentId)
                                 .orElseThrow(() -> new IllegalStateException("Payment should exist"));
                     }
                 });

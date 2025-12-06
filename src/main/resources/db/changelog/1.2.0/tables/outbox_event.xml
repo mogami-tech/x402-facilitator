@@ -22,12 +22,15 @@
             <column name="EVENT_STATUS" type="VARCHAR(20)" remarks="Event status">
                 <constraints nullable="false"/>
             </column>
-            <column name="ERROR_MESSAGE" type="VARCHAR(255)" remarks="Error message if EVENT_STATUS is ERROR"/>
+            <column name="ERROR_MESSAGE" type="VARCHAR(8192)" remarks="Error message if EVENT_STATUS is ERROR"/>
             <column name="CREATED_AT" type="TIMESTAMP" remarks="The timestamp of creation">
                 <constraints nullable="false"/>
             </column>
             <column name="PROCESSED_AT" type="TIMESTAMP" remarks="The timestamp of process"/>
 
+            <!-- Lock management columns -->
+            <column name="LOCKED_BY" type="VARCHAR(255)" remarks="Identifier of the process that has locked the event"/>
+            <column name="LOCKED_AT" type="TIMESTAMP" remarks="The timestamp of creation"/>
         </createTable>
 
         <!-- Auto increment on the unique identifier -->
@@ -35,6 +38,12 @@
                           columnName="ID"
                           columnDataType="BIGINT"
                           startWith="1"/>
+
+        <!-- Index on EVENT_ID -->
+        <createIndex indexName="INDEX_OUTBOX_EVENT_EVENT_ID"
+                     tableName="OUTBOX_EVENT">
+            <column name="EVENT_ID"/>
+        </createIndex>
 
         <!-- Index on EVENT_STATUS and CREATED_AT -->
         <createIndex indexName="INDEX_OUTBOX_EVENT_STATUS_AND_CREATED_AT"

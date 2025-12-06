@@ -35,7 +35,7 @@ public class SchedulerConfiguration {
         ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
         scheduler.setWaitForTasksToCompleteOnShutdown(true);
         scheduler.setAwaitTerminationMillis(TERMINATION_DELAY_IN_MILLISECONDS);
-        scheduler.setThreadNamePrefix("x402-facilitator-batch-");
+        scheduler.setThreadNamePrefix("outbox-event-");
         scheduler.setPoolSize(SCHEDULER_POOL_SIZE);
         scheduler.setErrorHandler(throwable -> {
             try {

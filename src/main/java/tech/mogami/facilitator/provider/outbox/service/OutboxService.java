@@ -20,27 +20,27 @@ public interface OutboxService {
     void publish(@NotNull OutboxEventMessage<?> message);
 
     /**
-     * Fetches pending outbox events of the specified types up to the given batch size (using lock).
+     * Locks and fetches pending outbox events of specified types.
      *
      * @param eventTypes the list of outbox event types to fetch
      * @param batchSize  the maximum number of events to fetch
-     * @return the list of pending outbox events
+     * @return the list of locked outbox events
      */
-    List<OutboxEvent> fetchPendingEvents(@NotNull List<OutboxEventType> eventTypes, int batchSize);
+    List<OutboxEvent> lockAndFetchPendingEvents(@NotNull List<OutboxEventType> eventTypes, int batchSize);
 
     /**
-     * Marks the given outbox event as done.
+     * Marks the outbox event with the specified ID as done.
      *
-     * @param event the outbox event to mark as done
+     * @param eventId the ID of the outbox event to mark as done
      */
-    void markDone(@NotNull OutboxEvent event);
+    void markDone(String eventId);
 
     /**
-     * Marks the given outbox event as errored with the provided error message.
+     * Marks the outbox event with the specified ID as error with the given error message.
      *
-     * @param event        the outbox event to mark as errored
-     * @param errorMessage the error message associated with the event
+     * @param eventId      the ID of the outbox event to mark as error
+     * @param errorMessage the error message to associate with the event
      */
-    void markError(@NotNull OutboxEvent event, String errorMessage);
+    void markError(String eventId, String errorMessage);
 
 }

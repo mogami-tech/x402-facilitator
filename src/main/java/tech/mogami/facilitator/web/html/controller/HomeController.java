@@ -43,7 +43,7 @@ public class HomeController extends BaseController {
                        final HttpServletRequest request,
                        final RedirectAttributes redirectAttributes,
                        @RequestParam(required = false) final String query) {
-        // We add configuration information to display on page.
+        // We add configuration information to display on the page.
         model.addAttribute(SUPPORTED_KINDS, supportedService.supported());
         model.addAttribute(FACILITATOR_ADDRESS, facilitatorAddress);
 

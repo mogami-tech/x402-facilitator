@@ -1,6 +1,5 @@
 package tech.mogami.facilitator.domain.payment;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Enumerated;
@@ -24,6 +23,7 @@ import java.util.List;
 
 import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.FetchType.EAGER;
+import static jakarta.persistence.FetchType.LAZY;
 import static tech.mogami.commons.constant.BlockchainConstants.ATOMIC_AMOUNT_TYPE_PRECISION;
 import static tech.mogami.commons.payment.PaymentStatus.PENDING;
 
@@ -73,9 +73,10 @@ public class Payment extends BaseTenantEntity {
     private PaymentStatus status = PENDING;
 
     /** Payment steps associated with this payment. */
-    @OneToMany(mappedBy = "payment", fetch = EAGER, cascade = CascadeType.ALL)
+    @Builder.Default
+    @OneToMany(mappedBy = "payment", fetch = LAZY)
     @OrderBy("createdAt ASC")
-    private List<PaymentStep> steps;
+    private List<PaymentStep> steps = new LinkedList<>();
 
     /**
      * Adds a payment step to this payment.
@@ -83,9 +84,6 @@ public class Payment extends BaseTenantEntity {
      * @param step the payment step to add
      */
     public void addStep(final PaymentStep step) {
-        if (this.steps == null) {
-            this.steps = new LinkedList<>();
-        }
         this.steps.add(step);
         step.setPayment(this);
     }

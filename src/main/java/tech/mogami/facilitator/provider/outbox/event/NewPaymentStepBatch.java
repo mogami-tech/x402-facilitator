@@ -8,6 +8,7 @@ import tech.mogami.facilitator.provider.outbox.handler.OutboxEventHandler;
 import tech.mogami.facilitator.provider.outbox.service.OutboxService;
 
 import java.util.List;
+import java.util.Map;
 
 import static tech.mogami.facilitator.domain.platform.outbox.OutboxEventType.NEW_PAYMENT_STEP;
 
@@ -20,14 +21,16 @@ import static tech.mogami.facilitator.domain.platform.outbox.OutboxEventType.NEW
 public class NewPaymentStepBatch extends OutboxBatch {
 
     /**
-     * Constructor.
+     * Constructor for NewPaymentStepBatch.
      *
-     * @param newOutboxService      the outbox service
-     * @param newDiscoveredHandlers the list of discovered outbox event handlers
+     * @param handlers      Map of outbox event handlers
+     * @param outboxService Outbox service
      */
-    public NewPaymentStepBatch(final OutboxService newOutboxService,
-                               final List<OutboxEventHandler<?>> newDiscoveredHandlers) {
-        super(newOutboxService, newDiscoveredHandlers);
+    public NewPaymentStepBatch(
+            final Map<OutboxEventType, OutboxEventHandler<?>> handlers,
+            final OutboxService outboxService
+    ) {
+        super(handlers, outboxService);
     }
 
     @Override

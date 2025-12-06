@@ -12,6 +12,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.time.Instant;
 
@@ -27,6 +28,7 @@ import static tech.mogami.facilitator.domain.platform.outbox.OutboxEventStatus.P
 @Builder
 @Getter
 @Setter
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class OutboxEvent {
@@ -53,7 +55,7 @@ public class OutboxEvent {
     /** Status of the outbox event. */
     @Builder.Default
     @Enumerated(STRING)
-    @Column(name = "EVENT_STATUS", nullable = false, updatable = false)
+    @Column(name = "EVENT_STATUS", nullable = false)
     private OutboxEventStatus status = PENDING;
 
     /** Error message if any occurred during processing. */
@@ -67,6 +69,14 @@ public class OutboxEvent {
     /** Processed at timestamp. */
     @Column(name = "PROCESSED_AT")
     private Instant processedAt;
+
+    /** Locked by identifier. */
+    @Column(name = "LOCKED_BY")
+    private String lockedBy;
+
+    /** Locked at timestamp. */
+    @Column(name = "LOCKED_AT")
+    private Instant lockedAt;
 
     /**
      * Sets the createdAt timestamp before persisting.

@@ -15,6 +15,15 @@ public enum OutboxEventStatus {
     DONE,
 
     /** An error occurred while processing the event. */
-    ERROR
+    ERROR;
+
+    /**
+     * Indicates if the status is a final state (DONE or ERROR).
+     *
+     * @return true if the status is final, false otherwise
+     */
+    public boolean isFinal() {
+        return this == DONE || this == ERROR;
+    }
 
 }

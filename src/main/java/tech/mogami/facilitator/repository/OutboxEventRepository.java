@@ -2,15 +2,16 @@ package tech.mogami.facilitator.repository;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Lock;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 import tech.mogami.facilitator.domain.platform.outbox.OutboxEvent;
+import tech.mogami.facilitator.domain.platform.outbox.OutboxEventStatus;
 import tech.mogami.facilitator.domain.platform.outbox.OutboxEventType;
 
+import java.time.Instant;
 import java.util.List;
-
-import static jakarta.persistence.LockModeType.PESSIMISTIC_WRITE;
 
 /**
  * Repository interface for {@link OutboxEvent} entities.
@@ -18,45 +19,81 @@ import static jakarta.persistence.LockModeType.PESSIMISTIC_WRITE;
 public interface OutboxEventRepository extends JpaRepository<OutboxEvent, Long> {
 
     /**
-     * Fetches a batch of pending outbox events of specified types, locking the selected rows to prevent concurrent processing.
-     * Works with PostgreSQL database.
+     * Finds outbox events that are candidates for locking based on their status, lock state, and event types.
      *
-     * @param types the list of event types to filter by
-     * @param limit the maximum number of events to fetch
-     * @return a list of pending outbox events
+     * @param types         List of event types to filter by.
+     * @param expiredBefore Instant indicating the cutoff time for expired locks.
+     * @param pageable      Pageable object for pagination.
+     * @return List of outbox events that are candidates for locking.
      */
-    @Query(value = """
-            SELECT      *
-            FROM        OUTBOX_EVENT
-            WHERE       status = 'PENDING'
-              AND       event_type IN (:types)
-            ORDER BY    created_at
-            FOR UPDATE SKIP LOCKED
-            LIMIT :limit
-            """,
-            nativeQuery = true)
-    List<OutboxEvent> fetchBatchSkipLocked(
-            @Param("types") List<String> types,
-            @Param("limit") int limit);
-
-    /**
-     * Fetches a batch of pending outbox events of specified types with pessimistic locking.
-     * Works with hsqlDB database.
-     *
-     * @param types    the list of event types to filter by
-     * @param pageable the pagination information
-     * @return a list of pending outbox events
-     */
-    @Lock(PESSIMISTIC_WRITE)
     @Query("""
             SELECT      e
             FROM        OutboxEvent e
-            WHERE       e.status = 'PENDING'
+            WHERE       e.status = tech.mogami.facilitator.domain.platform.outbox.OutboxEventStatus.PENDING
+              AND       (e.lockedBy IS NULL OR e.lockedAt < :expiredBefore)
               AND       e.eventType IN :types
             ORDER BY    e.createdAt
             """)
-    List<OutboxEvent> fetchBatchPessimistic(
+    List<OutboxEvent> findEventsToLock(
             @Param("types") List<OutboxEventType> types,
-            Pageable pageable);
+            @Param("expiredBefore") Instant expiredBefore,
+            Pageable pageable
+    );
+
+    /**
+     * Attempts to lock an outbox event for processing by a specific worker.
+     *
+     * @param id            The ID of the outbox event to lock.
+     * @param workerId      The identifier of the worker attempting to lock the event.
+     * @param now           The current timestamp.
+     * @param expiredBefore Instant indicating the cutoff time for expired locks.
+     * @return The number of rows affected (1 if the lock was successful, 0 otherwise).
+     */
+    @Transactional
+    @Modifying
+    @Query("""
+            UPDATE  OutboxEvent e
+            SET     e.lockedBy = :workerId,
+                    e.lockedAt = :now
+            WHERE   e.id = :id
+              AND   e.status = tech.mogami.facilitator.domain.platform.outbox.OutboxEventStatus.PENDING
+              AND   (e.lockedBy IS NULL OR e.lockedAt < :expiredBefore)
+            """)
+    int tryToLockEvent(
+            @Param("id") Long id,
+            @Param("workerId") String workerId,
+            @Param("now") Instant now,
+            @Param("expiredBefore") Instant expiredBefore
+    );
+
+    /**
+     * Resolves an outbox event by updating its status, error message, and processed timestamp.
+     *
+     * @param eventId      The unique identifier of the outbox event.
+     * @param workerId     The identifier of the worker that locked the event.
+     * @param status       The new status of the outbox event.
+     * @param errorMessage The error message if any occurred during processing.
+     * @param processedAt  The timestamp when the event was processed.
+     * @return The number of rows affected (1 if the update was successful, 0 otherwise).
+     */
+    @Transactional
+    @Modifying
+    @Query("""
+            UPDATE  OutboxEvent e
+            SET     e.status = :status,
+                    e.errorMessage = :errorMessage,
+                    e.processedAt = :processedAt,
+                    e.lockedBy = NULL,
+                    e.lockedAt = NULL
+            WHERE   e.eventId = :eventId
+              AND   e.lockedBy = :workerId
+            """)
+    int resolveEvent(
+            @Param("eventId") String eventId,
+            @Param("workerId") String workerId,
+            @Param("status") OutboxEventStatus status,
+            @Param("errorMessage") String errorMessage,
+            @Param("processedAt") Instant processedAt
+    );
 
 }

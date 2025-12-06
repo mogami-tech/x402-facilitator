@@ -15,13 +15,15 @@ public interface OutboxEventHandler<T> {
      *
      * @return the supported OutboxEventType
      */
+    @SuppressWarnings("SameReturnValue")
     OutboxEventType supports();
 
     /**
      * Handles the given event payload.
      *
      * @param payload the event payload to handle
+     * @return the result of the handling
      */
-    void handle(T payload);
+    OutboxEventHandlerResult handle(T payload);
 
 }

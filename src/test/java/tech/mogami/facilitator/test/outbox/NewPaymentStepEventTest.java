@@ -1,28 +1,44 @@
-package tech.mogami.facilitator.test.service.data;
+package tech.mogami.facilitator.test.outbox;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
+import tech.mogami.facilitator.domain.platform.outbox.OutboxEvent;
+import tech.mogami.facilitator.provider.outbox.batch.OutboxBatch;
+import tech.mogami.facilitator.provider.outbox.event.NewPaymentStepMessage;
 import tech.mogami.facilitator.provider.outbox.service.OutboxService;
+import tech.mogami.facilitator.repository.OutboxEventRepository;
 import tech.mogami.facilitator.repository.PaymentRepository;
 import tech.mogami.facilitator.service.data.PaymentService;
 import tech.mogami.facilitator.test.util.BaseTest;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
+import static tech.mogami.commons.constant.X402Error.INVALID_EXACT_EVM_PAYLOAD_SIGNATURE;
+import static tech.mogami.commons.constant.network.Networks.BASE_SEPOLIA;
+import static tech.mogami.commons.constant.network.base.BaseContracts.BASE_SEPOLIA_USDC_CONTRACT;
+import static tech.mogami.commons.test.BaseTestData.TEST_CLIENT_WALLET_ADDRESS_1;
+import static tech.mogami.commons.test.BaseTestData.TEST_CLIENT_WALLET_ADDRESS_2;
+import static tech.mogami.facilitator.domain.payment.PaymentStepType.VERIFY;
+import static tech.mogami.facilitator.domain.platform.outbox.OutboxEventStatus.DONE;
+import static tech.mogami.facilitator.domain.platform.outbox.OutboxEventStatus.ERROR;
 
 @SpringBootTest(properties = {
         "spring.datasource.url=jdbc:tc:postgresql:16:///explorer",
         "spring.datasource.driver-class-name=org.testcontainers.jdbc.ContainerDatabaseDriver"
 })
-@ActiveProfiles({"scheduler-disabled"})
-@DisplayName("Payment service tests")
-public class PaymentServiceTest extends BaseTest {
+@DisplayName("Payment step event tests")
+public class NewPaymentStepEventTest extends BaseTest {
 
     /** Complete payment. */
     public static final String COMPLETE_PAYMENT_NONCE = "NONCE_00001";
 
     /** Uncompleted payment. */
     public static final String UNCOMPLETED_PAYMENT = "NONCE_00002";
+
+    @Autowired
+    private OutboxEventRepository outboxEventRepository;
 
     @Autowired
     private PaymentRepository paymentRepository;
@@ -33,12 +49,68 @@ public class PaymentServiceTest extends BaseTest {
     @Autowired
     private OutboxService outboxService;
 
+    @Autowired
+    private OutboxBatch outboxBatch;
+
     @Test
     @DisplayName("Test payment step log creation")
     public void testCreatePaymentStepLog() throws InterruptedException {
         final long countBeforeCallingServices = paymentRepository.count();
+        final long initialNumberOfFinalEvents = getNumberOfFinalEvents();
 
-        // Invalid payment step should be refused ======================================================================
+        // Invalid payment steps should be refused =====================================================================
+        outboxService.publish(NewPaymentStepMessage.builder().build());
+        await().until(this::allEventsAreTreated);
+        assertThat(getLastEvent()).isNotNull()
+                .satisfies(event -> {
+                    assertThat(event.getStatus()).isEqualTo(ERROR);
+                    assertThat(event.getErrorMessage()).isEqualTo("paymentId is marked non-null but is null");
+                });
+
+        outboxService.publish(NewPaymentStepMessage.builder().paymentId("RANDOM_NONCE").build());
+        await().until(this::allEventsAreTreated);
+        assertThat(getLastEvent()).isNotNull()
+                .satisfies(event -> {
+                    assertThat(event.getStatus()).isEqualTo(ERROR);
+                    assertThat(event.getErrorMessage()).contains("null value in column \"payment_step_type\" of relation \"payment_step\" violates not-null constraint");
+                });
+
+        outboxService.publish(
+                NewPaymentStepMessage.builder()
+                        .paymentId(COMPLETE_PAYMENT_NONCE)
+                        .paymentStepType(VERIFY)
+                        .requestPayload(getVerifyRequest(
+                                BASE_SEPOLIA,
+                                TEST_CLIENT_WALLET_ADDRESS_1,
+                                TEST_CLIENT_WALLET_ADDRESS_2,
+                                BASE_SEPOLIA_USDC_CONTRACT,
+                                "1500500000",
+                                COMPLETE_PAYMENT_NONCE))
+                        .responsePayload(getVerifyResponse(
+                                false,
+                                INVALID_EXACT_EVM_PAYLOAD_SIGNATURE,
+                                TEST_CLIENT_WALLET_ADDRESS_1
+                        )).build()
+        );
+        await().until(this::allEventsAreTreated);
+        assertThat(getLastEvent()).isNotNull()
+                .satisfies(event -> {
+                    assertThat(event.getStatus()).isEqualTo(DONE);
+                    assertThat(event.getErrorMessage()).isNull();
+                });
+
+        outboxEventRepository.findAll()
+                .forEach(outboxEvent ->
+                        System.out.println(" FIN ==> Existing Outbox event: " + outboxEvent.getEventId() + " " + outboxEvent.getStatus()));
+
+//
+//        assertThat(getLastEvent()).isNotNull()
+//                .satisfies(event -> {
+//                    System.out.println("==> Event message: " + event);
+//                    assertThat(event.getStatus().isFinal()).isTrue();
+//                });
+
+
 //        assertThatExceptionOfType(ConstraintViolationException.class)
 //                .isThrownBy(() -> outboxService.publish(NewPaymentStepMessage.builder().build()));
 //        assertThatExceptionOfType(ConstraintViolationException.class)
@@ -400,5 +472,49 @@ public class PaymentServiceTest extends BaseTest {
 
     }
 
+    private boolean allEventsAreTreated() {
+        return outboxEventRepository.findAll()
+                .stream()
+                .allMatch(event -> event.getStatus().isFinal());
+    }
+
+
+    /**
+     * Returns the number of non-finished events.
+     *
+     * @return the number of non-finished events
+     */
+    private int getNumberOfNonFinalEvents() {
+        return outboxEventRepository.findAll()
+                .stream()
+                .filter(event -> !event.getStatus().isFinal())
+                .toList()
+                .size();
+    }
+
+    /**
+     * Returns the number of finished events.
+     *
+     * @return the number of finished events
+     */
+    private int getNumberOfFinalEvents() {
+        return outboxEventRepository.findAll()
+                .stream()
+                .filter(event -> event.getStatus().isFinal())
+                .toList()
+                .size();
+    }
+
+    /**
+     * Returns the last created outbox event.
+     *
+     * @return the last created outbox event
+     */
+    private OutboxEvent getLastEvent() {
+        return outboxEventRepository.findAll()
+                .stream()
+                .max((e1, e2) -> e1.getCreatedAt().compareTo(e2.getCreatedAt()))
+                .orElseThrow();
+    }
 
 }
