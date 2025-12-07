@@ -72,7 +72,7 @@ public class NewPaymentStepEventTest extends BaseTest {
         assertThat(getLastEvent()).isNotNull()
                 .satisfies(event -> {
                     assertThat(event.getStatus()).isEqualTo(ERROR);
-                    assertThat(event.getErrorMessage()).contains("null value in column \"payment_step_type\" of relation \"payment_step\" violates not-null constraint");
+                    assertThat(event.getErrorMessage()).contains("Transaction silently rolled back because it has been marked as rollback-only");
                 });
 
         outboxService.publish(

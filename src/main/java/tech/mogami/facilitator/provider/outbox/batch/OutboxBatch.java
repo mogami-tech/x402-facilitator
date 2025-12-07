@@ -2,8 +2,12 @@ package tech.mogami.facilitator.provider.outbox.batch;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.springframework.core.NestedExceptionUtils;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.util.StringUtils;
 import tech.mogami.commons.util.JsonUtil;
+import tech.mogami.facilitator.provider.outbox.domain.OutboxEvent;
 import tech.mogami.facilitator.provider.outbox.domain.OutboxEventType;
 import tech.mogami.facilitator.provider.outbox.handler.OutboxEventHandler;
 import tech.mogami.facilitator.provider.outbox.handler.OutboxEventHandlerResult;
@@ -51,24 +55,42 @@ public abstract class OutboxBatch {
      */
     @Scheduled(fixedDelay = DEFAULT_FIXED_DELAY_BETWEEN_BATCH_MS)
     public void run() {
-        outboxService.lockAndFetchPendingEvents(supportedTypes(), batchSize()).stream()
-                .peek(event -> log.debug("Processing outbox event: eventId: {}", event.getEventId()))
-                .forEach(event -> {
+        for (OutboxEvent event : outboxService.lockAndFetchPendingEvents(supportedTypes(), batchSize())) {
 
-                    // Process the event ===============================================================================
-                    final OutboxEventHandler<?> handler = handlers.get(event.getEventType());
-                    final Object payload = JsonUtil.fromJson(event.getPayload(), event.getEventType().payloadType());
-                    OutboxEventHandlerResult callResult = callHandler(handler, payload);
+            // Process the event ===============================================================================
+            try {
+                log.info("Locked outbox event for processing: eventId: {}", event.getEventId());
+                final OutboxEventHandler<?> handler = handlers.get(event.getEventType());
+                final Object payload = JsonUtil.fromJson(event.getPayload(), event.getEventType().payloadType());
 
-                    if (callResult.success()) {
-                        log.info("Outbox event {} processed successfully", event.getEventId());
-                        outboxService.markDone(event.getEventId());
-                    } else {
-                        log.info("Outbox event {} processing failed", event.getEventId());
-                        outboxService.markError(event.getEventId(), callResult.errorMessage());
-                    }
+                OutboxEventHandlerResult callResult = callHandler(handler, payload);
+                if (callResult.success()) {
+                    log.info("Outbox event {} processed successfully", event.getEventId());
+                    outboxService.markDone(event.getEventId());
+                } else {
+                    log.info("Outbox event {} processing failed", event.getEventId());
+                    outboxService.markError(event.getEventId(), callResult.errorMessage());
+                }
+            } catch (Throwable t) {
+                Throwable root = ExceptionUtils.getRootCause(t);
+                if (root == null) {
+                    root = t;
+                }
 
-                });
+                // Get root cause message
+                String message = ExceptionUtils.getRootCauseMessage(t);
+                if (!StringUtils.hasText(message)) {
+                    message = NestedExceptionUtils.getMostSpecificCause(t).getMessage();
+                }
+                if (!StringUtils.hasText(message)) {
+                    message = t.getMessage();
+                }
+
+                // Mark event as error
+                log.error("Outbox event {} processing threw an exception (root: {})", event.getEventId(), message, root);
+                outboxService.markError(event.getEventId(), message);
+            }
+        }
     }
 
     /**

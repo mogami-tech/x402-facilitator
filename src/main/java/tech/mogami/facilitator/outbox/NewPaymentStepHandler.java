@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import tech.mogami.commons.api.facilitator.RequestCommonData;
 import tech.mogami.commons.api.facilitator.settle.SettleRequest;
 import tech.mogami.commons.api.facilitator.settle.SettleResponse;
@@ -26,6 +28,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static org.springframework.transaction.annotation.Propagation.REQUIRES_NEW;
 import static tech.mogami.commons.payment.PaymentStatus.COMPLETED;
 import static tech.mogami.commons.payment.PaymentStatus.FAILED;
 import static tech.mogami.facilitator.domain.payment.PaymentStepType.SETTLE;
@@ -59,13 +62,15 @@ public class NewPaymentStepHandler implements OutboxEventHandler<NewPaymentStepM
     }
 
     @Override
+    @Transactional(propagation = REQUIRES_NEW)
     public OutboxEventHandlerResult handle(final NewPaymentStepMessage payload) {
+        System.out.println("TX ACTIVE IN HANDLER=" + TransactionSynchronizationManager.isActualTransactionActive());
+
         log.info("Handling new payment step for paymentId: {}", payload.paymentId());
 
-        // We retrieve the payment and add the payment step ============================================================
-        Payment payment;
+        // We retrieve the payment and add the payment step ============================================================7
         try {
-            payment = getOrCreatePayment(payload.paymentId());
+            Payment payment = getOrCreatePayment(payload.paymentId());
             log.info("New payment step {} with id: {}", payload.paymentId(), payment.getId());
 
             final PaymentStep paymentStep = PaymentStep.builder()
@@ -81,52 +86,52 @@ public class NewPaymentStepHandler implements OutboxEventHandler<NewPaymentStepM
             log.info("Payment step persisted for payment {} with paymentStepId {}", payload.paymentId(), paymentStep.getPaymentStepId());
             paymentStepRepository.save(paymentStep);
 
+            // We determine the steps to treat =============================================================================
+            getStepsToProcess(payment.getSteps())
+                    .forEach(step -> {
+                        RequestCommonData request = null;
+                        SettleResponse settleResponse = null;
+
+                        // We retrieve the JSON data =======================================================================
+                        if (step.getPaymentStepType() == VERIFY) {
+                            request = JsonUtil.fromJson(step.getRequestPayload(), VerifyRequest.class);
+                        }
+                        if (step.getPaymentStepType() == SETTLE) {
+                            request = JsonUtil.fromJson(step.getRequestPayload(), SettleRequest.class);
+                            settleResponse = JsonUtil.fromJson(step.getResponsePayload(), SettleResponse.class);
+                        }
+
+                        // We update the payment ===========================================================================
+                        if (request != null) {
+                            request.getFromAddress().ifPresent(addressAsString -> {
+                                participantService.getOrCreateAddress(addressAsString);
+                                addressRepository.findByAddress(addressAsString).ifPresent(payment::setFrom);
+                            });
+                            request.getToAddress().ifPresent(addressAsString -> {
+                                participantService.getOrCreateAddress(addressAsString);
+                                addressRepository.findByAddress(addressAsString).ifPresent(payment::setTo);
+                            });
+                            request.getAssetAmount().ifPresent(payment::setAssetAmount);
+                            request.getAssetContract().ifPresent(addressAsString -> {
+                                participantService.getOrCreateAddress(addressAsString);
+                                addressRepository.findByAddress(addressAsString).ifPresent(payment::setAssetContract);
+                            });
+                            request.getNetwork().ifPresent(networkValue -> payment.setNetworkName(networkValue.name()));
+                        }
+                        if (settleResponse != null) {
+                            if (settleResponse.success()) {
+                                payment.setStatus(COMPLETED);
+                            } else {
+                                payment.setStatus(FAILED);
+                            }
+                        }
+                    });
+            return OutboxEventHandlerResult.ok();
+
         } catch (Exception e) {
             log.error("Error handling NEW_PAYMENT_STEP: {}", e.getMessage(), e);
             return OutboxEventHandlerResult.error(e.getMessage());
         }
-
-        // We determine the steps to treat =============================================================================
-        getStepsToProcess(payment.getSteps())
-                .forEach(step -> {
-                    RequestCommonData request = null;
-                    SettleResponse settleResponse = null;
-
-                    // We retrieve the JSON data =======================================================================
-                    if (step.getPaymentStepType() == VERIFY) {
-                        request = JsonUtil.fromJson(step.getRequestPayload(), VerifyRequest.class);
-                    }
-                    if (step.getPaymentStepType() == SETTLE) {
-                        request = JsonUtil.fromJson(step.getRequestPayload(), SettleRequest.class);
-                        settleResponse = JsonUtil.fromJson(step.getResponsePayload(), SettleResponse.class);
-                    }
-
-                    // We update the payment ===========================================================================
-                    if (request != null) {
-                        request.getFromAddress().ifPresent(addressAsString -> {
-                            participantService.getOrCreateAddress(addressAsString);
-                            addressRepository.findByAddress(addressAsString).ifPresent(payment::setFrom);
-                        });
-                        request.getToAddress().ifPresent(addressAsString -> {
-                            participantService.getOrCreateAddress(addressAsString);
-                            addressRepository.findByAddress(addressAsString).ifPresent(payment::setTo);
-                        });
-                        request.getAssetAmount().ifPresent(payment::setAssetAmount);
-                        request.getAssetContract().ifPresent(addressAsString -> {
-                            participantService.getOrCreateAddress(addressAsString);
-                            addressRepository.findByAddress(addressAsString).ifPresent(payment::setAssetContract);
-                        });
-                        request.getNetwork().ifPresent(networkValue -> payment.setNetworkName(networkValue.name()));
-                    }
-                    if (settleResponse != null) {
-                        if (settleResponse.success()) {
-                            payment.setStatus(COMPLETED);
-                        } else {
-                            payment.setStatus(FAILED);
-                        }
-                    }
-                });
-        return OutboxEventHandlerResult.ok();
     }
 
     /**

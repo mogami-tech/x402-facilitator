@@ -86,6 +86,7 @@ public class OutboxServiceImplementation implements OutboxService {
     @Override
     @Transactional(propagation = REQUIRES_NEW)
     public void markError(final String eventId, final String errorMessage) {
+        System.out.println("ERREUR ICI");
         int numbersOfLinesUpdated = outboxEventRepository.resolveEvent(
                 eventId,
                 worker.id(),
