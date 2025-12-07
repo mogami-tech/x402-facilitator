@@ -1,4 +1,4 @@
-package tech.mogami.facilitator.repository;
+package tech.mogami.facilitator.provider.outbox.repository;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -6,9 +6,9 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
-import tech.mogami.facilitator.domain.platform.outbox.OutboxEvent;
-import tech.mogami.facilitator.domain.platform.outbox.OutboxEventStatus;
-import tech.mogami.facilitator.domain.platform.outbox.OutboxEventType;
+import tech.mogami.facilitator.provider.outbox.domain.OutboxEvent;
+import tech.mogami.facilitator.provider.outbox.domain.OutboxEventStatus;
+import tech.mogami.facilitator.provider.outbox.domain.OutboxEventType;
 
 import java.time.Instant;
 import java.util.List;
@@ -27,12 +27,17 @@ public interface OutboxEventRepository extends JpaRepository<OutboxEvent, Long> 
      * @return List of outbox events that are candidates for locking.
      */
     @Query("""
-            SELECT      e
-            FROM        OutboxEvent e
-            WHERE       e.status = tech.mogami.facilitator.domain.platform.outbox.OutboxEventStatus.PENDING
-              AND       (e.lockedBy IS NULL OR e.lockedAt < :expiredBefore)
-              AND       e.eventType IN :types
-            ORDER BY    e.createdAt
+            SELECT e
+            FROM OutboxEvent e
+            WHERE (
+                    e.status = tech.mogami.facilitator.provider.outbox.domain.OutboxEventStatus.PENDING
+                    OR (
+                        e.status = tech.mogami.facilitator.provider.outbox.domain.OutboxEventStatus.PROCESSING
+                        AND (e.lockedBy IS NULL OR e.lockedAt < :expiredBefore)
+                    )
+                )
+            AND e.eventType IN :types
+            ORDER BY e.createdAt
             """)
     List<OutboxEvent> findEventsToLock(
             @Param("types") List<OutboxEventType> types,
@@ -52,12 +57,18 @@ public interface OutboxEventRepository extends JpaRepository<OutboxEvent, Long> 
     @Transactional
     @Modifying
     @Query("""
-            UPDATE  OutboxEvent e
+            UPDATE OutboxEvent e
             SET     e.lockedBy = :workerId,
-                    e.lockedAt = :now
+                    e.lockedAt = :now,
+                    e.status = tech.mogami.facilitator.provider.outbox.domain.OutboxEventStatus.PROCESSING
             WHERE   e.id = :id
-              AND   e.status = tech.mogami.facilitator.domain.platform.outbox.OutboxEventStatus.PENDING
-              AND   (e.lockedBy IS NULL OR e.lockedAt < :expiredBefore)
+                AND (
+                        e.status = tech.mogami.facilitator.provider.outbox.domain.OutboxEventStatus.PENDING
+                        OR (
+                            e.status = tech.mogami.facilitator.provider.outbox.domain.OutboxEventStatus.PROCESSING
+                            AND (e.lockedBy IS NULL OR e.lockedAt < :expiredBefore)
+                        )
+                    )
             """)
     int tryToLockEvent(
             @Param("id") Long id,

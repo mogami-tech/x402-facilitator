@@ -1,11 +1,11 @@
 package tech.mogami.facilitator.provider.outbox.util;
 
 /**
- * Worker identifier.
+ * Worker definition.
  *
  * @param id the worker ID
  */
-public record WorkerId(
+public record Worker(
         String id
 ) {
 }

@@ -1,6 +1,6 @@
-package tech.mogami.facilitator.domain.platform.outbox;
+package tech.mogami.facilitator.provider.outbox.domain;
 
-import tech.mogami.facilitator.provider.outbox.event.NewPaymentStepMessage;
+import tech.mogami.facilitator.outbox.NewPaymentStepMessage;
 import tech.mogami.facilitator.provider.outbox.handler.OutboxEventMessage;
 
 /**

@@ -1,4 +1,4 @@
-package tech.mogami.facilitator.domain.platform.outbox;
+package tech.mogami.facilitator.provider.outbox.domain;
 
 /**
  * Enumeration representing the status of an outbox event.

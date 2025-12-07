@@ -4,11 +4,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import tech.mogami.facilitator.domain.platform.outbox.OutboxEvent;
+import tech.mogami.facilitator.outbox.NewPaymentStepMessage;
 import tech.mogami.facilitator.provider.outbox.batch.OutboxBatch;
-import tech.mogami.facilitator.provider.outbox.event.NewPaymentStepMessage;
+import tech.mogami.facilitator.provider.outbox.domain.OutboxEvent;
+import tech.mogami.facilitator.provider.outbox.repository.OutboxEventRepository;
 import tech.mogami.facilitator.provider.outbox.service.OutboxService;
-import tech.mogami.facilitator.repository.OutboxEventRepository;
 import tech.mogami.facilitator.repository.PaymentRepository;
 import tech.mogami.facilitator.service.data.PaymentService;
 import tech.mogami.facilitator.test.util.BaseTest;
@@ -21,8 +21,8 @@ import static tech.mogami.commons.constant.network.base.BaseContracts.BASE_SEPOL
 import static tech.mogami.commons.test.BaseTestData.TEST_CLIENT_WALLET_ADDRESS_1;
 import static tech.mogami.commons.test.BaseTestData.TEST_CLIENT_WALLET_ADDRESS_2;
 import static tech.mogami.facilitator.domain.payment.PaymentStepType.VERIFY;
-import static tech.mogami.facilitator.domain.platform.outbox.OutboxEventStatus.DONE;
-import static tech.mogami.facilitator.domain.platform.outbox.OutboxEventStatus.ERROR;
+import static tech.mogami.facilitator.provider.outbox.domain.OutboxEventStatus.DONE;
+import static tech.mogami.facilitator.provider.outbox.domain.OutboxEventStatus.ERROR;
 
 @SpringBootTest(properties = {
         "spring.datasource.url=jdbc:tc:postgresql:16:///explorer",

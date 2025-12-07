@@ -1,7 +1,7 @@
 package tech.mogami.facilitator.provider.outbox.handler;
 
 
-import tech.mogami.facilitator.domain.platform.outbox.OutboxEventType;
+import tech.mogami.facilitator.provider.outbox.domain.OutboxEventType;
 
 /**
  * Generic interface for handling outbox events.

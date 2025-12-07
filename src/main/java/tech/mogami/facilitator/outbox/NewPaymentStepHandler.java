@@ -1,4 +1,4 @@
-package tech.mogami.facilitator.provider.outbox.event;
+package tech.mogami.facilitator.outbox;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +12,7 @@ import tech.mogami.commons.api.facilitator.verify.VerifyRequest;
 import tech.mogami.commons.util.JsonUtil;
 import tech.mogami.facilitator.domain.payment.Payment;
 import tech.mogami.facilitator.domain.payment.PaymentStep;
-import tech.mogami.facilitator.domain.platform.outbox.OutboxEventType;
+import tech.mogami.facilitator.provider.outbox.domain.OutboxEventType;
 import tech.mogami.facilitator.provider.outbox.handler.OutboxEventHandler;
 import tech.mogami.facilitator.provider.outbox.handler.OutboxEventHandlerResult;
 import tech.mogami.facilitator.repository.AddressRepository;
@@ -30,7 +30,7 @@ import static tech.mogami.commons.payment.PaymentStatus.COMPLETED;
 import static tech.mogami.commons.payment.PaymentStatus.FAILED;
 import static tech.mogami.facilitator.domain.payment.PaymentStepType.SETTLE;
 import static tech.mogami.facilitator.domain.payment.PaymentStepType.VERIFY;
-import static tech.mogami.facilitator.domain.platform.outbox.OutboxEventType.NEW_PAYMENT_STEP;
+import static tech.mogami.facilitator.provider.outbox.domain.OutboxEventType.NEW_PAYMENT_STEP;
 
 /**
  * Handler for new payment step outbox events.
@@ -160,6 +160,11 @@ public class NewPaymentStepHandler implements OutboxEventHandler<NewPaymentStepM
      * @return the list of payment steps to process
      */
     private List<PaymentStep> getStepsToProcess(final List<PaymentStep> steps) {
+        if (steps == null || steps.isEmpty()) {
+            log.error("No steps to process - Anormal situation");
+            return List.of();
+        }
+
         // Do we have steps of SETTLE type? and is there a successful one among them? ==================================
         LinkedList<PaymentStep> verifySteps = steps.stream()
                 .filter(step -> step.getPaymentStepType() == VERIFY)

@@ -1,4 +1,4 @@
-package tech.mogami.facilitator.domain.platform.outbox;
+package tech.mogami.facilitator.provider.outbox.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -18,7 +18,7 @@ import java.time.Instant;
 
 import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.GenerationType.IDENTITY;
-import static tech.mogami.facilitator.domain.platform.outbox.OutboxEventStatus.PENDING;
+import static tech.mogami.facilitator.provider.outbox.domain.OutboxEventStatus.PENDING;
 
 /**
  * Represents an outbox event.

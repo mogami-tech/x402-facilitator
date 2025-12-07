@@ -3,9 +3,9 @@ package tech.mogami.facilitator.configuration;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import tech.mogami.facilitator.domain.platform.outbox.OutboxEventType;
+import tech.mogami.facilitator.provider.outbox.domain.OutboxEventType;
 import tech.mogami.facilitator.provider.outbox.handler.OutboxEventHandler;
-import tech.mogami.facilitator.provider.outbox.util.WorkerId;
+import tech.mogami.facilitator.provider.outbox.util.Worker;
 
 import java.time.Duration;
 import java.util.List;
@@ -24,14 +24,17 @@ public class OutboxConfiguration {
     /** Default event lock duration. */
     public static final Duration DEFAULT_EVENT_LOCK_DURATION = Duration.ofMinutes(1);
 
+    /** Default fixed delay for scheduling batches. */
+    public static final long DEFAULT_FIXED_DELAY_BETWEEN_BATCH_MS = 200L;
+
     /**
-     * Provides a worker ID.
+     * Provides a worker.
      *
-     * @return the worker ID
+     * @return the worker
      */
     @Bean
-    public WorkerId workerId() {
-        return new WorkerId(UUID.randomUUID().toString());
+    public Worker worker() {
+        return new Worker(UUID.randomUUID().toString());
     }
 
     /**

@@ -1,16 +1,16 @@
-package tech.mogami.facilitator.provider.outbox.event;
+package tech.mogami.facilitator.outbox;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import tech.mogami.facilitator.domain.platform.outbox.OutboxEventType;
 import tech.mogami.facilitator.provider.outbox.batch.OutboxBatch;
+import tech.mogami.facilitator.provider.outbox.domain.OutboxEventType;
 import tech.mogami.facilitator.provider.outbox.handler.OutboxEventHandler;
 import tech.mogami.facilitator.provider.outbox.service.OutboxService;
 
 import java.util.List;
 import java.util.Map;
 
-import static tech.mogami.facilitator.domain.platform.outbox.OutboxEventType.NEW_PAYMENT_STEP;
+import static tech.mogami.facilitator.provider.outbox.domain.OutboxEventType.NEW_PAYMENT_STEP;
 
 /**
  * Batch for processing new payment step outbox events.

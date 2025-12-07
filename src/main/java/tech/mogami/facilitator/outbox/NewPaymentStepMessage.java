@@ -1,13 +1,14 @@
-package tech.mogami.facilitator.provider.outbox.event;
+package tech.mogami.facilitator.outbox;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import tech.mogami.facilitator.domain.payment.PaymentStepType;
-import tech.mogami.facilitator.domain.platform.outbox.OutboxEventType;
+import tech.mogami.facilitator.provider.outbox.domain.OutboxEventType;
 import tech.mogami.facilitator.provider.outbox.handler.OutboxEventMessage;
 
-import static tech.mogami.facilitator.domain.platform.outbox.OutboxEventType.NEW_PAYMENT_STEP;
+import static tech.mogami.facilitator.provider.outbox.domain.OutboxEventType.NEW_PAYMENT_STEP;
+
 
 /**
  * Message representing a new payment step event.

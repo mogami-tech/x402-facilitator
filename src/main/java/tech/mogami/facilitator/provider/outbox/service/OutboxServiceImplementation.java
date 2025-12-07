@@ -2,15 +2,16 @@ package tech.mogami.facilitator.provider.outbox.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tech.mogami.commons.util.JsonUtil;
-import tech.mogami.facilitator.domain.platform.outbox.OutboxEvent;
-import tech.mogami.facilitator.domain.platform.outbox.OutboxEventStatus;
-import tech.mogami.facilitator.domain.platform.outbox.OutboxEventType;
+import tech.mogami.facilitator.provider.outbox.domain.OutboxEvent;
+import tech.mogami.facilitator.provider.outbox.domain.OutboxEventStatus;
+import tech.mogami.facilitator.provider.outbox.domain.OutboxEventType;
 import tech.mogami.facilitator.provider.outbox.handler.OutboxEventMessage;
-import tech.mogami.facilitator.provider.outbox.util.WorkerId;
-import tech.mogami.facilitator.repository.OutboxEventRepository;
+import tech.mogami.facilitator.provider.outbox.repository.OutboxEventRepository;
+import tech.mogami.facilitator.provider.outbox.util.Worker;
 
 import java.time.Instant;
 import java.util.List;
@@ -29,7 +30,7 @@ import static tech.mogami.facilitator.configuration.OutboxConfiguration.DEFAULT_
 public class OutboxServiceImplementation implements OutboxService {
 
     /** Worker id. */
-    private final WorkerId workerId;
+    private final Worker worker;
 
     /** Repository for outbox events. */
     private final OutboxEventRepository outboxEventRepository;
@@ -52,44 +53,49 @@ public class OutboxServiceImplementation implements OutboxService {
         return outboxEventRepository.findEventsToLock(
                         eventTypes,
                         expiredBefore,
-                        org.springframework.data.domain.PageRequest.of(0, batchSize)
-                )
+                        PageRequest.of(0, batchSize * 2))
                 .stream()
                 .filter(event -> {
-                    if (outboxEventRepository.tryToLockEvent(event.getId(), workerId.id(), now, expiredBefore) == 1) {
-                        log.debug("Locked outbox event: eventId={}, eventType={}", event.getEventId(), event.getEventType());
+                    if (outboxEventRepository.tryToLockEvent(event.getId(), worker.id(), now, expiredBefore) == 1) {
+                        log.debug("Locked outbox event with eventId={}", event.getEventId());
                         return true;
                     } else {
-                        log.debug("Failed to lock outbox event (already locked?): eventId={}, eventType={}", event.getEventId(), event.getEventType());
+                        log.debug("Failed to lock outbox event with eventId={}", event.getEventId());
                         return false;
                     }
                 })
+                .limit(batchSize)
                 .toList();
     }
 
     @Override
     @Transactional(propagation = REQUIRES_NEW)
     public void markDone(final String eventId) {
-        outboxEventRepository.resolveEvent(
+        int numbersOfLinesUpdated = outboxEventRepository.resolveEvent(
                 eventId,
-                workerId.id(),
+                worker.id(),
                 OutboxEventStatus.DONE,
                 null,
                 Instant.now()
         );
+        if (numbersOfLinesUpdated == 0) {
+            log.warn("No outbox event found to mark as DONE for eventId={}", eventId);
+        }
     }
 
     @Override
     @Transactional(propagation = REQUIRES_NEW)
     public void markError(final String eventId, final String errorMessage) {
-        System.out.println("=> Marking event as error: " + eventId + ", errorMessage: " + errorMessage);
-        outboxEventRepository.resolveEvent(
+        int numbersOfLinesUpdated = outboxEventRepository.resolveEvent(
                 eventId,
-                workerId.id(),
+                worker.id(),
                 OutboxEventStatus.ERROR,
                 errorMessage,
                 Instant.now()
         );
+        if (numbersOfLinesUpdated == 0) {
+            log.warn("No outbox event found to mark as ERROR for eventId={}", eventId);
+        }
     }
 
 }

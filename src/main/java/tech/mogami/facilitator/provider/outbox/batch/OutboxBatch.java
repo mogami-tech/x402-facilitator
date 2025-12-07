@@ -4,14 +4,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import tech.mogami.commons.util.JsonUtil;
-import tech.mogami.facilitator.domain.platform.outbox.OutboxEvent;
-import tech.mogami.facilitator.domain.platform.outbox.OutboxEventType;
+import tech.mogami.facilitator.provider.outbox.domain.OutboxEventType;
 import tech.mogami.facilitator.provider.outbox.handler.OutboxEventHandler;
 import tech.mogami.facilitator.provider.outbox.handler.OutboxEventHandlerResult;
 import tech.mogami.facilitator.provider.outbox.service.OutboxService;
 
 import java.util.List;
 import java.util.Map;
+
+import static tech.mogami.facilitator.configuration.OutboxConfiguration.DEFAULT_FIXED_DELAY_BETWEEN_BATCH_MS;
 
 /**
  * Abstract class for outbox batches.
@@ -20,9 +21,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 @SuppressWarnings({"checkstyle:DesignForExtension", "unused"})
 public abstract class OutboxBatch {
-
-    /** Default fixed delay for scheduling batches. */
-    protected static final long DEFAULT_FIXED_DELAY_MS = 200L;
 
     /** Map of outbox event handlers. */
     private final Map<OutboxEventType, OutboxEventHandler<?>> handlers;
@@ -51,10 +49,9 @@ public abstract class OutboxBatch {
     /**
      * Scheduled method to run the batch processing.
      */
-    @Scheduled(fixedDelay = DEFAULT_FIXED_DELAY_MS)
+    @Scheduled(fixedDelay = DEFAULT_FIXED_DELAY_BETWEEN_BATCH_MS)
     public void run() {
-        final List<OutboxEvent> outboxEvents = outboxService.lockAndFetchPendingEvents(supportedTypes(), batchSize());
-        outboxEvents.stream()
+        outboxService.lockAndFetchPendingEvents(supportedTypes(), batchSize()).stream()
                 .peek(event -> log.debug("Processing outbox event: eventId: {}", event.getEventId()))
                 .forEach(event -> {
 

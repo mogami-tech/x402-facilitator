@@ -1,8 +1,8 @@
 package tech.mogami.facilitator.provider.outbox.service;
 
 import jakarta.validation.constraints.NotNull;
-import tech.mogami.facilitator.domain.platform.outbox.OutboxEvent;
-import tech.mogami.facilitator.domain.platform.outbox.OutboxEventType;
+import tech.mogami.facilitator.provider.outbox.domain.OutboxEvent;
+import tech.mogami.facilitator.provider.outbox.domain.OutboxEventType;
 import tech.mogami.facilitator.provider.outbox.handler.OutboxEventMessage;
 
 import java.util.List;

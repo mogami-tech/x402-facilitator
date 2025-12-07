@@ -1,7 +1,7 @@
 package tech.mogami.facilitator.provider.outbox.handler;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import tech.mogami.facilitator.domain.platform.outbox.OutboxEventType;
+import tech.mogami.facilitator.provider.outbox.domain.OutboxEventType;
 
 /**
  * Marker interface for outbox event messages.
