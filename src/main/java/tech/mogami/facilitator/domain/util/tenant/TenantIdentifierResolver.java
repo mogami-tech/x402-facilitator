@@ -1,4 +1,4 @@
-package tech.mogami.facilitator.domain.platform.tenant;
+package tech.mogami.facilitator.domain.util.tenant;
 
 import org.hibernate.context.spi.CurrentTenantIdentifierResolver;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernatePropertiesCustomizer;

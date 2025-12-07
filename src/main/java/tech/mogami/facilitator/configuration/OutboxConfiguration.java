@@ -34,7 +34,9 @@ public class OutboxConfiguration {
      */
     @Bean
     public Worker worker() {
-        return new Worker(UUID.randomUUID().toString());
+        final String workerId = UUID.randomUUID().toString();
+        log.info("Server worker id is {}", workerId);
+        return new Worker(workerId);
     }
 
     /**

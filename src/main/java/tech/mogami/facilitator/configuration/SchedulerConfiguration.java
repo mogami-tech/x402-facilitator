@@ -39,7 +39,7 @@ public class SchedulerConfiguration {
         scheduler.setPoolSize(SCHEDULER_POOL_SIZE);
         scheduler.setErrorHandler(throwable -> {
             try {
-                log.error("Error while processing requests: {}", throwable.getMessage());
+                log.error("Throwable while processing requests: {}", throwable.getMessage());
             } catch (Exception exception) {
                 log.error("Exception while processing requests: {}", exception.getMessage());
             }

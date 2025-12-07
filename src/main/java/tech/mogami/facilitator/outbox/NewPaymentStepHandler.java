@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 import tech.mogami.commons.api.facilitator.RequestCommonData;
 import tech.mogami.commons.api.facilitator.settle.SettleRequest;
 import tech.mogami.commons.api.facilitator.settle.SettleResponse;
@@ -63,45 +62,55 @@ public class NewPaymentStepHandler implements OutboxEventHandler<NewPaymentStepM
 
     @Override
     @Transactional(propagation = REQUIRES_NEW)
-    public OutboxEventHandlerResult handle(final NewPaymentStepMessage payload) {
-        System.out.println("TX ACTIVE IN HANDLER=" + TransactionSynchronizationManager.isActualTransactionActive());
+    public OutboxEventHandlerResult handle(final NewPaymentStepMessage message) {
+        log.info("Handling new payment step for paymentId: {}", message.paymentId());
 
-        log.info("Handling new payment step for paymentId: {}", payload.paymentId());
-
-        // We retrieve the payment and add the payment step ============================================================7
+        // We retrieve the payment and add the payment step ============================================================
         try {
-            Payment payment = getOrCreatePayment(payload.paymentId());
-            log.info("New payment step {} with id: {}", payload.paymentId(), payment.getId());
+            Payment payment = getOrCreatePayment(message.paymentId());
+            log.info("New payment step {} with id: {}", message.paymentId(), payment.getId());
 
             final PaymentStep paymentStep = PaymentStep.builder()
                     .paymentStepId(UUID.randomUUID().toString())
                     .payment(payment)
-                    .paymentStepType(payload.paymentStepType())
-                    .requestPayload(payload.requestPayload())
-                    .responsePayload(payload.responsePayload())
-                    .errorCode(payload.errorCode())
-                    .errorMessage(payload.errorMessage())
+                    .paymentStepType(message.paymentStepType())
+                    .requestPayload(message.requestPayload())
+                    .responsePayload(message.responsePayload())
+                    .errorCode(message.errorCode())
+                    .errorMessage(message.errorMessage())
                     .build();
             payment.addStep(paymentStep);
-            log.info("Payment step persisted for payment {} with paymentStepId {}", payload.paymentId(), paymentStep.getPaymentStepId());
+            log.info("Payment step persisted for payment {} with paymentStepId {}", message.paymentId(), paymentStep.getPaymentStepId());
             paymentStepRepository.save(paymentStep);
 
-            // We determine the steps to treat =============================================================================
+            // We determine the steps to treat =========================================================================
             getStepsToProcess(payment.getSteps())
                     .forEach(step -> {
                         RequestCommonData request = null;
                         SettleResponse settleResponse = null;
 
-                        // We retrieve the JSON data =======================================================================
+                        // We retrieve the JSON data ===================================================================
                         if (step.getPaymentStepType() == VERIFY) {
-                            request = JsonUtil.fromJson(step.getRequestPayload(), VerifyRequest.class);
+                            try {
+                                request = JsonUtil.fromJson(step.getRequestPayload(), VerifyRequest.class);
+                            } catch (IllegalArgumentException e) {
+                                log.warn("Unable to parse VerifyRequest from payment step id {}: {}", step.getPaymentStepId(), e.getMessage());
+                            }
                         }
                         if (step.getPaymentStepType() == SETTLE) {
-                            request = JsonUtil.fromJson(step.getRequestPayload(), SettleRequest.class);
-                            settleResponse = JsonUtil.fromJson(step.getResponsePayload(), SettleResponse.class);
+                            try {
+                                request = JsonUtil.fromJson(step.getRequestPayload(), SettleRequest.class);
+                            } catch (IllegalArgumentException e) {
+                                log.warn("Unable to parse SettleRequest from payment step id {}: {}", step.getPaymentStepId(), e.getMessage());
+                            }
+                            try {
+                                settleResponse = JsonUtil.fromJson(step.getResponsePayload(), SettleResponse.class);
+                            } catch (IllegalArgumentException e) {
+                                log.warn("Unable to parse SettleResponse from payment step id {}: {}", step.getPaymentStepId(), e.getMessage());
+                            }
                         }
 
-                        // We update the payment ===========================================================================
+                        // We update the payment =======================================================================
                         if (request != null) {
                             request.getFromAddress().ifPresent(addressAsString -> {
                                 participantService.getOrCreateAddress(addressAsString);
@@ -165,6 +174,7 @@ public class NewPaymentStepHandler implements OutboxEventHandler<NewPaymentStepM
      * @return the list of payment steps to process
      */
     private List<PaymentStep> getStepsToProcess(final List<PaymentStep> steps) {
+        // Avoid errors ================================================================================================
         if (steps == null || steps.isEmpty()) {
             log.error("No steps to process - Anormal situation");
             return List.of();
@@ -189,7 +199,7 @@ public class NewPaymentStepHandler implements OutboxEventHandler<NewPaymentStepM
         if (settleSteps.isEmpty()) {
             // No SETTLE steps, we treat VERIFY steps.
             successfulVerifyStep.ifPresentOrElse(
-                    // We have a successful VERIFY step, we treat only it.
+                    // We have a successful VERIFY step, we treat only this one.
                     stepsToProcess::add,
                     // No successful VERIFY step, we treat all of them.
                     () -> stepsToProcess.addAll(verifySteps)
@@ -197,7 +207,7 @@ public class NewPaymentStepHandler implements OutboxEventHandler<NewPaymentStepM
         } else {
             // We have SETTLE steps, we treat them.
             successfulSettleStep.ifPresentOrElse(
-                    // We have a successful SETTLE step, we treat only it.
+                    // We have a successful SETTLE step, we treat only this one.
                     stepsToProcess::add,
                     // No successful SETTLE step, we treat all of them.
                     () -> stepsToProcess.addAll(settleSteps)

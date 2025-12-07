@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import tech.mogami.commons.payment.PaymentStatus;
 import tech.mogami.facilitator.domain.blockchain.Address;
-import tech.mogami.facilitator.domain.platform.base.BaseTenantEntity;
+import tech.mogami.facilitator.domain.util.base.BaseTenantEntity;
 
 import java.math.BigInteger;
 import java.util.LinkedList;
@@ -23,7 +23,6 @@ import java.util.List;
 
 import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.FetchType.EAGER;
-import static jakarta.persistence.FetchType.LAZY;
 import static tech.mogami.commons.constant.BlockchainConstants.ATOMIC_AMOUNT_TYPE_PRECISION;
 import static tech.mogami.commons.payment.PaymentStatus.PENDING;
 
@@ -74,7 +73,7 @@ public class Payment extends BaseTenantEntity {
 
     /** Payment steps associated with this payment. */
     @Builder.Default
-    @OneToMany(mappedBy = "payment", fetch = LAZY)
+    @OneToMany(mappedBy = "payment", fetch = EAGER)
     @OrderBy("createdAt ASC")
     private List<PaymentStep> steps = new LinkedList<>();
 

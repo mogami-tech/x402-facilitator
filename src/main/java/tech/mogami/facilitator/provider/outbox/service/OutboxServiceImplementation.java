@@ -71,6 +71,7 @@ public class OutboxServiceImplementation implements OutboxService {
     @Override
     @Transactional(propagation = REQUIRES_NEW)
     public void markDone(final String eventId) {
+        log.debug("Marking outbox event done for eventId={}", eventId);
         int numbersOfLinesUpdated = outboxEventRepository.resolveEvent(
                 eventId,
                 worker.id(),
@@ -86,7 +87,7 @@ public class OutboxServiceImplementation implements OutboxService {
     @Override
     @Transactional(propagation = REQUIRES_NEW)
     public void markError(final String eventId, final String errorMessage) {
-        System.out.println("ERREUR ICI");
+        log.debug("Marking outbox event error for eventId={}", eventId);
         int numbersOfLinesUpdated = outboxEventRepository.resolveEvent(
                 eventId,
                 worker.id(),

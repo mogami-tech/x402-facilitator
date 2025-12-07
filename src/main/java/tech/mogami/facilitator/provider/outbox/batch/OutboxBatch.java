@@ -59,6 +59,7 @@ public abstract class OutboxBatch {
 
             // Process the event ===============================================================================
             try {
+
                 log.info("Locked outbox event for processing: eventId: {}", event.getEventId());
                 final OutboxEventHandler<?> handler = handlers.get(event.getEventType());
                 final Object payload = JsonUtil.fromJson(event.getPayload(), event.getEventType().payloadType());
@@ -71,6 +72,7 @@ public abstract class OutboxBatch {
                     log.info("Outbox event {} processing failed", event.getEventId());
                     outboxService.markError(event.getEventId(), callResult.errorMessage());
                 }
+
             } catch (Throwable t) {
                 Throwable root = ExceptionUtils.getRootCause(t);
                 if (root == null) {

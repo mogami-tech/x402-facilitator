@@ -101,12 +101,6 @@ public class SettleControllerTest {
                 paymentRequirements,
                 paymentPayload);
 
-        System.out.println("==> " + JsonUtil.toPrettyJson(VerifyRequest.builder()
-                .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
-                .paymentPayload(signedPayload)
-                .paymentRequirements(paymentRequirements)
-                .build()));
-
         mockMvc.perform(MockMvcRequestBuilders.post(SETTLE_ENDPOINT)
                         .contentType(APPLICATION_JSON)
                         .accept(APPLICATION_JSON, TEXT_PLAIN, ALL)

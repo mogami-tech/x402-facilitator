@@ -11,7 +11,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import tech.mogami.facilitator.domain.platform.base.BaseTenantEntity;
+import tech.mogami.facilitator.domain.util.base.BaseTenantEntity;
 
 import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.FetchType.EAGER;
