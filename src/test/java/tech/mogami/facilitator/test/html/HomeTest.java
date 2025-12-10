@@ -13,7 +13,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
-import static tech.mogami.facilitator.web.html.pages.HomePage.HOME;
+import static tech.mogami.facilitator.web.html.pages.HomePage.HOME_PAGE;
 import static tech.mogami.facilitator.web.html.pages.HomePage.HOME_URL;
 
 @SpringBootTest
@@ -30,7 +30,7 @@ public class HomeTest extends BaseWebTest {
 
         mockMvc.perform(get(HOME_URL))
                 .andExpect(status().isOk())
-                .andExpect(view().name(containsString(HOME.view())))
+                .andExpect(view().name(containsString(HOME_PAGE.view())))
                 // Checking that we have a link to the API documentation.
                 .andExpect(content().string(containsString("/swagger-ui/")))
                 // Checking the search form is filled without value coming from parameter.

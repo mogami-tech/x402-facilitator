@@ -10,9 +10,9 @@ import lombok.experimental.UtilityClass;
 public class ModelAttribute {
 
     /** Supported kinds attribute. */
-    public static final String SUPPORTED_KINDS = "supportedKinds";
+    public static final String SUPPORTED_KINDS_ATTRIBUTE = "supportedKinds";
 
     /** Facilitator address. */
-    public static final String FACILITATOR_ADDRESS = "facilitatorAddress";
+    public static final String FACILITATOR_ADDRESS_ATTRIBUTE = "facilitatorAddress";
 
 }

@@ -11,7 +11,15 @@ import java.util.Optional;
  */
 @Repository
 public interface PaymentRepository extends JpaRepository<Payment, Long> {
-    
+
+    /**
+     * Checks if a payment exists by its unique payment ID.
+     *
+     * @param paymentId the unique payment ID
+     * @return true if the payment exists, false otherwise
+     */
+    boolean existsByPaymentId(String paymentId);
+
     /**
      * Finds a payment by its unique payment ID.
      *

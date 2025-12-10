@@ -35,7 +35,18 @@ public class PaymentServiceImplementation extends BaseService implements Payment
     private final PaymentStepServiceImplementation paymentStepService;
 
     @Override
-    public Optional<PaymentDto> searchPaymentById(final String paymentId) {
+    public boolean existsByPaymentId(final String paymentId) {
+        if (StringUtils.isBlank(paymentId)) {
+            log.debug("Payment ID is blank, returning false for existence check.");
+            return false;
+        } else {
+            log.debug("Checking existence of payment by paymentId: {}", paymentId);
+            return paymentRepository.existsByPaymentId(paymentId);
+        }
+    }
+
+    @Override
+    public Optional<PaymentDto> searchByPaymentId(final String paymentId) {
         log.debug("Retrieving payment by paymentId: {}", paymentId);
         return Optional.ofNullable(StringUtils.trimToNull(paymentId))
                 .flatMap(paymentRepository::findByPaymentId)

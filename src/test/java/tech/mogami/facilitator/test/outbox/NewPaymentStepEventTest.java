@@ -110,7 +110,7 @@ public class NewPaymentStepEventTest extends BaseTest {
         assertThat(paymentRepository.count()).isEqualTo(initialPaymentCount + 2);
 
         // Testing what we have created ================================================================================
-        assertThat(paymentService.searchPaymentById(COMPLETE_PAYMENT_NONCE)).isPresent().get()
+        assertThat(paymentService.searchByPaymentId(COMPLETE_PAYMENT_NONCE)).isPresent().get()
                 .satisfies(payment -> {
                     assertThat(payment.paymentId()).isEqualTo(COMPLETE_PAYMENT_NONCE);
                     assertThat(payment.steps()).hasSize(2);
@@ -131,7 +131,7 @@ public class NewPaymentStepEventTest extends BaseTest {
                 });
         await().until(this::allEventsAreTreated);
         assertThat(paymentRepository.count()).isEqualTo(initialPaymentCount + 2);
-        assertThat(paymentService.searchPaymentById(UNCOMPLETED_PAYMENT)).isPresent().get()
+        assertThat(paymentService.searchByPaymentId(UNCOMPLETED_PAYMENT)).isPresent().get()
                 .satisfies(payment -> {
                     assertThat(payment.paymentId()).isEqualTo(UNCOMPLETED_PAYMENT);
                     assertThat(payment.steps()).hasSize(1);
@@ -168,7 +168,7 @@ public class NewPaymentStepEventTest extends BaseTest {
 
         // We now check the value we can get from the payment step =====================================================
         await().until(this::allEventsAreTreated);
-        assertThat(paymentService.searchPaymentById(COMPLETE_PAYMENT_NONCE)).isPresent().get()
+        assertThat(paymentService.searchByPaymentId(COMPLETE_PAYMENT_NONCE)).isPresent().get()
                 .satisfies(payment -> {
                     assertThat(payment.paymentId()).isEqualTo(COMPLETE_PAYMENT_NONCE);
                     assertThat(payment.steps()).hasSize(4);
@@ -211,7 +211,7 @@ public class NewPaymentStepEventTest extends BaseTest {
 
         // The payment values must have been updated ===================================================================
         await().until(this::allEventsAreTreated);
-        assertThat(paymentService.searchPaymentById(COMPLETE_PAYMENT_NONCE)).isPresent().get()
+        assertThat(paymentService.searchByPaymentId(COMPLETE_PAYMENT_NONCE)).isPresent().get()
                 .satisfies(payment -> {
                     assertThat(payment.paymentId()).isEqualTo(COMPLETE_PAYMENT_NONCE);
                     assertThat(payment.steps()).hasSize(5);
@@ -253,7 +253,7 @@ public class NewPaymentStepEventTest extends BaseTest {
 
         // The payment values must have beed updated ===================================================================
         await().until(this::allEventsAreTreated);
-        assertThat(paymentService.searchPaymentById(COMPLETE_PAYMENT_NONCE)).isPresent().get()
+        assertThat(paymentService.searchByPaymentId(COMPLETE_PAYMENT_NONCE)).isPresent().get()
                 .satisfies(payment -> {
                     assertThat(payment.paymentId()).isEqualTo(COMPLETE_PAYMENT_NONCE);
                     assertThat(payment.steps()).hasSize(6);
@@ -295,7 +295,7 @@ public class NewPaymentStepEventTest extends BaseTest {
 
         // The payment values must NOT be updated ======================================================================
         await().until(this::allEventsAreTreated);
-        assertThat(paymentService.searchPaymentById(COMPLETE_PAYMENT_NONCE)).isPresent().get()
+        assertThat(paymentService.searchByPaymentId(COMPLETE_PAYMENT_NONCE)).isPresent().get()
                 .satisfies(payment -> {
                     assertThat(payment.paymentId()).isEqualTo(COMPLETE_PAYMENT_NONCE);
                     assertThat(payment.steps()).hasSize(7);
@@ -336,7 +336,7 @@ public class NewPaymentStepEventTest extends BaseTest {
 
         // The payment values must be updated ==========================================================================
         await().until(this::allEventsAreTreated);
-        assertThat(paymentService.searchPaymentById(COMPLETE_PAYMENT_NONCE)).isPresent().get()
+        assertThat(paymentService.searchByPaymentId(COMPLETE_PAYMENT_NONCE)).isPresent().get()
                 .satisfies(payment -> {
                     assertThat(payment.paymentId()).isEqualTo(COMPLETE_PAYMENT_NONCE);
                     assertThat(payment.steps()).hasSize(8);
@@ -417,7 +417,7 @@ public class NewPaymentStepEventTest extends BaseTest {
 
         // The payment values must not have changed - Still the successful step ========================================
         await().until(this::allEventsAreTreated);
-        assertThat(paymentService.searchPaymentById(COMPLETE_PAYMENT_NONCE)).isPresent().get()
+        assertThat(paymentService.searchByPaymentId(COMPLETE_PAYMENT_NONCE)).isPresent().get()
                 .satisfies(payment -> {
                     assertThat(payment.paymentId()).isEqualTo(COMPLETE_PAYMENT_NONCE);
                     assertThat(payment.steps()).hasSize(11);

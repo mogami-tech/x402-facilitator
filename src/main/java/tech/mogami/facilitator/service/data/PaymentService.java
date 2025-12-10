@@ -10,11 +10,19 @@ import java.util.Optional;
 public interface PaymentService {
 
     /**
+     * Check if a payment exists by its unique identifier, its nonce.
+     *
+     * @param paymentId the unique identifier of the payment, its nonce.
+     * @return true if the payment exists, false otherwise
+     */
+    boolean existsByPaymentId(String paymentId);
+
+    /**
      * Search a payment by its unique identifier, its nonce.
      *
      * @param paymentId the unique identifier of the payment, its nonce.
      * @return the payment data transfer object
      */
-    Optional<PaymentDto> searchPaymentById(String paymentId);
+    Optional<PaymentDto> searchByPaymentId(String paymentId);
 
 }
