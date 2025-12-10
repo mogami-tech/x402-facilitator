@@ -1,4 +1,4 @@
-package tech.mogami.facilitator.web.html.controller;
+package tech.mogami.facilitator.web.www.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -10,16 +10,16 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import tech.mogami.facilitator.service.data.PaymentService;
-import tech.mogami.facilitator.web.html.util.BaseController;
+import tech.mogami.facilitator.web.www.util.BaseController;
 
 import java.util.Locale;
 
 import static tech.mogami.commons.web.GlobalModelAttributes.ERROR_MESSAGE_ATTRIBUTE;
 import static tech.mogami.commons.web.GlobalModelAttributes.QUERY_ATTRIBUTE;
 import static tech.mogami.commons.web.GlobalModelAttributes.RESULT_ATTRIBUTE;
-import static tech.mogami.facilitator.web.html.pages.HomePage.HOME_REDIRECT;
-import static tech.mogami.facilitator.web.html.pages.PaymentPage.PAYMENT_BY_NONCE_PAGE;
-import static tech.mogami.facilitator.web.html.pages.PaymentPage.PAYMENT_BY_NONCE_URL;
+import static tech.mogami.facilitator.web.www.pages.HomePage.HOME_REDIRECT;
+import static tech.mogami.facilitator.web.www.pages.PaymentPage.PAYMENT_BY_NONCE_PAGE;
+import static tech.mogami.facilitator.web.www.pages.PaymentPage.PAYMENT_BY_NONCE_URL;
 
 /**
  * Payment controller.

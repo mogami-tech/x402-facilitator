@@ -10,7 +10,7 @@ import org.springframework.http.HttpHeaders;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
-import static tech.mogami.facilitator.web.html.util.BaseController.HTMX_REQUEST;
+import static tech.mogami.facilitator.web.www.util.BaseController.HTMX_REQUEST;
 
 /**
  * Utility classes for tests.

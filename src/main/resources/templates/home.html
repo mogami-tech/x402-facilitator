@@ -63,6 +63,11 @@
 
             </label>
 
+            <!--/* Error management ====================================================================================== */-->
+            <div th:if="${errorMessage}"
+                 th:insert="~{util/fragments/error_message :: error_message(${errorMessage})}">
+            </div>
+
         </div>
     </form>
 

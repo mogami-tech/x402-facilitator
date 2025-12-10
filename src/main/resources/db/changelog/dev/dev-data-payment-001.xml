@@ -7,7 +7,7 @@
         <!-- Example 001 : Only payment is in database, no step ==================================================== -->
         <insert tableName="PAYMENT">
             <column name="ID" valueNumeric="1"/>
-            <column name="PAYMENT_ID" value="nonce_001"/>
+            <column name="PAYMENT_ID" value="nonce001"/>
             <column name="FK_TENANT_ID" value="00000000-0000-0000-0000-000000000000"/>
             <column name="FK_FROM_ADDRESS_ID"/>
             <column name="FK_TO_ADDRESS_ID"/>

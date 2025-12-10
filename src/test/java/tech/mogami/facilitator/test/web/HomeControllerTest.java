@@ -18,13 +18,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 import static tech.mogami.commons.web.GlobalModelAttributes.QUERY_ATTRIBUTE;
-import static tech.mogami.facilitator.web.html.pages.HomePage.HOME_PAGE;
-import static tech.mogami.facilitator.web.html.pages.HomePage.HOME_URL;
+import static tech.mogami.facilitator.web.www.pages.HomePage.HOME_PAGE;
+import static tech.mogami.facilitator.web.www.pages.HomePage.HOME_URL;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 @DisplayName("Home controller tests")
-public class HomeTest extends BaseWebTest {
+public class HomeControllerTest extends BaseWebTest {
 
     @Autowired
     MockMvc mockMvc;

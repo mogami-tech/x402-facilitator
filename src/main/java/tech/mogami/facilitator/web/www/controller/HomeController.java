@@ -1,4 +1,4 @@
-package tech.mogami.facilitator.web.html.controller;
+package tech.mogami.facilitator.web.www.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -9,13 +9,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import tech.mogami.facilitator.service.facilitator.SupportedService;
-import tech.mogami.facilitator.web.html.util.BaseController;
+import tech.mogami.facilitator.web.www.util.BaseController;
 
 import static tech.mogami.commons.web.GlobalModelAttributes.QUERY_ATTRIBUTE;
-import static tech.mogami.facilitator.web.html.pages.HomePage.HOME_PAGE;
-import static tech.mogami.facilitator.web.html.pages.HomePage.HOME_URL;
-import static tech.mogami.facilitator.web.html.util.ModelAttribute.FACILITATOR_ADDRESS_ATTRIBUTE;
-import static tech.mogami.facilitator.web.html.util.ModelAttribute.SUPPORTED_KINDS_ATTRIBUTE;
+import static tech.mogami.facilitator.web.www.pages.HomePage.HOME_PAGE;
+import static tech.mogami.facilitator.web.www.pages.HomePage.HOME_URL;
+import static tech.mogami.facilitator.web.www.util.ModelAttribute.FACILITATOR_ADDRESS_ATTRIBUTE;
+import static tech.mogami.facilitator.web.www.util.ModelAttribute.SUPPORTED_KINDS_ATTRIBUTE;
 
 /**
  * Home controller is the controller for the home page of the Mogami Facilitator web application.

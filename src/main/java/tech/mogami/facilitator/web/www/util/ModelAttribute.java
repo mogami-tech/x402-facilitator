@@ -1,4 +1,4 @@
-package tech.mogami.facilitator.web.html.util;
+package tech.mogami.facilitator.web.www.util;
 
 import lombok.experimental.UtilityClass;
 
