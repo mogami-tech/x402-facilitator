@@ -50,7 +50,7 @@ public class PaymentController extends BaseController {
                                     final Locale locale,
                                     final HttpServletRequest request,
                                     final RedirectAttributes redirectAttributes,
-                                    @PathVariable final String nonce) {
+                                    @PathVariable(required = false) final String nonce) {
         final String effectiveNonce = StringUtils.trimToNull(nonce);
         return paymentService.searchByPaymentId(effectiveNonce)
                 // Payment found =======================================================================================

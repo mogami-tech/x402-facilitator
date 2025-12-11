@@ -1,0 +1,62 @@
+<!--/*@thymesVar id="result" type="tech.mogami.facilitator.dto.payment.PaymentDto"*/-->
+<!--/*
+    Stats component with shadow and responsive layout
+    On mobile (<640px) → stats-vertical applies → each stat is one per line.
+    On small screens and up (≥640px) → sm:stats-horizontal overrides → they switch to row layout.
+*/-->
+<div class="stats shadow w-full stats-vertical sm:stats-horizontal my-8"
+     th:classappend="
+        ${result.status.toString() == 'COMPLETED'} ? ' bg-green-300'
+        : (${result.status.toString() == 'FAILED'} ? ' bg-red-300'
+        : 'bg-gray-300')">
+
+    <!--/* Displaying the payment nonce */-->
+    <div class="stat">
+        <div class="stat-title" th:text="#{generic.nonce}"></div>
+        <div class="stat-value truncate max-w-[400px]" id="payment-nonce"
+             th:text="${result.paymentId()}"></div>
+        <div class="stat-desc truncate max-w-[400px]" th:text="#{generic.nonce.description}"></div>
+    </div>
+
+    <!--/* Displaying the payment network */-->
+    <div class="stat">
+        <div class="stat-title" th:text="#{generic.network}"></div>
+        <div class="stat-value truncate max-w-[400px]" id="payment-network-name"
+             th:text="${result.formattedNetwork()}"></div>
+        <div class="stat-desc truncate max-w-[400px]" th:text="#{generic.network.description}"></div>
+    </div>
+
+    <!--/* Displaying the payment status */-->
+    <div class="stat w-full sm:w-64 sm:flex-grow-0">
+        <div class="stat-title" th:text="#{generic.paymentStatus}"></div>
+        <div class="stat-value truncate max-w-[400px]" id="payment-status"
+             th:text="#{'payment.status.' + ${result.status()}}"></div>
+        <div class="stat-desc truncate max-w-[400px]" th:text="#{generic.paymentStatus.description}"></div>
+    </div>
+
+</div>
+
+<div class="stats shadow w-full stats-vertical sm:stats-horizontal my-4">
+
+    <!--/* Displaying "From address" */-->
+    <div class="stat">
+        <div class="stat-title" th:text="#{generic.fromAddress}"></div>
+        <div class="stat-value truncate max-w-[400px]" id="payment-from-address"
+             th:text="${result.formattedFrom()}"></div>
+    </div>
+
+    <!--/* Displaying "To address" */-->
+    <div class="stat">
+        <div class="stat-title" th:text="#{generic.toAddress}"></div>
+        <div class="stat-value truncate max-w-[400px]" id="payment-to-address"
+             th:text="${result.formattedTo()}"></div>
+    </div>
+
+    <!--/* Displaying "Amount" */-->
+    <div class="stat w-full sm:w-64 sm:flex-grow-0">
+        <div class="stat-title" th:text="#{generic.amount}"></div>
+        <div class="stat-value truncate max-w-[400px]" id="payment-amount"
+             th:text="${result.formattedAmount()}"></div>
+    </div>
+
+</div>

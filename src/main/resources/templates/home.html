@@ -25,7 +25,8 @@
 
         <div class="flex flex-col items-center justify-center gap-2 w-full">
 
-            <h1 class="text-5xl font-bold mb-6" th:text="#{generic.application.name}"></h1>
+            <!--/* Title & description */-->
+            <h1 class="text-5xl font-bold mb-6 text-center" th:text="#{generic.application.name}"></h1>
             <p class="text-lg max-w-3xl mb-4 text-center mx-auto" th:utext="#{home.description}"></p>
 
             <p class="text-xs text-base-content/60 italic mt-2 text-center" th:utext="#{search.title}"></p>
@@ -63,7 +64,7 @@
 
             </label>
 
-            <!--/* Error management ====================================================================================== */-->
+            <!--/* Error management ============================================================================== */-->
             <div th:if="${errorMessage}"
                  th:insert="~{util/fragments/error_message :: error_message(${errorMessage})}">
             </div>

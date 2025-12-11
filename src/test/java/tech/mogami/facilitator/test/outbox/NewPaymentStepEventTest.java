@@ -28,6 +28,7 @@ import static tech.mogami.commons.test.BaseTestData.TEST_CLIENT_WALLET_ADDRESS_1
 import static tech.mogami.commons.test.BaseTestData.TEST_CLIENT_WALLET_ADDRESS_2;
 import static tech.mogami.facilitator.domain.payment.PaymentStepType.SETTLE;
 import static tech.mogami.facilitator.domain.payment.PaymentStepType.VERIFY;
+import static tech.mogami.facilitator.dto.payment.PaymentDto.UNKNOWN_FORMATTED_VALUE;
 import static tech.mogami.facilitator.provider.outbox.domain.OutboxEventStatus.ERROR;
 
 @SpringBootTest(properties = {
@@ -117,6 +118,7 @@ public class NewPaymentStepEventTest extends BaseTest {
 
                     // Raw values.
                     assertThat(payment.paymentId()).isNotNull();
+                    assertThat(payment.paymentId()).isEqualTo(COMPLETE_PAYMENT_NONCE);
                     assertThat(payment.fromAddress()).isNull();
                     assertThat(payment.toAddress()).isNull();
                     assertThat(payment.assetAmount()).isNull();
@@ -124,10 +126,10 @@ public class NewPaymentStepEventTest extends BaseTest {
                     assertThat(payment.network()).isNull();
 
                     // Formatted values.
-                    assertThat(payment.formattedFrom()).isNull();
-                    assertThat(payment.formattedTo()).isNull();
-                    assertThat(payment.formattedAmount(ENGLISH)).isNull();
-                    assertThat(payment.formattedAmount(FRENCH)).isNull();
+                    assertThat(payment.formattedFrom()).isEqualTo(UNKNOWN_FORMATTED_VALUE);
+                    assertThat(payment.formattedTo()).isEqualTo(UNKNOWN_FORMATTED_VALUE);
+                    assertThat(payment.formattedAmount(ENGLISH)).isEqualTo(UNKNOWN_FORMATTED_VALUE);
+                    assertThat(payment.formattedAmount(FRENCH)).isEqualTo(UNKNOWN_FORMATTED_VALUE);
                 });
         await().until(this::allEventsAreTreated);
         assertThat(paymentRepository.count()).isEqualTo(initialPaymentCount + 2);

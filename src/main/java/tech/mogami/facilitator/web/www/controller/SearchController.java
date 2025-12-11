@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.util.UriUtils;
-import tech.mogami.facilitator.repository.PaymentRepository;
 import tech.mogami.facilitator.service.data.PaymentService;
 import tech.mogami.facilitator.web.www.util.BaseController;
 
@@ -34,8 +33,6 @@ public class SearchController extends BaseController {
     /** Payment service. */
     private final PaymentService paymentService;
 
-    private final PaymentRepository paymentRepository;
-
     /**
      * Search for a payment.
      *
@@ -51,9 +48,6 @@ public class SearchController extends BaseController {
                          final Locale locale,
                          final RedirectAttributes redirectAttributes,
                          @RequestParam(required = false) final String query) {
-        System.out.println("=> SearchController.search: query=" + query);
-        paymentRepository.findAll().forEach(payment -> System.out.println("=> Payment in repo: " + payment.getPaymentId()));
-
         final String effectiveQuery = StringUtils.trimToNull(query);
         if (effectiveQuery == null) {
             // If no query is provided, we set an error message ========================================================

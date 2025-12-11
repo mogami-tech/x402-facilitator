@@ -8,14 +8,11 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import tech.mogami.facilitator.service.facilitator.SupportedService;
 import tech.mogami.facilitator.web.www.util.BaseController;
 
 import static tech.mogami.commons.web.GlobalModelAttributes.QUERY_ATTRIBUTE;
 import static tech.mogami.facilitator.web.www.pages.HomePage.HOME_PAGE;
 import static tech.mogami.facilitator.web.www.pages.HomePage.HOME_URL;
-import static tech.mogami.facilitator.web.www.util.ModelAttribute.FACILITATOR_ADDRESS_ATTRIBUTE;
-import static tech.mogami.facilitator.web.www.util.ModelAttribute.SUPPORTED_KINDS_ATTRIBUTE;
 
 /**
  * Home controller is the controller for the home page of the Mogami Facilitator web application.
@@ -24,11 +21,6 @@ import static tech.mogami.facilitator.web.www.util.ModelAttribute.SUPPORTED_KIND
 @RequiredArgsConstructor
 public class HomeController extends BaseController {
 
-    /** Facilitator address. */
-    private final String facilitatorAddress;
-
-    /** Supporter service. */
-    private final SupportedService supportedService;
 
     /**
      * Page displaying home.
@@ -45,11 +37,6 @@ public class HomeController extends BaseController {
                        final HttpServletRequest request,
                        final RedirectAttributes redirectAttributes,
                        @RequestParam(required = false) final String query) {
-
-        // We add configuration information to display on the page =====================================================
-        model.addAttribute(SUPPORTED_KINDS_ATTRIBUTE, supportedService.supported());
-        model.addAttribute(FACILITATOR_ADDRESS_ATTRIBUTE, facilitatorAddress);
-
         // We either retrieve the query from the request or from the redirect attributes ===============================
         final String queryValue = StringUtils.defaultIfBlank(query, (String) redirectAttributes.getFlashAttributes().get(QUERY_ATTRIBUTE));
         model.addAttribute(QUERY_ATTRIBUTE, StringUtils.trimToNull(queryValue));

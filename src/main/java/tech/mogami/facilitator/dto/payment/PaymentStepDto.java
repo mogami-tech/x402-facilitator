@@ -4,27 +4,28 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import tech.mogami.facilitator.domain.payment.PaymentStepType;
 
+import java.time.Instant;
+
 /**
  * Payment step data transfer object.
  *
  * @param paymentStepId   Unique payment step identifier
  * @param paymentStepType Type of the payment step
- * @param nonce           Nonce associated with the payment step
  * @param requestPayload  Request payload sent to the facilitator
  * @param responsePayload Response payload sent by the facilitator
  * @param errorCode       Optional error code returned by the facilitator
  * @param errorMessage    Optional error message returned by the facilitator
+ * @param createdAt       Timestamp when the payment step was created
  */
 @Builder
 public record PaymentStepDto(
         String paymentStepId,
         @NotNull PaymentStepType paymentStepType,
-        // TODO Delete nonce.
-        @NotNull String nonce,
         String requestPayload,
         String responsePayload,
         String errorCode,
-        String errorMessage
+        String errorMessage,
+        Instant createdAt
 ) {
 
     /**

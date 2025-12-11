@@ -7,8 +7,8 @@ import tech.mogami.facilitator.dto.blockchain.AddressDto;
 import static org.assertj.core.api.Assertions.assertThat;
 import static tech.mogami.commons.test.BaseTestData.TEST_CLIENT_WALLET_ADDRESS_1;
 
-@DisplayName("AddressDTO tests")
-public class AddressDTOTest {
+@DisplayName("AddressDto tests")
+public class AddressDtoTest {
 
     @Test
     @DisplayName("Shorten address")

@@ -1,5 +1,6 @@
 package tech.mogami.facilitator.test.outbox;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,7 +56,7 @@ public class OutboxTest extends BaseTest {
 
         // Run threads to publish outbox events ========================================================================
         for (int i = 0; i < THREADS; i++) {
-            final String nonce = "nonce-" + i;
+            final String nonce = "outbox-event-nonce-" + i;
             pool.submit(() -> {
                 try {
                     for (int j = 0; j < EVENTS_PER_THREAD; j++) {
@@ -99,9 +100,13 @@ public class OutboxTest extends BaseTest {
         assertThat(eventsDone).isEqualTo(TOTAL_EVENTS_EXPECTED);
 
         // All payments and payment steps have been created
-        assertThat(paymentRepository.count()).isEqualTo(THREADS);
         assertThat(paymentRepository.findAll()
                 .stream()
+                .filter(payment -> StringUtils.startsWith(payment.getPaymentId(), "outbox-event-nonce-"))
+                .count()).isEqualTo(THREADS);
+        assertThat(paymentRepository.findAll()
+                .stream()
+                .filter(payment -> StringUtils.startsWith(payment.getPaymentId(), "outbox-event-nonce-"))
                 .filter(payment -> payment.getSteps().size() != EVENTS_PER_THREAD)
                 .findAny()).isEmpty();
 

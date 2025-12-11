@@ -57,7 +57,7 @@
         <addAutoIncrement tableName="PAYMENT"
                           columnName="ID"
                           columnDataType="BIGINT"
-                          startWith="10"/>
+                          startWith="100"/>
 
         <!-- Index on TENANT -->
         <createIndex indexName="INDEX_PAYMENT_FK_TENANT_ID"

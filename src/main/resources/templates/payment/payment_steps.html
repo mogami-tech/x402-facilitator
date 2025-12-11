@@ -1,0 +1,12 @@
+<!--/*@thymesVar id="result" type="tech.mogami.facilitator.dto.payment.PaymentDto"*/-->
+
+<div class="card bg-primary text-primary-content" th:each="step: ${result.steps()}">
+    <div class="card-body">
+        <h2 class="card-title">/<span th:text="${step.paymentStepType()}"></span></h2>
+        <p th:text="${step.paymentStepId()}"></p>
+        <div class="card-actions justify-end">
+            <button class="btn">View request</button>
+            <button class="btn">View response</button>
+        </div>
+    </div>
+</div>

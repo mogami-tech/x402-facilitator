@@ -37,6 +37,9 @@ public record PaymentDto(
         @Singular List<PaymentStepDto> steps
 ) {
 
+    /** Unknown value for any formated field. */
+    public static final String UNKNOWN_FORMATTED_VALUE = "-";
+
     /**
      * Get the formatted "from".
      *
@@ -45,7 +48,7 @@ public record PaymentDto(
     public String formattedFrom() {
         return Optional.ofNullable(fromAddress)
                 .map(AddressDto::address)
-                .orElse(null);
+                .orElse(UNKNOWN_FORMATTED_VALUE);
     }
 
     /**
@@ -56,7 +59,16 @@ public record PaymentDto(
     public String formattedTo() {
         return Optional.ofNullable(toAddress)
                 .map(AddressDto::address)
-                .orElse(null);
+                .orElse(UNKNOWN_FORMATTED_VALUE);
+    }
+
+    /**
+     * Get the formatted asset amount with symbol based on the default locale.
+     *
+     * @return the formatted asset amount with symbol
+     */
+    public String formattedAmount() {
+        return formattedAmount(Locale.getDefault());
     }
 
     /**
@@ -67,7 +79,7 @@ public record PaymentDto(
      */
     public String formattedAmount(final Locale locale) {
         if (assetAmount == null || assetContract == null || network == null) {
-            return null;
+            return UNKNOWN_FORMATTED_VALUE;
         }
 
         // Manage number formatting based on locale if needed.
@@ -78,6 +90,28 @@ public record PaymentDto(
         return network.findDeployedAsset(assetContract.address())
                 .map(asset -> nf.format(asset.fromAtomic(assetAmount)) + " " + asset.asset().symbol())
                 .orElseGet(() -> nf.format(assetAmount));
+    }
+
+    /**
+     * Get the formatted asset contract address.
+     *
+     * @return the formatted asset contract address
+     */
+    public String formattedAssetContract() {
+        return Optional.ofNullable(assetContract)
+                .map(AddressDto::address)
+                .orElse(UNKNOWN_FORMATTED_VALUE);
+    }
+
+    /**
+     * Get the formatted network name.
+     *
+     * @return the formatted network name
+     */
+    public String formattedNetwork() {
+        return Optional.ofNullable(network)
+                .map(Network::displayName)
+                .orElse(UNKNOWN_FORMATTED_VALUE);
     }
 
 }

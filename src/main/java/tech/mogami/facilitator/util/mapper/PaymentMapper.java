@@ -25,8 +25,7 @@ public interface PaymentMapper {
     @Mapping(target = "network", source = "networkName", qualifiedByName = "networkFromName")
     PaymentDto toDto(Payment payment);
 
+    @Mapping(target = "createdAt", source = "createdAt")
     PaymentStepDto toDto(PaymentStep step);
-
-    PaymentStep toEntity(PaymentStepDto dtoStep);
 
 }

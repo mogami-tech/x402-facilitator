@@ -16,7 +16,11 @@
     */-->
     <div class="w-full max-w-9/10 mx-auto">
 
-        <span th:text="${result.paymentId()}"></span>
+        <!--/* Payment summary =================================================================================== */-->
+        <div layout:replace="~{payment/payment_header}"></div>
+
+        <!--/* Payment steps ===================================================================================== */-->
+        <div layout:replace="~{payment/payment_steps}"></div>
 
     </div>
 

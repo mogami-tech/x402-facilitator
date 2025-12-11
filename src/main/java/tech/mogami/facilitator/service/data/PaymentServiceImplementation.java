@@ -37,7 +37,7 @@ public class PaymentServiceImplementation extends BaseService implements Payment
     @Override
     public boolean existsByPaymentId(final String paymentId) {
         if (StringUtils.isBlank(paymentId)) {
-            log.debug("Payment ID is blank, returning false for existence check.");
+            log.debug("Payment ID is blank, returning false for existence check");
             return false;
         } else {
             log.debug("Checking existence of payment by paymentId: {}", paymentId);
