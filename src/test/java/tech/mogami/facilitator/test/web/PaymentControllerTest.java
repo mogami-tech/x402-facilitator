@@ -65,12 +65,33 @@ public class PaymentControllerTest extends BaseWebTest {
         assertElementValue(page, "payment-to-address", "0x7553F6FA4Fb62986b64f79aEFa1fB93ea64A22b1");
         assertElementValue(page, "payment-amount", "0,01 USDC");
 
-        // First step (in error).
+        // First step (error).
         assertElementExists(page, "payment-step-0");
         assertElementValue(page, "payment-step-0-type", "VERIFY");
         assertElementValue(page, "payment-step-0-status", "Failed");
-        assertElementValue(page, "payment-step-0-error-code", "invalid_exact_evm_payload_signature");
-        assertElementValue(page, "payment-step-0-error-message", "Signature is empty");
+        assertElementValue(page, "payment-step-0-error", "Error: invalid_exact_evm_payload_signature (Details: Signature is empty)");
+
+        // Second step (successful).
+        assertElementExists(page, "payment-step-1");
+        assertElementValue(page, "payment-step-1-type", "VERIFY");
+        assertElementValue(page, "payment-step-1-status", "Succeed");
+        assertElementNotExists(page, "payment-step-1-error-code");
+        assertElementNotExists(page, "payment-step-1-error-message");
+
+        // Third step (error).
+        assertElementExists(page, "payment-step-2");
+        assertElementValue(page, "payment-step-2-type", "SETTLE");
+        assertElementValue(page, "payment-step-2-status", "Failed");
+        assertElementValue(page, "payment-step-2-error", "Error: unexpected_settle_error (Details: Node unreachable)");
+
+        // Fourth step (successful).
+        assertElementExists(page, "payment-step-3");
+        assertElementValue(page, "payment-step-3-type", "SETTLE");
+        assertElementValue(page, "payment-step-3-status", "Succeeded");
+        assertElementNotExists(page, "payment-step-3-error-code");
+        assertElementNotExists(page, "payment-step-3-error-message");
+
+        assertElementNotExists(page, "payment-step-4");
     }
 
 }

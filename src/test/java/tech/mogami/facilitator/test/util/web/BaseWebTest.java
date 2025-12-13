@@ -57,6 +57,20 @@ public class BaseWebTest {
     }
 
     /**
+     * Asserts that the element with the given ID does not exist in the page.
+     *
+     * @param page      the page to check
+     * @param elementId the ID of the element to check
+     */
+    public void assertElementNotExists(
+            final Document page,
+            final String elementId) {
+        assertThat(page.getElementById(elementId))
+                .as("checking that element with ID '%s' does not exist", elementId)
+                .isNull();
+    }
+
+    /**
      * Asserts that the element with the given ID exists in the page and contains the expected value.
      *
      * @param page          the page to check

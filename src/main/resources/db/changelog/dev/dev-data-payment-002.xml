@@ -19,6 +19,7 @@
             <column name="UPDATED_AT"/>
         </insert>
 
+        <!-- Step 1 -->
         <insert tableName="PAYMENT_STEP">
             <column name="ID" valueNumeric="1"/>
             <column name="PAYMENT_STEP_ID" value="PAYMENT_STEP_001_001"/>
@@ -75,6 +76,185 @@
             <column name="ERROR_CODE" value="invalid_exact_evm_payload_signature"/>
             <column name="ERROR_MESSAGE" value="Signature is empty"/>
             <column name="CREATED_AT" valueDate="2025-01-01T00:01:00"/>
+            <column name="UPDATED_AT"/>
+        </insert>
+
+        <!-- Step 2 -->
+        <insert tableName="PAYMENT_STEP">
+            <column name="ID" valueNumeric="2"/>
+            <column name="PAYMENT_STEP_ID" value="PAYMENT_STEP_001_002"/>
+            <column name="FK_TENANT_ID" value="00000000-0000-0000-0000-000000000000"/>
+            <column name="FK_PAYMENT_ID" valueNumeric="2"/>
+            <column name="PAYMENT_STEP_TYPE" value="VERIFY"/>
+            <column name="REQUEST_PAYLOAD">
+                <![CDATA[
+                {
+                  "x402Version": 1,
+                  "paymentPayload": {
+                    "x402Version": 1,
+                    "scheme": "exact",
+                    "network": "base-sepolia",
+                    "payload": {
+                      "signature": "0x2d6a7588d6acca505cbf0d9a4a227e0c52c6c34008c8e8986a1283259764173608a2ce6496642e377d6da8dbbf5836e9bd15092f9ecab05ded3d6293af148b571c",
+                      "authorization": {
+                        "from": "0x2980bc24bBFB34DE1BBC91479Cb712ffbCE02F73",
+                        "to": "0x7553F6FA4Fb62986b64f79aEFa1fB93ea64A22b1",
+                        "value": "10000",
+                        "validAfter": "1754484182",
+                        "validBefore": "1754484302",
+                        "nonce": "0x774bd311d1661b4954d2ed2380599285151583179a2e7b7e5142b82971a11326"
+                      }
+                    }
+                  },
+                  "paymentRequirements": {
+                    "scheme": "exact",
+                    "network": "base-sepolia",
+                    "maxAmountRequired": "10000",
+                    "resource": "http://localhost:4021/weather",
+                    "description": "",
+                    "mimeType": "",
+                    "payTo": "0x7553F6FA4Fb62986b64f79aEFa1fB93ea64A22b1",
+                    "maxTimeoutSeconds": 60,
+                    "asset": "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
+                    "extra": {
+                      "name": "USDC",
+                      "version": "2"
+                    }
+                  }
+                }
+                ]]>
+            </column>
+            <column name="RESPONSE_PAYLOAD">
+                <![CDATA[
+                {
+                    "isValid": true,
+                    "invalidReason": "invalid_exact_evm_payload_signature",
+                    "payer": "0x2980bc24bBFB34DE1BBC91479Cb712ffbCE02F73"
+                }
+                ]]>
+            </column>
+            <column name="CREATED_AT" valueDate="2025-01-01T00:02:00"/>
+            <column name="UPDATED_AT"/>
+        </insert>
+
+        <!-- Step 3 -->
+        <insert tableName="PAYMENT_STEP">
+            <column name="ID" valueNumeric="3"/>
+            <column name="PAYMENT_STEP_ID" value="PAYMENT_STEP_001_003"/>
+            <column name="FK_TENANT_ID" value="00000000-0000-0000-0000-000000000000"/>
+            <column name="FK_PAYMENT_ID" valueNumeric="2"/>
+            <column name="PAYMENT_STEP_TYPE" value="SETTLE"/>
+            <column name="REQUEST_PAYLOAD">
+                <![CDATA[
+                {
+                  "x402Version": 1,
+                  "paymentPayload": {
+                    "x402Version": 1,
+                    "scheme": "exact",
+                    "network": "base-sepolia",
+                    "payload": {
+                      "signature": "0xc2c261db2f352e47049c68a9f96be3a46f0dda5138ec04fc9a0462f0d32c531d31a31b26c1b7852978b9db3ccc5ea4839de25ca4c17fee47f7344d420128ceb11b",
+                      "authorization": {
+                        "from": "0x2980bc24bBFB34DE1BBC91479Cb712ffbCE02F73",
+                        "to": "0x2980bc24bBFB34DE1BBC91479Cb712ffbCE02F73",
+                        "value": "1000",
+                        "validAfter": "1747601321",
+                        "validBefore": "1747601441",
+                        "nonce": "0xa5f2264bcb079c96f07d9fe1378f5f846e3acd5ea29024d740cec881e2e85fe6"
+                      }
+                    }
+                  },
+                  "paymentRequirements": {
+                    "scheme": "exact",
+                    "network": "base-sepolia",
+                    "maxAmountRequired": "1000",
+                    "resource": "http://localhost:4021/weather",
+                    "description": "",
+                    "mimeType": "",
+                    "payTo": "0x2980bc24bBFB34DE1BBC91479Cb712ffbCE02F73",
+                    "maxTimeoutSeconds": 60,
+                    "asset": "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
+                    "extra": {
+                      "name": "USDC",
+                      "version": "2"
+                    }
+                  }
+                }
+                ]]>
+            </column>
+            <column name="RESPONSE_PAYLOAD">
+                <![CDATA[
+                {
+                  "success": false,
+                  "network": "base-sepolia",
+                  "transaction": "",
+                  "errorReason": "invalid_scheme",
+                  "payer": "0x2980bc24bBFB34DE1BBC91479Cb712ffbCE02F73"
+                }
+                ]]>
+            </column>
+            <column name="ERROR_CODE" value="unexpected_settle_error"/>
+            <column name="ERROR_MESSAGE" value="Node unreachable"/>
+            <column name="CREATED_AT" valueDate="2025-01-01T00:03:00"/>
+            <column name="UPDATED_AT"/>
+        </insert>
+
+        <!-- Step 4 -->
+        <insert tableName="PAYMENT_STEP">
+            <column name="ID" valueNumeric="4"/>
+            <column name="PAYMENT_STEP_ID" value="PAYMENT_STEP_001_004"/>
+            <column name="FK_TENANT_ID" value="00000000-0000-0000-0000-000000000000"/>
+            <column name="FK_PAYMENT_ID" valueNumeric="2"/>
+            <column name="PAYMENT_STEP_TYPE" value="SETTLE"/>
+            <column name="REQUEST_PAYLOAD">
+                <![CDATA[
+                {
+                  "x402Version": 1,
+                  "paymentPayload": {
+                    "x402Version": 1,
+                    "scheme": "exact",
+                    "network": "base-sepolia",
+                    "payload": {
+                      "signature": "0xc2c261db2f352e47049c68a9f96be3a46f0dda5138ec04fc9a0462f0d32c531d31a31b26c1b7852978b9db3ccc5ea4839de25ca4c17fee47f7344d420128ceb11b",
+                      "authorization": {
+                        "from": "0x2980bc24bBFB34DE1BBC91479Cb712ffbCE02F73",
+                        "to": "0x2980bc24bBFB34DE1BBC91479Cb712ffbCE02F73",
+                        "value": "1000",
+                        "validAfter": "1747601321",
+                        "validBefore": "1747601441",
+                        "nonce": "0xa5f2264bcb079c96f07d9fe1378f5f846e3acd5ea29024d740cec881e2e85fe6"
+                      }
+                    }
+                  },
+                  "paymentRequirements": {
+                    "scheme": "exact",
+                    "network": "base-sepolia",
+                    "maxAmountRequired": "1000",
+                    "resource": "http://localhost:4021/weather",
+                    "description": "",
+                    "mimeType": "",
+                    "payTo": "0x2980bc24bBFB34DE1BBC91479Cb712ffbCE02F73",
+                    "maxTimeoutSeconds": 60,
+                    "asset": "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
+                    "extra": {
+                      "name": "USDC",
+                      "version": "2"
+                    }
+                  }
+                }
+                ]]>
+            </column>
+            <column name="RESPONSE_PAYLOAD">
+                <![CDATA[
+                {
+                  "success": true,
+                  "network": "base-sepolia",
+                  "transaction": "0xfc10fefada6c3764ddc6d1eaae63db232a37f409dd98fa81fd6bd3959b748c7b",
+                  "payer": "0x2980bc24bBFB34DE1BBC91479Cb712ffbCE02F73"
+                }
+                ]]>
+            </column>
+            <column name="CREATED_AT" valueDate="2025-01-01T00:04:00"/>
             <column name="UPDATED_AT"/>
         </insert>
 

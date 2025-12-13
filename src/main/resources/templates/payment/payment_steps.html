@@ -1,7 +1,7 @@
 <!--/*@thymesVar id="result" type="tech.mogami.facilitator.dto.payment.PaymentDto"*/-->
 
 <!--/* Card displaying the step ================================================================================== */-->
-<div class="card"
+<div class="card my-1"
      th:classappend="${step.hasError()} ? ' bg-error text-error-content' : ' bg-success text-success-content'"
      th:each="step, iStat : ${result.steps()}"
      th:id="'payment-step-' + ${iStat.index}"
@@ -28,10 +28,8 @@
                th:text="#{payment.step.failure.description(${ts})}"
                th:with="ts=${#temporals.format(step.createdAt(),  'dd/MM/yyyy HH:mm z', T(java.time.ZoneId).of('Europe/Paris'))}">
             </p>
-            <p th:id="'payment-step-' + ${iStat.index} + '-error-code'"
-               th:utext="#{error.code(${step.errorCode()})}"></p>
-            <p th:id="'payment-step-' + ${iStat.index} + '-error-message'"
-               th:utext="#{error.message(${step.errorMessage()})}"></p>
+            <p th:id="'payment-step-' + ${iStat.index} + '-error'"
+               th:utext="#{errorWithDetails(${step.errorCode()}, ${step.errorMessage()})}"></p>
         </th:block>
 
         <!--/* Buttons */-->
