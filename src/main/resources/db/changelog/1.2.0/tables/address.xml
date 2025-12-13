@@ -29,7 +29,7 @@
         <addAutoIncrement tableName="ADDRESS"
                           columnName="ID"
                           columnDataType="BIGINT"
-                          startWith="1"/>
+                          startWith="100"/>
 
         <!-- Index on FK_PARTICIPANT_ID -->
         <createIndex indexName="INDEX_ADDRESS_FK_PARTICIPANT_ID"

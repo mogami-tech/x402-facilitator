@@ -79,6 +79,7 @@
         <webjars-locator.version>0.52</webjars-locator.version>
         <htmx.version>2.0.8</htmx.version>
         <alpinejs.version>3.15.1</alpinejs.version>
+        <prismjs.version>1.30.0</prismjs.version>
 
         <!-- Tests -->
         <junit-jupiter.version>6.0.0</junit-jupiter.version>
@@ -222,6 +223,11 @@
             <groupId>org.webjars.npm</groupId>
             <artifactId>alpinejs</artifactId>
             <version>${alpinejs.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.webjars.npm</groupId>
+            <artifactId>prismjs</artifactId>
+            <version>${prismjs.version}</version>
         </dependency>
 
         <!-- Util -->

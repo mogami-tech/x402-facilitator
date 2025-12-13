@@ -4,7 +4,7 @@
     On mobile (<640px) → stats-vertical applies → each stat is one per line.
     On small screens and up (≥640px) → sm:stats-horizontal overrides → they switch to row layout.
 */-->
-<div class="stats shadow w-full stats-vertical sm:stats-horizontal my-8"
+<div class="stats shadow w-full stats-vertical sm:stats-horizontal my-1"
      th:classappend="
         ${result.status.toString() == 'COMPLETED'} ? ' bg-green-300'
         : (${result.status.toString() == 'FAILED'} ? ' bg-red-300'
@@ -36,7 +36,7 @@
 
 </div>
 
-<div class="stats shadow w-full stats-vertical sm:stats-horizontal my-4">
+<div class="stats shadow w-full stats-vertical sm:stats-horizontal my-4 bg-gray-100">
 
     <!--/* Displaying "From address" */-->
     <div class="stat">

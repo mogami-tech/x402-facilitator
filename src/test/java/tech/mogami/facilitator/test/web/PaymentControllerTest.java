@@ -32,7 +32,6 @@ public class PaymentControllerTest extends BaseWebTest {
     @MethodSource("headers")
     @DisplayName("Simple payment without step")
     public void simplePaymentWithoutStep(final HttpHeaders headers) throws Exception {
-
         MvcResult result = mockMvc.perform(get(PAYMENT_BY_NONCE_URL.replace("{nonce}", "nonce001")).headers(headers))
                 .andExpect(status().isOk())
                 .andExpect(view().name(containsString(PAYMENT_BY_NONCE_PAGE.view())))
@@ -46,6 +45,32 @@ public class PaymentControllerTest extends BaseWebTest {
         assertElementValue(page, "payment-from-address", "-");
         assertElementValue(page, "payment-to-address", "-");
         assertElementValue(page, "payment-amount", "-");
+    }
+
+    @ParameterizedTest
+    @MethodSource("headers")
+    @DisplayName("Complete payment with steps")
+    public void completePaymentWithSteps(final HttpHeaders headers) throws Exception {
+        MvcResult result = mockMvc.perform(get(PAYMENT_BY_NONCE_URL.replace("{nonce}", "nonce002")).headers(headers))
+                .andExpect(status().isOk())
+                .andExpect(view().name(containsString(PAYMENT_BY_NONCE_PAGE.view())))
+                .andReturn();
+        Document page = Jsoup.parse(result.getResponse().getContentAsString());
+
+        // Payment header.
+        assertElementValue(page, "payment-nonce", "nonce002");
+        assertElementValue(page, "payment-status", "Completed");
+        assertElementValue(page, "payment-network-name", "Base Sepolia Testnet");
+        assertElementValue(page, "payment-from-address", "0x2980bc24bBFB34DE1BBC91479Cb712ffbCE02F73");
+        assertElementValue(page, "payment-to-address", "0x7553F6FA4Fb62986b64f79aEFa1fB93ea64A22b1");
+        assertElementValue(page, "payment-amount", "0,01 USDC");
+
+        // First step (in error).
+        assertElementExists(page, "payment-step-0");
+        assertElementValue(page, "payment-step-0-type", "VERIFY");
+        assertElementValue(page, "payment-step-0-status", "Failed");
+        assertElementValue(page, "payment-step-0-error-code", "invalid_exact_evm_payload_signature");
+        assertElementValue(page, "payment-step-0-error-message", "Signature is empty");
     }
 
 }

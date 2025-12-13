@@ -5,6 +5,8 @@ databaseChangeLog:
   # ====================================================================================================================
   # Dev data.
   - include:
+      file: /db/changelog/dev/dev-data-addresses.xml
+  - include:
       file: /db/changelog/dev/dev-data-payment-001.xml
   - include:
       file: /db/changelog/dev/dev-data-payment-002.xml

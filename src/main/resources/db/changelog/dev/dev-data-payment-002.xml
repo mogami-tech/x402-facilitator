@@ -9,12 +9,12 @@
             <column name="ID" valueNumeric="2"/>
             <column name="PAYMENT_ID" value="nonce002"/>
             <column name="FK_TENANT_ID" value="00000000-0000-0000-0000-000000000000"/>
-            <column name="FK_FROM_ADDRESS_ID"/>
-            <column name="FK_TO_ADDRESS_ID"/>
-            <column name="ASSET_AMOUNT"/>
-            <column name="FK_CONTRACT_ADDRESS_ID"/>
-            <column name="NETWORK_NAME"/>
-            <column name="STATUS" value="PENDING"/>
+            <column name="FK_FROM_ADDRESS_ID" valueNumeric="1"/>
+            <column name="FK_TO_ADDRESS_ID" valueNumeric="2"/>
+            <column name="ASSET_AMOUNT" valueNumeric="10000"/>
+            <column name="FK_CONTRACT_ADDRESS_ID" valueNumeric="3"/>
+            <column name="NETWORK_NAME" value="base-sepolia"/>
+            <column name="STATUS" value="COMPLETED"/>
             <column name="CREATED_AT" valueDate="2025-01-01T00:00:00"/>
             <column name="UPDATED_AT"/>
         </insert>
@@ -38,7 +38,7 @@
                       "authorization": {
                         "from": "0x2980bc24bBFB34DE1BBC91479Cb712ffbCE02F73",
                         "to": "0x7553F6FA4Fb62986b64f79aEFa1fB93ea64A22b1",
-                        "value": "1000",
+                        "value": "10000",
                         "validAfter": "1754484182",
                         "validBefore": "1754484302",
                         "nonce": "0x774bd311d1661b4954d2ed2380599285151583179a2e7b7e5142b82971a11326"
@@ -48,7 +48,7 @@
                   "paymentRequirements": {
                     "scheme": "exact",
                     "network": "base-sepolia",
-                    "maxAmountRequired": "1000",
+                    "maxAmountRequired": "10000",
                     "resource": "http://localhost:4021/weather",
                     "description": "",
                     "mimeType": "",
@@ -63,7 +63,7 @@
                 }
                 ]]>
             </column>
-            <column name="REQUEST_PAYLOAD">
+            <column name="RESPONSE_PAYLOAD">
                 <![CDATA[
                 {
                     "isValid": true,
@@ -74,7 +74,7 @@
             </column>
             <column name="ERROR_CODE" value="invalid_exact_evm_payload_signature"/>
             <column name="ERROR_MESSAGE" value="Signature is empty"/>
-            <column name="CREATED_AT" valueDate="2025-01-01T00:00:01"/>
+            <column name="CREATED_AT" valueDate="2025-01-01T00:01:00"/>
             <column name="UPDATED_AT"/>
         </insert>
 
