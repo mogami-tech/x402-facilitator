@@ -64,6 +64,7 @@ public class PaymentControllerTest extends BaseWebTest {
         assertElementValue(page, "payment-from-address", "0x2980bc24bBFB34DE1BBC91479Cb712ffbCE02F73");
         assertElementValue(page, "payment-to-address", "0x7553F6FA4Fb62986b64f79aEFa1fB93ea64A22b1");
         assertElementValue(page, "payment-amount", "0,01 USDC");
+        assertElementValue(page, "payment-version", "1");
 
         // First step (error).
         assertElementExists(page, "payment-step-0");

@@ -42,6 +42,10 @@ public class Payment extends BaseTenantEntity {
     @Column(name = "PAYMENT_ID", nullable = false, unique = true, updatable = false)
     private String paymentId;
 
+    /** X402 version used for this payment. */
+    @Column(name = "X402_VERSION", nullable = false)
+    private String x402Version;
+
     /** The address from which the payment is made. */
     @ManyToOne(fetch = EAGER)
     @JoinColumn(name = "FK_FROM_ADDRESS_ID", nullable = false)

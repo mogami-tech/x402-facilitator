@@ -112,6 +112,9 @@ public class NewPaymentStepHandler implements OutboxEventHandler<NewPaymentStepM
 
                         // We update the payment =======================================================================
                         if (request != null) {
+                            request.getVersion().ifPresent(x402Version -> {
+                                payment.setX402Version(x402Version.canonical());
+                            });
                             request.getFromAddress().ifPresent(addressAsString -> {
                                 participantService.getOrCreateAddress(addressAsString);
                                 addressRepository.findByAddress(addressAsString).ifPresent(payment::setFrom);
@@ -176,7 +179,7 @@ public class NewPaymentStepHandler implements OutboxEventHandler<NewPaymentStepM
     private List<PaymentStep> getStepsToProcess(final List<PaymentStep> steps) {
         // Avoid errors ================================================================================================
         if (steps == null || steps.isEmpty()) {
-            log.error("No steps to process - Anormal situation");
+            log.error("No steps to process - Abnormal situation");
             return List.of();
         }
 

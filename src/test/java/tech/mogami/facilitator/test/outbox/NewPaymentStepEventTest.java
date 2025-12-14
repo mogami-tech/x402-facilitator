@@ -24,6 +24,8 @@ import static tech.mogami.commons.constant.network.Networks.BASE_MAINNET;
 import static tech.mogami.commons.constant.network.Networks.BASE_SEPOLIA;
 import static tech.mogami.commons.constant.network.base.BaseContracts.BASE_MAINNET_USDC_CONTRACT;
 import static tech.mogami.commons.constant.network.base.BaseContracts.BASE_SEPOLIA_USDC_CONTRACT;
+import static tech.mogami.commons.constant.version.X402Versions.V1;
+import static tech.mogami.commons.constant.version.X402Versions.V2;
 import static tech.mogami.commons.test.BaseTestData.TEST_CLIENT_WALLET_ADDRESS_1;
 import static tech.mogami.commons.test.BaseTestData.TEST_CLIENT_WALLET_ADDRESS_2;
 import static tech.mogami.facilitator.domain.payment.PaymentStepType.SETTLE;
@@ -118,6 +120,7 @@ public class NewPaymentStepEventTest extends BaseTest {
 
                     // Raw values.
                     assertThat(payment.paymentId()).isNotNull();
+                    assertThat(payment.version()).isNull();
                     assertThat(payment.paymentId()).isEqualTo(COMPLETE_PAYMENT_NONCE);
                     assertThat(payment.fromAddress()).isNull();
                     assertThat(payment.toAddress()).isNull();
@@ -126,6 +129,7 @@ public class NewPaymentStepEventTest extends BaseTest {
                     assertThat(payment.network()).isNull();
 
                     // Formatted values.
+                    assertThat(payment.formattedVersion()).isEqualTo(UNKNOWN_FORMATTED_VALUE);
                     assertThat(payment.formattedFrom()).isEqualTo(UNKNOWN_FORMATTED_VALUE);
                     assertThat(payment.formattedTo()).isEqualTo(UNKNOWN_FORMATTED_VALUE);
                     assertThat(payment.formattedAmount(ENGLISH)).isEqualTo(UNKNOWN_FORMATTED_VALUE);
@@ -144,6 +148,7 @@ public class NewPaymentStepEventTest extends BaseTest {
                 .paymentId(COMPLETE_PAYMENT_NONCE)
                 .paymentStepType(VERIFY)
                 .requestPayload(getVerifyRequest(
+                        V1,
                         BASE_SEPOLIA,
                         TEST_CLIENT_WALLET_ADDRESS_1,
                         TEST_CLIENT_WALLET_ADDRESS_2,
@@ -177,14 +182,18 @@ public class NewPaymentStepEventTest extends BaseTest {
 
                     // Raw values.
                     assertThat(payment.paymentId()).isNotNull();
+                    assertThat(payment.version()).isNotNull();
+                    assertThat(payment.version()).isEqualTo(V1);
                     assertThat(payment.fromAddress()).isNotNull();
                     assertThat(payment.fromAddress().address()).isEqualTo(TEST_CLIENT_WALLET_ADDRESS_1);
+                    assertThat(payment.toAddress()).isNotNull();
                     assertThat(payment.toAddress().address()).isEqualTo(TEST_CLIENT_WALLET_ADDRESS_2);
                     assertThat(payment.assetAmount()).isEqualTo("1500500000");
                     assertThat(payment.assetContract().address()).isEqualTo(BASE_SEPOLIA_USDC_CONTRACT);
                     assertThat(payment.network().name()).isEqualTo(BASE_SEPOLIA.name());
 
                     // Formatted values.
+                    assertThat(payment.formattedVersion()).isEqualTo("1");
                     assertThat(payment.formattedFrom()).isEqualTo(TEST_CLIENT_WALLET_ADDRESS_1);
                     assertThat(payment.formattedTo()).isEqualTo(TEST_CLIENT_WALLET_ADDRESS_2);
                     assertThat(payment.formattedAmount(ENGLISH)).isEqualTo("1,500.5 USDC");
@@ -196,6 +205,7 @@ public class NewPaymentStepEventTest extends BaseTest {
                 .paymentId(COMPLETE_PAYMENT_NONCE)
                 .paymentStepType(VERIFY)
                 .requestPayload(getVerifyRequest(
+                        V2,
                         BASE_MAINNET,
                         "0xf6b42050A71Ca13f842eDa53C7d31B7C1BD22222",
                         "0xCC6f005718945b59cfC5aF1981BF93904A822222",
@@ -220,6 +230,8 @@ public class NewPaymentStepEventTest extends BaseTest {
 
                     // Raw values.
                     assertThat(payment.paymentId()).isNotNull();
+                    assertThat(payment.version()).isNotNull();
+                    assertThat(payment.version()).isEqualTo(V2);
                     assertThat(payment.fromAddress().address()).isEqualTo("0xf6b42050A71Ca13f842eDa53C7d31B7C1BD22222");
                     assertThat(payment.toAddress().address()).isEqualTo("0xCC6f005718945b59cfC5aF1981BF93904A822222");
                     assertThat(payment.assetAmount()).isEqualTo("2500500000");
@@ -227,6 +239,7 @@ public class NewPaymentStepEventTest extends BaseTest {
                     assertThat(payment.network().name()).isEqualTo(BASE_MAINNET.name());
 
                     // Formatted values.
+                    assertThat(payment.formattedVersion()).isEqualTo("2");
                     assertThat(payment.formattedFrom()).isEqualTo("0xf6b42050A71Ca13f842eDa53C7d31B7C1BD22222");
                     assertThat(payment.formattedTo()).isEqualTo("0xCC6f005718945b59cfC5aF1981BF93904A822222");
                     assertThat(payment.formattedAmount(ENGLISH)).isEqualTo("2,500,500,000");
@@ -238,6 +251,7 @@ public class NewPaymentStepEventTest extends BaseTest {
                 .paymentId(COMPLETE_PAYMENT_NONCE)
                 .paymentStepType(SETTLE)
                 .requestPayload(getSettleRequest(
+                        V1,
                         BASE_SEPOLIA,
                         "0xf6b42050A71Ca13f842eDa53C7d31B7C1BD33333",
                         "0xCC6f005718945b59cfC5aF1981BF93904A833333",
@@ -253,7 +267,7 @@ public class NewPaymentStepEventTest extends BaseTest {
                 .errorMessage(UNEXPECTED_SETTLE_ERROR.getDefaultMessage())
                 .build());
 
-        // The payment values must have beed updated ===================================================================
+        // The payment values must have been updated ===================================================================
         await().until(this::allEventsAreTreated);
         assertThat(paymentService.searchByPaymentId(COMPLETE_PAYMENT_NONCE)).isPresent().get()
                 .satisfies(payment -> {
@@ -262,6 +276,7 @@ public class NewPaymentStepEventTest extends BaseTest {
 
                     // Raw values.
                     assertThat(payment.paymentId()).isNotNull();
+                    assertThat(payment.version()).isEqualTo(V1);
                     assertThat(payment.fromAddress().address()).isEqualTo("0xf6b42050A71Ca13f842eDa53C7d31B7C1BD33333");
                     assertThat(payment.toAddress().address()).isEqualTo("0xCC6f005718945b59cfC5aF1981BF93904A833333");
                     assertThat(payment.assetAmount()).isEqualTo("3500500000");
@@ -269,6 +284,7 @@ public class NewPaymentStepEventTest extends BaseTest {
                     assertThat(payment.network().name()).isEqualTo(BASE_SEPOLIA.name());
 
                     // Formatted values.
+                    assertThat(payment.formattedVersion()).isEqualTo("1");
                     assertThat(payment.formattedFrom()).isEqualTo("0xf6b42050A71Ca13f842eDa53C7d31B7C1BD33333");
                     assertThat(payment.formattedTo()).isEqualTo("0xCC6f005718945b59cfC5aF1981BF93904A833333");
                     assertThat(payment.formattedAmount(ENGLISH)).isEqualTo("3,500,500,000");
@@ -280,6 +296,7 @@ public class NewPaymentStepEventTest extends BaseTest {
                 .paymentId(COMPLETE_PAYMENT_NONCE)
                 .paymentStepType(VERIFY)
                 .requestPayload(getVerifyRequest(
+                        V2,
                         BASE_MAINNET,
                         "0xf6b42050A71Ca13f842eDa53C7d31B7C1BD44444",
                         "0xCC6f005718945b59cfC5aF1981BF93904A844444",
@@ -304,6 +321,7 @@ public class NewPaymentStepEventTest extends BaseTest {
 
                     // Raw values.
                     assertThat(payment.paymentId()).isNotNull();
+                    assertThat(payment.version()).isEqualTo(V1);
                     assertThat(payment.fromAddress().address()).isEqualTo("0xf6b42050A71Ca13f842eDa53C7d31B7C1BD33333");
                     assertThat(payment.toAddress().address()).isEqualTo("0xCC6f005718945b59cfC5aF1981BF93904A833333");
                     assertThat(payment.assetAmount()).isEqualTo("3500500000");
@@ -311,6 +329,7 @@ public class NewPaymentStepEventTest extends BaseTest {
                     assertThat(payment.network().name()).isEqualTo(BASE_SEPOLIA.name());
 
                     // Formatted values.
+                    assertThat(payment.formattedVersion()).isEqualTo("1");
                     assertThat(payment.formattedFrom()).isEqualTo("0xf6b42050A71Ca13f842eDa53C7d31B7C1BD33333");
                     assertThat(payment.formattedTo()).isEqualTo("0xCC6f005718945b59cfC5aF1981BF93904A833333");
                     assertThat(payment.formattedAmount(ENGLISH)).isEqualTo("3,500,500,000");
@@ -322,6 +341,7 @@ public class NewPaymentStepEventTest extends BaseTest {
                 .paymentId(COMPLETE_PAYMENT_NONCE)
                 .paymentStepType(SETTLE)
                 .requestPayload(getSettleRequest(
+                        V2,
                         BASE_MAINNET,
                         TEST_CLIENT_WALLET_ADDRESS_1,
                         TEST_CLIENT_WALLET_ADDRESS_2,
@@ -345,6 +365,7 @@ public class NewPaymentStepEventTest extends BaseTest {
 
                     // Raw values.
                     assertThat(payment.paymentId()).isNotNull();
+                    assertThat(payment.version()).isEqualTo(V2);
                     assertThat(payment.fromAddress().address()).isEqualTo(TEST_CLIENT_WALLET_ADDRESS_1);
                     assertThat(payment.toAddress().address()).isEqualTo(TEST_CLIENT_WALLET_ADDRESS_2);
                     assertThat(payment.assetAmount()).isEqualTo("4500500000");
@@ -352,6 +373,7 @@ public class NewPaymentStepEventTest extends BaseTest {
                     assertThat(payment.network().name()).isEqualTo(BASE_MAINNET.name());
 
                     // Formatted values.
+                    assertThat(payment.formattedVersion()).isEqualTo("2");
                     assertThat(payment.formattedFrom()).isEqualTo(TEST_CLIENT_WALLET_ADDRESS_1);
                     assertThat(payment.formattedTo()).isEqualTo(TEST_CLIENT_WALLET_ADDRESS_2);
                     assertThat(payment.formattedAmount(ENGLISH)).isEqualTo("4,500.5 USDC");
@@ -363,6 +385,7 @@ public class NewPaymentStepEventTest extends BaseTest {
                 .paymentId(COMPLETE_PAYMENT_NONCE)
                 .paymentStepType(VERIFY)
                 .requestPayload(getVerifyRequest(
+                        V1,
                         BASE_MAINNET,
                         "0xf6b42050A71Ca13f842eDa53C7d31B7C1BD55555",
                         "0xCC6f005718945b59cfC5aF1981BF93904A855555",
@@ -383,6 +406,7 @@ public class NewPaymentStepEventTest extends BaseTest {
                 .paymentId(COMPLETE_PAYMENT_NONCE)
                 .paymentStepType(VERIFY)
                 .requestPayload(getVerifyRequest(
+                        V1,
                         BASE_MAINNET,
                         "0xf6b42050A71Ca13f842eDa53C7d31B7C1BD66666",
                         "0xCC6f005718945b59cfC5aF1981BF93904A866666",
@@ -401,6 +425,7 @@ public class NewPaymentStepEventTest extends BaseTest {
                 .paymentId(COMPLETE_PAYMENT_NONCE)
                 .paymentStepType(SETTLE)
                 .requestPayload(getSettleRequest(
+                        V1,
                         BASE_SEPOLIA,
                         "0xf6b42050A71Ca13f842eDa53C7d31B7C1BD77777",
                         "0xCC6f005718945b59cfC5aF1981BF93904A877777",
@@ -426,6 +451,7 @@ public class NewPaymentStepEventTest extends BaseTest {
 
                     // Raw values.
                     assertThat(payment.paymentId()).isNotNull();
+                    assertThat(payment.version()).isEqualTo(V2);
                     assertThat(payment.fromAddress().address()).isEqualTo(TEST_CLIENT_WALLET_ADDRESS_1);
                     assertThat(payment.toAddress().address()).isEqualTo(TEST_CLIENT_WALLET_ADDRESS_2);
                     assertThat(payment.assetAmount()).isEqualTo("4500500000");
@@ -433,6 +459,7 @@ public class NewPaymentStepEventTest extends BaseTest {
                     assertThat(payment.network().name()).isEqualTo(BASE_MAINNET.name());
 
                     // Formatted values.
+                    assertThat(payment.formattedVersion()).isEqualTo("2");
                     assertThat(payment.formattedFrom()).isEqualTo(TEST_CLIENT_WALLET_ADDRESS_1);
                     assertThat(payment.formattedTo()).isEqualTo(TEST_CLIENT_WALLET_ADDRESS_2);
                     assertThat(payment.formattedAmount(ENGLISH)).isEqualTo("4,500.5 USDC");

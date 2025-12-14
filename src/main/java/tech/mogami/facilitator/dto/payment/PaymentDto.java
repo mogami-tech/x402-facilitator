@@ -3,6 +3,7 @@ package tech.mogami.facilitator.dto.payment;
 import lombok.Builder;
 import lombok.Singular;
 import tech.mogami.commons.constant.network.Network;
+import tech.mogami.commons.constant.version.X402Version;
 import tech.mogami.commons.payment.PaymentStatus;
 import tech.mogami.facilitator.dto.blockchain.AddressDto;
 
@@ -17,6 +18,7 @@ import java.util.Optional;
  * Payment data transfer object.
  *
  * @param paymentId     Globally unique payment identifier (usually the nonce)
+ * @param version       X402 version used for this payment
  * @param fromAddress   Address from which the payment is sent
  * @param toAddress     Address to which the payment is sent
  * @param assetAmount   Amount of the asset being transferred
@@ -28,6 +30,7 @@ import java.util.Optional;
 @Builder
 public record PaymentDto(
         String paymentId,
+        X402Version version,
         AddressDto fromAddress,
         AddressDto toAddress,
         BigInteger assetAmount,
@@ -39,6 +42,17 @@ public record PaymentDto(
 
     /** Unknown value for any formated field. */
     public static final String UNKNOWN_FORMATTED_VALUE = "-";
+
+    /**
+     * Get the formatted version.
+     *
+     * @return the formatted version
+     */
+    public String formattedVersion() {
+        return Optional.ofNullable(version)
+                .map(v -> String.valueOf(v.version()))
+                .orElse(UNKNOWN_FORMATTED_VALUE);
+    }
 
     /**
      * Get the formatted "from".

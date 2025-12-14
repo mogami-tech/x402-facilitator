@@ -7,7 +7,7 @@ import tech.mogami.commons.api.facilitator.verify.VerifyRequest;
 import tech.mogami.commons.api.facilitator.verify.VerifyResponse;
 import tech.mogami.commons.constant.X402Error;
 import tech.mogami.commons.constant.network.Network;
-import tech.mogami.commons.constant.version.X402Versions;
+import tech.mogami.commons.constant.version.X402Version;
 import tech.mogami.commons.payment.PaymentPayload;
 import tech.mogami.commons.payment.PaymentRequirements;
 import tech.mogami.commons.payment.schemes.exact.ExactSchemePayload;
@@ -30,6 +30,7 @@ public abstract class BaseTest {
     }
 
     public String getVerifyRequest(
+            final X402Version x402Version,
             final Network network,
             final String fromAddress,
             final String toAddress,
@@ -38,9 +39,9 @@ public abstract class BaseTest {
             final String nonce
     ) {
         return JsonUtil.toPrettyJson(VerifyRequest.builder()
-                .x402Version(X402Versions.V1.version())
+                .x402Version(x402Version.version())
                 .paymentPayload(PaymentPayload.builder()
-                        .x402Version(X402Versions.V1.version())
+                        .x402Version(x402Version.version())
                         .scheme(EXACT_SCHEME.name())
                         .network(network.name())
                         .payload(ExactSchemePayload.builder()
@@ -88,6 +89,7 @@ public abstract class BaseTest {
     }
 
     public String getSettleRequest(
+            final X402Version x402Version,
             final Network network,
             final String fromAddress,
             final String toAddress,
@@ -96,9 +98,9 @@ public abstract class BaseTest {
             final String nonce
     ) {
         return JsonUtil.toPrettyJson(SettleRequest.builder()
-                .x402Version(X402Versions.V1.version())
+                .x402Version(x402Version.version())
                 .paymentPayload(PaymentPayload.builder()
-                        .x402Version(X402Versions.V1.version())
+                        .x402Version(x402Version.version())
                         .scheme(EXACT_SCHEME.name())
                         .network(network.name())
                         .payload(ExactSchemePayload.builder()

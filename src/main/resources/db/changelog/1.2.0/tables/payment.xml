@@ -24,6 +24,7 @@
             </column>
 
             <!-- Data -->
+            <column name="X402_VERSION" type="varchar(50)" remarks="X402 version (ex: 1)"/>
             <column name="FK_FROM_ADDRESS_ID" type="BIGINT" remarks="Source address">
                 <constraints foreignKeyName="PAYMENT_FK_FROM_ADDRESS_ID"
                              referencedTableName="ADDRESS"

@@ -9,6 +9,7 @@
             <column name="ID" valueNumeric="2"/>
             <column name="PAYMENT_ID" value="nonce002"/>
             <column name="FK_TENANT_ID" value="00000000-0000-0000-0000-000000000000"/>
+            <column name="X402_VERSION" value="1"/>
             <column name="FK_FROM_ADDRESS_ID" valueNumeric="1"/>
             <column name="FK_TO_ADDRESS_ID" valueNumeric="2"/>
             <column name="ASSET_AMOUNT" valueNumeric="10000"/>

@@ -59,4 +59,11 @@
              th:text="${result.formattedAmount()}"></div>
     </div>
 
+    <!--/* Displaying "Version" */-->
+    <div class="stat w-full sm:w-64 sm:flex-grow-0">
+        <div class="stat-title" th:text="#{generic.version}"></div>
+        <div class="stat-value truncate max-w-[400px]" id="payment-version"
+             th:text="${result.formattedVersion()}"></div>
+    </div>
+
 </div>
