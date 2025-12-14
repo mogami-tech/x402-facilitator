@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import tech.mogami.commons.api.facilitator.verify.VerifyRequest;
 import tech.mogami.commons.api.facilitator.verify.VerifyResponse;
 import tech.mogami.facilitator.service.facilitator.VerifyService;
+import tech.mogami.facilitator.verifier.VerificationResult;
 
 import static tech.mogami.commons.api.facilitator.FacilitatorApiEndpoints.VERIFY_ENDPOINT;
 
@@ -37,12 +38,28 @@ public class VerifyController {
     VerifyResponse verify(@RequestBody final VerifyRequest verifyRequest) {
         final String nonce = verifyRequest.getNonce()
                 .orElseThrow(() -> new IllegalArgumentException("Nonce is required in the payment payload"));
+        final String payer = verifyRequest.getFromAddress().orElse("PAYER_NOT_FOUND");
 
-        // Call the verification service to process the request.
-        VerifyResponse result = verifierService.verify(verifyRequest);
-
-        log.info("Received verification request: {}", verifyRequest);
-        return result;
+        try {
+            // Call the verification service to process the request.
+            VerificationResult verificationResult = verifierService.verify(verifyRequest);
+            if (!verificationResult.isValid()) {
+                log.info("Verification error {}", verificationResult.errorMessage());
+                return VerifyResponse.builder()
+                        .isValid(false)
+                        .invalidReason(verificationResult.verificationError().getCode())
+                        .payer(payer)
+                        .build();
+            } else {
+                log.info("All verifiers passed for request: {}", verifyRequest);
+                return VerifyResponse.builder()
+                        .isValid(true)
+                        .payer(payer)
+                        .build();
+            }
+        } finally {
+            log.info("Verification completed for nonce: {} by payer: {}", nonce, payer);
+        }
     }
 
 }

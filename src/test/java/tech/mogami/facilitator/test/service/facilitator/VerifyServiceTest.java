@@ -37,7 +37,7 @@ public class VerifyServiceTest {
                 .isNotNull()
                 .satisfies(result -> {
                     assertThat(result.isValid()).isFalse();
-                    assertThat(result.invalidReason()).isEqualTo("unknown_error");
+                    assertThat(result.verificationError().getCode()).isEqualTo("unknown_error");
                 });
     }
 
@@ -81,7 +81,7 @@ public class VerifyServiceTest {
                 .isNotNull()
                 .satisfies(result -> {
                     assertThat(result.isValid()).isFalse();
-                    assertThat(result.invalidReason()).isEqualTo("invalid_network");
+                    assertThat(result.verificationError().getCode()).isEqualTo("invalid_network");
                 });
     }
 
@@ -125,7 +125,7 @@ public class VerifyServiceTest {
                 .isNotNull()
                 .satisfies(result -> {
                     assertThat(result.isValid()).isFalse();
-                    assertThat(result.invalidReason()).isEqualTo("invalid_exact_evm_payload_signature");
+                    assertThat(result.verificationError().getCode()).isEqualTo("invalid_exact_evm_payload_signature");
                 });
     }
 
@@ -169,7 +169,7 @@ public class VerifyServiceTest {
                 .isNotNull()
                 .satisfies(result -> {
                     assertThat(result.isValid()).isFalse();
-                    assertThat(result.invalidReason()).isEqualTo("invalid_exact_evm_payload_recipient_mismatch");
+                    assertThat(result.verificationError().getCode()).isEqualTo("invalid_exact_evm_payload_recipient_mismatch");
                 });
     }
 
@@ -213,7 +213,7 @@ public class VerifyServiceTest {
                 .isNotNull()
                 .satisfies(result -> {
                     assertThat(result.isValid()).isFalse();
-                    assertThat(result.invalidReason()).isEqualTo("invalid_exact_evm_payload_authorization_valid_before");
+                    assertThat(result.verificationError().getCode()).isEqualTo("invalid_exact_evm_payload_authorization_valid_before");
                 });
     }
 
@@ -264,7 +264,7 @@ public class VerifyServiceTest {
                 .isNotNull()
                 .satisfies(result -> {
                     assertThat(result.isValid()).isFalse();
-                    assertThat(result.invalidReason()).isEqualTo("insufficient_funds");
+                    assertThat(result.verificationError().getCode()).isEqualTo("insufficient_funds");
                 });
     }
 
@@ -315,7 +315,7 @@ public class VerifyServiceTest {
                 .isNotNull()
                 .satisfies(result -> {
                     assertThat(result.isValid()).isFalse();
-                    assertThat(result.invalidReason()).isEqualTo("invalid_exact_evm_payload_authorization_value");
+                    assertThat(result.verificationError().getCode()).isEqualTo("invalid_exact_evm_payload_authorization_value");
                 });
     }
 

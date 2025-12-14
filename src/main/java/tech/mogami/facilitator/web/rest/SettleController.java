@@ -14,7 +14,6 @@ import org.web3j.utils.Numeric;
 import tech.mogami.commons.api.facilitator.settle.SettleRequest;
 import tech.mogami.commons.api.facilitator.settle.SettleResponse;
 import tech.mogami.commons.api.facilitator.verify.VerifyRequest;
-import tech.mogami.commons.api.facilitator.verify.VerifyResponse;
 import tech.mogami.commons.constant.network.Network;
 import tech.mogami.commons.constant.network.Networks;
 import tech.mogami.commons.crypto.contract.FiatTokenV2_2;
@@ -22,6 +21,7 @@ import tech.mogami.commons.payment.schemes.exact.ExactSchemePayload;
 import tech.mogami.facilitator.parameter.X402Parameters;
 import tech.mogami.facilitator.provider.web3j.GasService;
 import tech.mogami.facilitator.service.facilitator.VerifyService;
+import tech.mogami.facilitator.verifier.VerificationResult;
 
 import java.math.BigInteger;
 import java.util.Map;
@@ -62,9 +62,10 @@ public class SettleController {
     @Operation(summary = "Settle a payment request")
     SettleResponse settle(@RequestBody final SettleRequest settleRequest) {
         final String nonce = settleRequest.getNonce().orElseThrow(() -> new IllegalArgumentException("Nonce is required in the payment payload"));
+        final String payer = settleRequest.getFromAddress().orElse("PAYER_NOT_FOUND");
 
         log.info("Received settlement request: {}", settleRequest);
-        VerifyResponse verifyResult = verifierService
+        VerificationResult verificationResult = verifierService
                 .verify(VerifyRequest.builder()
                         .x402Version(settleRequest.x402Version())
                         .paymentPayload(settleRequest.paymentPayload())
@@ -81,14 +82,14 @@ public class SettleController {
                     .orElseThrow(() -> new IllegalArgumentException("Unsupported network: " + settleRequest.paymentRequirements().network()));
         }
 
-        if (!verifyResult.isValid()) {
-            log.error("Invalid payment request: {}", verifyResult);
+        if (!verificationResult.isValid()) {
+            log.error("Invalid payment request: {}", verificationResult);
 
             return SettleResponse.builder()
                     .success(false)
                     .network(network.name())
-                    .errorReason(verifyResult.invalidReason())
-                    .payer(verifyResult.payer())
+                    .errorReason(verificationResult.verificationError().getCode())
+                    .payer(payer)
                     .build();
         } else {
             try {
@@ -129,7 +130,7 @@ public class SettleController {
                             .success(true)
                             .network(settleRequest.paymentRequirements().network())
                             .transaction(transactionReceipt.getTransactionHash())
-                            .payer(verifyResult.payer())
+                            .payer(payer)
                             .build();
                 } else {
                     log.error("Failed to settle request {}: {}",
@@ -140,7 +141,7 @@ public class SettleController {
                             .success(false)
                             .network(settleRequest.paymentRequirements().network())
                             .errorReason("transaction_failed")
-                            .payer(verifyResult.payer())
+                            .payer(payer)
                             .build();
                 }
             } catch (Exception e) {
@@ -152,7 +153,7 @@ public class SettleController {
                         .success(false)
                         .network(network.name())
                         .errorReason(e.getMessage())
-                        .payer(verifyResult.payer())
+                        .payer(payer)
                         .build();
             }
         }
