@@ -2,6 +2,7 @@ package tech.mogami.facilitator.test.integration;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,8 @@ import tech.mogami.commons.util.NonceUtil;
 import tech.mogami.facilitator.provider.outbox.repository.OutboxEventRepository;
 import tech.mogami.facilitator.test.util.web.BaseWebTest;
 import tech.mogami.java.client.helper.X402PaymentHelper;
+
+import java.util.Locale;
 
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.containsString;
@@ -57,6 +60,11 @@ public class CompletePaymentTest extends BaseWebTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @BeforeEach
+    void forceLocale() {
+        Locale.setDefault(Locale.FRANCE);
+    }
 
     @Test
     @DisplayName("Complete payment integration test")
