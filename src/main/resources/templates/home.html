@@ -64,6 +64,13 @@
 
             </label>
 
+            <!--/* Homepage message */-->
+            <!--/*
+                mt-12   :   Use mt-12 to add a margin-top.
+                text-sm :   Use text-sm to set the font-size to 0.875rem.
+            */-->
+            <div class="flex items-center justify-center mx-auto mt-12 text-sm" th:utext="#{home.message}"></div>
+
             <!--/* Error management ============================================================================== */-->
             <div th:if="${errorMessage}"
                  th:insert="~{util/fragments/error_message :: error_message(${errorMessage})}">
