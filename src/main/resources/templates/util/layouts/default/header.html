@@ -25,13 +25,36 @@
     */-->
     <div class="hidden md:flex gap-2 items-center">
 
-        <!-- Sources (GitHub) -->
+        <!-- Use our facilitator -->
         <a class="button-header"
-           href="https://github.com/mogami-tech/x402-facilitator"
+           onclick="use_facilitator_modal.showModal()"
+           rel="noopener">
+            <span class="icon-[mdi--cloud] inline-block h-5 w-5"></span>
+            <span th:text="#{home.use.button}"></span>
+        </a>
+        <dialog class="modal modal-bottom sm:modal-middle" id="use_facilitator_modal">
+            <div class="modal-box">
+                <h3 class="text-lg font-bold" th:text="#{home.use.modal.title}"></h3>
+                <p>
+                    <span th:text="#{home.use.modal.description.line1}"></span><br>
+                    <span th:text="#{home.use.modal.description.line2}"></span><br>
+                    <a class="link" href="https://facilitator.mogami.tech">https://facilitator.mogami.tech</a>
+                </p>
+                <div class="modal-action">
+                    <form method="dialog">
+                        <button class="btn" th:text="#{generic.close}"></button>
+                    </form>
+                </div>
+            </div>
+        </dialog>
+
+        <!-- Run your facilitator -->
+        <a class="button-header"
+           href="https://mogami.gitbook.io/mogami/faciliator-server/getting-started"
            rel="noopener"
            target="_blank">
-            <span class="icon-[mdi--github] inline-block h-5 w-5"></span>
-            <span th:text="#{home.github.button}"></span>
+            <span class="icon-[mdi--server] inline-block h-5 w-5"></span>
+            <span th:text="#{home.run.button}"></span>
         </a>
 
         <!-- API (Swagger) -->
@@ -41,6 +64,15 @@
            th:href="@{/swagger-ui/index.html}">
             <span class="icon-[mdi--api] inline-block h-5 w-5"></span>
             <span th:text="#{home.documentation.button}"></span>
+        </a>
+
+        <!-- Sources (GitHub) -->
+        <a class="button-header"
+           href="https://github.com/mogami-tech/x402-facilitator"
+           rel="noopener"
+           target="_blank">
+            <span class="icon-[mdi--github] inline-block h-5 w-5"></span>
+            <span th:text="#{home.github.button}"></span>
         </a>
 
         <!-- Contact (email) -->

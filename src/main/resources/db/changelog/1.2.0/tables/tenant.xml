@@ -1,0 +1,43 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.4.xsd">
+    <changeSet author="straumat" id="1.2.0-table-tenant">
+
+        <createTable tableName="TENANT"
+                     remarks="Table containing tenant information">
+
+            <!-- Keys -->
+            <column name="ID" type="BIGINT" remarks="Internal unique identifier">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_TENANT"/>
+            </column>
+            <column name="TENANT_ID" type="VARCHAR(255)" remarks="Unique tenant key used for isolation">
+                <constraints nullable="false" unique="true" uniqueConstraintName="UNIQUE_TENANT_TENANT_ID"/>
+            </column>
+
+            <!-- Foreign keys -->
+            <column name="FK_PARTICIPANT_ID" type="BIGINT" remarks="Owning participant">
+                <constraints nullable="false" foreignKeyName="TENANT_FK_PARTICIPANT_ID"
+                             referencedTableName="PARTICIPANT"
+                             referencedColumnNames="ID"/>
+            </column>
+
+            <!-- Data -->
+            <column name="NAME" type="VARCHAR(255)" remarks="Tenant label (e.g. Production, Test, etc.)"/>
+
+        </createTable>
+
+        <!-- Auto increment on the unique identifier -->
+        <addAutoIncrement tableName="TENANT"
+                          columnName="ID"
+                          columnDataType="BIGINT"
+                          startWith="10"/>
+
+        <!-- Index on TENANT.FK_PARTICIPANT_ID -->
+        <createIndex indexName="INDEX_TENANT_FK_PARTICIPANT_ID"
+                     tableName="TENANT">
+            <column name="FK_PARTICIPANT_ID"/>
+        </createIndex>
+
+    </changeSet>
+</databaseChangeLog>

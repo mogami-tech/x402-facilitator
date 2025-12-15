@@ -10,7 +10,7 @@ import org.springframework.http.HttpHeaders;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
-import static tech.mogami.facilitator.web.html.util.BaseController.HTMX_REQUEST;
+import static tech.mogami.facilitator.web.www.util.BaseController.HTMX_REQUEST;
 
 /**
  * Utility classes for tests.
@@ -54,6 +54,20 @@ public class BaseWebTest {
         assertThat(page.getElementById(elementId))
                 .as("checking that element with ID '%s' exists", elementId)
                 .isNotNull();
+    }
+
+    /**
+     * Asserts that the element with the given ID does not exist in the page.
+     *
+     * @param page      the page to check
+     * @param elementId the ID of the element to check
+     */
+    public void assertElementNotExists(
+            final Document page,
+            final String elementId) {
+        assertThat(page.getElementById(elementId))
+                .as("checking that element with ID '%s' does not exist", elementId)
+                .isNull();
     }
 
     /**

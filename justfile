@@ -6,7 +6,7 @@ run_tests:
     mvn clean install
 
 run_application:
-    mvn spring-boot:run -Dspring-boot.run.profiles=development
+    mvn spring-boot:run -Dspring-boot.run.profiles=dev
 
 run_web_backend:
     mvn clean spring-boot:run -Dspring-boot.run.profiles=dev

@@ -17,7 +17,6 @@ public class ParametersTest {
 
     @Test
     @DisplayName("Facilitator parameters")
-    @SuppressWarnings("SpellCheckingInspection")
     void facilitatorParameters() {
         assertThat(x402Parameters.facilitator().privateKey())
                 .isEqualTo("0xc1f97668293dcaecb72bfc6fba31a39d34a1a5d1d3d36e30f237a9cbcb3077e9");

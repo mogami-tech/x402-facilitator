@@ -14,20 +14,26 @@ import org.web3j.utils.Numeric;
 import tech.mogami.commons.api.facilitator.settle.SettleRequest;
 import tech.mogami.commons.api.facilitator.settle.SettleResponse;
 import tech.mogami.commons.api.facilitator.verify.VerifyRequest;
-import tech.mogami.commons.api.facilitator.verify.VerifyResponse;
 import tech.mogami.commons.constant.network.Network;
-import tech.mogami.commons.constant.network.Networks;
 import tech.mogami.commons.crypto.contract.FiatTokenV2_2;
-import tech.mogami.commons.header.payment.schemes.exact.ExactSchemePayload;
+import tech.mogami.commons.payment.schemes.exact.ExactSchemePayload;
+import tech.mogami.commons.util.JsonUtil;
+import tech.mogami.facilitator.outbox.NewPaymentStepMessage;
 import tech.mogami.facilitator.parameter.X402Parameters;
+import tech.mogami.facilitator.provider.outbox.service.OutboxService;
 import tech.mogami.facilitator.provider.web3j.GasService;
-import tech.mogami.facilitator.service.VerifyService;
+import tech.mogami.facilitator.service.facilitator.VerifyService;
+import tech.mogami.facilitator.verifier.VerificationResult;
 
 import java.math.BigInteger;
 import java.util.Map;
+import java.util.Optional;
 
 import static tech.mogami.commons.api.facilitator.FacilitatorApiEndpoints.SETTLE_ENDPOINT;
-import static tech.mogami.commons.constant.network.Networks.BASE_SEPOLIA;
+import static tech.mogami.commons.constant.X402Error.INVALID_NETWORK;
+import static tech.mogami.commons.constant.X402Error.INVALID_TRANSACTION_STATE;
+import static tech.mogami.commons.constant.X402Error.UNEXPECTED_SETTLE_ERROR;
+import static tech.mogami.facilitator.domain.payment.PaymentStepType.SETTLE;
 
 /**
  * /settle endpoint - Settle a payment.
@@ -52,6 +58,9 @@ public class SettleController {
     /** Gas service. */
     private final GasService gasService;
 
+    /** Outbox service to publish payment steps. */
+    private final OutboxService outboxService;
+
     /**
      * Settle a payment request.
      *
@@ -62,99 +71,125 @@ public class SettleController {
     @Operation(summary = "Settle a payment request")
     SettleResponse settle(@RequestBody final SettleRequest settleRequest) {
         final String nonce = settleRequest.getNonce().orElseThrow(() -> new IllegalArgumentException("Nonce is required in the payment payload"));
+        final String payer = settleRequest.getFromAddress().orElse("PAYER_NOT_FOUND");
+        final Optional<Network> network = settleRequest.getNetwork();
+        String errorCode = null;
+        String errorMessage = null;
+        SettleResponse settleResponse = null;
 
-        log.info("Received settlement request: {}", settleRequest);
-        VerifyResponse verifyResult = verifierService
-                .verify(VerifyRequest.builder()
-                        .x402Version(settleRequest.x402Version())
-                        .paymentPayload(settleRequest.paymentPayload())
-                        .paymentRequirements(settleRequest.paymentRequirements())
-                        .build());
+        try {
+            // The settle response should reply with the network.
+            // TODO Transform as a verifier?
+            if (network.isEmpty()) {
+                log.error("Unsupported network");
+                errorCode = INVALID_NETWORK.getCode();
+                errorMessage = INVALID_NETWORK.getDefaultMessage();
+                settleResponse = SettleResponse.builder()
+                        .success(false)
+                        .network(null)
+                        .errorReason(INVALID_NETWORK.getCode())
+                        .payer(payer)
+                        .build();
+                return settleResponse;
+            }
 
-        // The settle response should reply with the network, but we must be sure there is no null value.
-        final Network network;
-        if (settleRequest.paymentRequirements() == null || settleRequest.paymentRequirements().network() == null) {
-            log.error("Payment requirements network is null, using default BASE_SEPOLIA");
-            network = BASE_SEPOLIA;
-        } else {
-            network = Networks.findByName(settleRequest.paymentRequirements().network())
-                    .orElseThrow(() -> new IllegalArgumentException("Unsupported network: " + settleRequest.paymentRequirements().network()));
-        }
+            // We do the verification again ============================================================================
+            log.info("Received settlement request: {}", settleRequest);
+            VerificationResult verificationResult = verifierService
+                    .verify(VerifyRequest.builder()
+                            .x402Version(settleRequest.x402Version())
+                            .paymentPayload(settleRequest.paymentPayload())
+                            .paymentRequirements(settleRequest.paymentRequirements())
+                            .build());
+            if (!verificationResult.isValid()) {
+                log.error("Invalid payment request: {}", verificationResult);
+                errorCode = verificationResult.verificationError().getCode();
+                errorMessage = verificationResult.errorMessage();
+                settleResponse = SettleResponse.builder()
+                        .success(false)
+                        .network(network.get().name())
+                        .errorReason(verificationResult.verificationError().getCode())
+                        .payer(payer)
+                        .build();
+            } else {
+                try {
+                    // Loading the contract to use to make the payment =====================================================
+                    final Web3j web3j = web3jClients.get(network.get());
+                    FiatTokenV2_2 contract = FiatTokenV2_2.load(
+                            settleRequest.paymentRequirements().asset(),
+                            web3j,
+                            new RawTransactionManager(web3j,
+                                    Credentials.create(x402Parameters.facilitator().privateKey()),
+                                    network.get().chainId()),
+                            gasService.getGasProvider(network.get())
+                    );
 
-        if (!verifyResult.isValid()) {
-            log.error("Invalid payment request: {}", verifyResult);
-
-            return SettleResponse.builder()
-                    .success(false)
-                    .network(network.name())
-                    .errorReason(verifyResult.invalidReason())
-                    .payer(verifyResult.payer())
-                    .build();
-        } else {
-            try {
-                // Loading the contract to use to make the payment =====================================================
-                final Web3j web3j = web3jClients.get(network);
-                FiatTokenV2_2 contract = FiatTokenV2_2.load(
-                        settleRequest.paymentRequirements().asset(),
-                        web3j,
-                        new RawTransactionManager(web3j,
-                                Credentials.create(x402Parameters.facilitator().privateKey()),
-                                network.chainId()),
-                        gasService.getGasProvider(network)
-                );
-
-                // We send the transaction using the authorization =====================================================
-                log.info("Settling request {} with contract {}",
-                        settleRequest,
-                        settleRequest.paymentRequirements().asset());
-                ExactSchemePayload payload = (ExactSchemePayload) settleRequest.paymentPayload().payload();
-
-                var transactionReceipt = contract.transferWithAuthorization(
-                                payload.authorization().from(),
-                                settleRequest.paymentRequirements().payTo(),
-                                new BigInteger(settleRequest.paymentRequirements().maxAmountRequired()),
-                                new BigInteger(payload.authorization().validAfter()),
-                                new BigInteger(payload.authorization().validBefore()),
-                                Numeric.hexStringToByteArray(payload.authorization().nonce()),
-                                Numeric.hexStringToByteArray(payload.signature()))
-                        .send();
-
-                // We treat the result of the transaction ==============================================================
-                if (transactionReceipt.isStatusOK()) {
-                    log.info("Successfully settled of request {}: {}",
+                    // We send the transaction using the authorization =================================================
+                    log.info("Settling request {} with contract {}",
                             settleRequest,
-                            transactionReceipt.getTransactionHash());
+                            settleRequest.paymentRequirements().asset());
+                    ExactSchemePayload payload = (ExactSchemePayload) settleRequest.paymentPayload().payload();
+                    var transactionReceipt = contract.transferWithAuthorization(
+                                    payload.authorization().from(),
+                                    settleRequest.paymentRequirements().payTo(),
+                                    new BigInteger(settleRequest.paymentRequirements().maxAmountRequired()),
+                                    new BigInteger(payload.authorization().validAfter()),
+                                    new BigInteger(payload.authorization().validBefore()),
+                                    Numeric.hexStringToByteArray(payload.authorization().nonce()),
+                                    Numeric.hexStringToByteArray(payload.signature()))
+                            .send();
 
-                    return SettleResponse.builder()
-                            .success(true)
-                            .network(settleRequest.paymentRequirements().network())
-                            .transaction(transactionReceipt.getTransactionHash())
-                            .payer(verifyResult.payer())
-                            .build();
-                } else {
-                    log.error("Failed to settle request {}: {}",
+                    // We treat the result of the transaction ==========================================================
+                    if (transactionReceipt.isStatusOK()) {
+                        log.info("Successfully settled of request {}: {}",
+                                settleRequest,
+                                transactionReceipt.getTransactionHash());
+
+                        settleResponse = SettleResponse.builder()
+                                .success(true)
+                                .network(settleRequest.paymentRequirements().network())
+                                .transaction(transactionReceipt.getTransactionHash())
+                                .payer(payer)
+                                .build();
+                    } else {
+                        log.error("Failed to settle request {}: {}",
+                                settleRequest,
+                                transactionReceipt.getStatus());
+                        errorCode = INVALID_TRANSACTION_STATE.getCode();
+                        errorMessage = transactionReceipt.getStatus();
+                        settleResponse = SettleResponse.builder()
+                                .success(false)
+                                .network(settleRequest.paymentRequirements().network())
+                                .errorReason(errorCode)
+                                .payer(payer)
+                                .build();
+                    }
+                } catch (Exception e) {
+                    log.error("Exception during request settlement {}: {}",
                             settleRequest,
-                            transactionReceipt.getStatus());
-
-                    return SettleResponse.builder()
+                            e.getMessage());
+                    errorCode = UNEXPECTED_SETTLE_ERROR.getCode();
+                    errorMessage = e.getMessage();
+                    settleResponse = SettleResponse.builder()
                             .success(false)
-                            .network(settleRequest.paymentRequirements().network())
-                            .errorReason("transaction_failed")
-                            .payer(verifyResult.payer())
+                            .network(network.get().name())
+                            .errorReason(errorCode)
+                            .payer(payer)
                             .build();
                 }
-            } catch (Exception e) {
-                log.error("Exception during request settlement {}: {}",
-                        settleRequest,
-                        e.getMessage());
-
-                return SettleResponse.builder()
-                        .success(false)
-                        .network(network.name())
-                        .errorReason(e.getMessage())
-                        .payer(verifyResult.payer())
-                        .build();
             }
+            return settleResponse;
+        } finally {
+            outboxService.publish(
+                    NewPaymentStepMessage.builder()
+                            .paymentId(nonce)
+                            .paymentStepType(SETTLE)
+                            .requestPayload(JsonUtil.toJson(settleRequest))
+                            .responsePayload(JsonUtil.toJson(settleResponse))
+                            .errorCode(errorCode)
+                            .errorMessage(errorMessage)
+                            .build()
+            );
         }
     }
 

@@ -1,0 +1,41 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.4.xsd">
+    <changeSet author="straumat" id="1.2.0-table-address">
+
+        <createTable tableName="ADDRESS"
+                     remarks="Contains every address used and it's associated participant">
+
+            <!-- Keys -->
+            <column name="ID" type="BIGINT" remarks="Internal unique identifier">
+                <constraints nullable="false" primaryKey="true"
+                             primaryKeyName="PK_ADDRESS"/>
+            </column>
+            <column name="ADDRESS" type="VARCHAR(42)"
+                    remarks="Blockchain address">
+                <constraints nullable="false" unique="true" uniqueConstraintName="UNIQUE_ADDRESS_ADDRESS"/>
+            </column>
+
+            <column name="FK_PARTICIPANT_ID" type="BIGINT" remarks="Participant ID">
+                <constraints foreignKeyName="ADDRESS_FK_PARTICIPANT_ID"
+                             referencedTableName="PARTICIPANT"
+                             referencedColumnNames="ID"/>
+            </column>
+
+        </createTable>
+
+        <!-- Auto increment on the unique identifier -->
+        <addAutoIncrement tableName="ADDRESS"
+                          columnName="ID"
+                          columnDataType="BIGINT"
+                          startWith="100"/>
+
+        <!-- Index on FK_PARTICIPANT_ID -->
+        <createIndex indexName="INDEX_ADDRESS_FK_PARTICIPANT_ID"
+                     tableName="ADDRESS">
+            <column name="FK_PARTICIPANT_ID"/>
+        </createIndex>
+
+    </changeSet>
+</databaseChangeLog>

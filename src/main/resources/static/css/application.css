@@ -26,7 +26,7 @@ html {
 @layer components {
 
     .button-header {
-        @apply btn btn-secondary btn-sm btn-outline flex items-center gap-2;
+        @apply btn btn-secondary btn-sm btn-outline flex items-center gap-1;
     }
 
 }

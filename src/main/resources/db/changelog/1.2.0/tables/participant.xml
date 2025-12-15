@@ -1,0 +1,53 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.4.xsd">
+    <changeSet author="straumat" id="1.2.0-table-participant">
+
+        <createTable tableName="PARTICIPANT"
+                     remarks="Table containing participant information">
+
+            <!-- Keys -->
+            <column name="ID" type="BIGINT" remarks="Internal unique identifier">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_PARTICIPANT"/>
+            </column>
+            <column name="PARTICIPANT_ID" type="VARCHAR(255)" remarks="Participant ID">
+                <constraints nullable="false" unique="true" uniqueConstraintName="UNIQUE_PARTICIPANT_PARTICIPANT_ID"/>
+            </column>
+
+            <!-- Participant type -->
+            <column name="TYPE" type="VARCHAR(20)" remarks="AGENT, INDIVIDUAL or CORPORATION">
+                <constraints nullable="false"/>
+            </column>
+
+            <!-- Data for agents =================================================================================== -->
+            <column name="AGENT_NAME" type="VARCHAR(255)" remarks="Name of the AI agent"/>
+
+            <!-- Data for individuals ============================================================================== -->
+            <column name="FIRST_NAME" type="VARCHAR(255)" remarks="First name of individual"/>
+            <column name="LAST_NAME" type="VARCHAR(255)" remarks="Last name of individual"/>
+
+            <!-- Data for corporations ============================================================================= -->
+            <column name="COMPANY_NAME" type="VARCHAR(255)" remarks="Name of the company"/>
+
+            <!-- Common ============================================================================================ -->
+            <column name="EMAIL" type="VARCHAR(255)" remarks="Contact email">
+                <constraints nullable="false" unique="true" uniqueConstraintName="UNIQUE_PARTICIPANT_EMAIL"/>
+            </column>
+
+        </createTable>
+
+        <!-- Auto increment on the unique identifier -->
+        <addAutoIncrement tableName="PARTICIPANT"
+                          columnName="ID"
+                          columnDataType="BIGINT"
+                          startWith="10"/>
+
+        <!-- Index on PARTICIPANT.TYPE -->
+        <createIndex indexName="INDEX_PARTICIPANT_TYPE"
+                     tableName="PARTICIPANT">
+            <column name="TYPE"/>
+        </createIndex>
+
+    </changeSet>
+</databaseChangeLog>
