@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.web3j.crypto.Credentials;
+import tech.mogami.commons.api.facilitator.settle.SettleRequest;
 import tech.mogami.commons.api.facilitator.verify.VerifyRequest;
 import tech.mogami.commons.payment.PaymentPayload;
 import tech.mogami.commons.payment.PaymentRequirements;
@@ -59,8 +60,8 @@ public class SettleControllerTest {
                                         .build())))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(false))
-                .andExpect(jsonPath("$.network").value(BASE_SEPOLIA.name()))
-                .andExpect(jsonPath("$.errorReason").value("invalid_payload"))
+                .andExpect(jsonPath("$.network").isEmpty())
+                .andExpect(jsonPath("$.errorReason").value("invalid_network"))
                 .andExpect(jsonPath("$.payer").value("PAYER_NOT_FOUND"));
     }
 
@@ -104,7 +105,7 @@ public class SettleControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.post(SETTLE_ENDPOINT)
                         .contentType(APPLICATION_JSON)
                         .accept(APPLICATION_JSON, TEXT_PLAIN, ALL)
-                        .content(JsonUtil.toJson(VerifyRequest.builder()
+                        .content(JsonUtil.toJson(SettleRequest.builder()
                                 .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
                                 .paymentPayload(signedPayload)
                                 .paymentRequirements(paymentRequirements)

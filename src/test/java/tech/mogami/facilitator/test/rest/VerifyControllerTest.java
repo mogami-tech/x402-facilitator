@@ -119,7 +119,7 @@ public class VerifyControllerTest {
                         ).build()
                 ).build();
 
-        // We use Mogami client SDK to create a payment payload with insufficient funds.
+        // We use Mogami client SDK to create a payment payload with sufficient funds.
         var signedPayload = X402PaymentHelper.getSignedPayload(
                 Credentials.create(TEST_CLIENT_WALLET_ADDRESS_1_PRIVATE_KEY),
                 paymentRequirements,

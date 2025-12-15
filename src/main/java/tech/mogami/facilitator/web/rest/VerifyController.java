@@ -9,10 +9,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import tech.mogami.commons.api.facilitator.verify.VerifyRequest;
 import tech.mogami.commons.api.facilitator.verify.VerifyResponse;
+import tech.mogami.commons.util.JsonUtil;
+import tech.mogami.facilitator.outbox.NewPaymentStepMessage;
+import tech.mogami.facilitator.provider.outbox.service.OutboxService;
 import tech.mogami.facilitator.service.facilitator.VerifyService;
 import tech.mogami.facilitator.verifier.VerificationResult;
 
 import static tech.mogami.commons.api.facilitator.FacilitatorApiEndpoints.VERIFY_ENDPOINT;
+import static tech.mogami.facilitator.domain.payment.PaymentStepType.VERIFY;
 
 
 /**
@@ -27,6 +31,9 @@ public class VerifyController {
     /** Verify service to handle verification logic. */
     private final VerifyService verifierService;
 
+    /** Outbox service. */
+    private final OutboxService outboxService;
+
     /**
      * Verify a payment request.
      *
@@ -39,26 +46,41 @@ public class VerifyController {
         final String nonce = verifyRequest.getNonce()
                 .orElseThrow(() -> new IllegalArgumentException("Nonce is required in the payment payload"));
         final String payer = verifyRequest.getFromAddress().orElse("PAYER_NOT_FOUND");
+        String errorCode = null;
+        String errorMessage = null;
+        VerifyResponse verifyResponse = null;
 
         try {
             // Call the verification service to process the request.
             VerificationResult verificationResult = verifierService.verify(verifyRequest);
             if (!verificationResult.isValid()) {
+                errorCode = verificationResult.verificationError().getCode();
+                errorMessage = verificationResult.errorMessage();
                 log.info("Verification error {}", verificationResult.errorMessage());
-                return VerifyResponse.builder()
+                verifyResponse = VerifyResponse.builder()
                         .isValid(false)
                         .invalidReason(verificationResult.verificationError().getCode())
                         .payer(payer)
                         .build();
             } else {
                 log.info("All verifiers passed for request: {}", verifyRequest);
-                return VerifyResponse.builder()
+                verifyResponse = VerifyResponse.builder()
                         .isValid(true)
                         .payer(payer)
                         .build();
             }
+            return verifyResponse;
         } finally {
-            log.info("Verification completed for nonce: {} by payer: {}", nonce, payer);
+            outboxService.publish(
+                    NewPaymentStepMessage.builder()
+                            .paymentId(nonce)
+                            .paymentStepType(VERIFY)
+                            .requestPayload(JsonUtil.toJson(verifyRequest))
+                            .responsePayload(JsonUtil.toJson(verifyResponse))
+                            .errorCode(errorCode)
+                            .errorMessage(errorMessage)
+                            .build()
+            );
         }
     }
 
