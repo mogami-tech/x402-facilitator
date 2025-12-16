@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import tech.mogami.facilitator.outbox.NewPaymentStepMessage;
-import tech.mogami.facilitator.provider.outbox.batch.OutboxBatch;
 import tech.mogami.facilitator.provider.outbox.domain.OutboxEvent;
 import tech.mogami.facilitator.provider.outbox.repository.OutboxEventRepository;
 import tech.mogami.facilitator.provider.outbox.service.OutboxService;
@@ -31,6 +30,7 @@ import static tech.mogami.commons.test.BaseTestData.TEST_CLIENT_WALLET_ADDRESS_2
 import static tech.mogami.facilitator.domain.payment.PaymentStepType.SETTLE;
 import static tech.mogami.facilitator.domain.payment.PaymentStepType.VERIFY;
 import static tech.mogami.facilitator.dto.payment.PaymentDto.UNKNOWN_FORMATTED_VALUE;
+import static tech.mogami.facilitator.outbox.NewPaymentStepHandler.MAX_STEPS_PER_PAYMENT;
 import static tech.mogami.facilitator.provider.outbox.domain.OutboxEventStatus.ERROR;
 
 @SpringBootTest(properties = {
@@ -44,7 +44,10 @@ public class NewPaymentStepEventTest extends BaseTest {
     public static final String COMPLETE_PAYMENT_NONCE = "NONCE_00001";
 
     /** Uncompleted payment. */
-    public static final String UNCOMPLETED_PAYMENT = "NONCE_00002";
+    public static final String UNCOMPLETED_PAYMENT_NONCE = "NONCE_00002";
+
+    /** Nonce used for testing maximum step per payment limit. */
+    public static final String MAX_STEP_PAYMENT_NONCE = "NONCE_00003";
 
     @Autowired
     private OutboxEventRepository outboxEventRepository;
@@ -58,12 +61,9 @@ public class NewPaymentStepEventTest extends BaseTest {
     @Autowired
     private OutboxService outboxService;
 
-    @Autowired
-    private OutboxBatch outboxBatch;
-
     @Test
     @DisplayName("Payment step creation")
-    public void paymentStepCreationTest() throws InterruptedException {
+    public void paymentStepCreationTest() {
         final long initialPaymentCount = paymentRepository.count();
 
         // Invalid payment steps should be refused =====================================================================
@@ -102,7 +102,7 @@ public class NewPaymentStepEventTest extends BaseTest {
                 .build());
 
         outboxService.publish(NewPaymentStepMessage.builder()
-                .paymentId(UNCOMPLETED_PAYMENT)
+                .paymentId(UNCOMPLETED_PAYMENT_NONCE)
                 .paymentStepType(VERIFY)
                 .requestPayload("invalid_json")
                 .responsePayload("invalid_json")
@@ -137,9 +137,9 @@ public class NewPaymentStepEventTest extends BaseTest {
                 });
         await().until(this::allEventsAreTreated);
         assertThat(paymentRepository.count()).isEqualTo(initialPaymentCount + 2);
-        assertThat(paymentService.searchByPaymentId(UNCOMPLETED_PAYMENT)).isPresent().get()
+        assertThat(paymentService.searchByPaymentId(UNCOMPLETED_PAYMENT_NONCE)).isPresent().get()
                 .satisfies(payment -> {
-                    assertThat(payment.paymentId()).isEqualTo(UNCOMPLETED_PAYMENT);
+                    assertThat(payment.paymentId()).isEqualTo(UNCOMPLETED_PAYMENT_NONCE);
                     assertThat(payment.steps()).hasSize(1);
                 });
 
@@ -468,6 +468,40 @@ public class NewPaymentStepEventTest extends BaseTest {
 
         await().until(this::allEventsAreTreated);
         assertThat(paymentRepository.count()).isEqualTo(initialPaymentCount + 2);
+    }
+
+    @Test
+    @DisplayName("Maximum step per payment limit")
+    public void maximumStepPerPaymentLimit() {
+        final long initialPaymentCount = paymentRepository.count();
+
+        // We add the maximum number of steps ==========================================================================
+        for (int i = 0; i < MAX_STEPS_PER_PAYMENT; i++) {
+            outboxService.publish(NewPaymentStepMessage.builder()
+                    .paymentId(MAX_STEP_PAYMENT_NONCE)
+                    .paymentStepType(VERIFY)
+                    .build());
+        }
+
+        // We add one more step, which should be refused ===============================================================
+        outboxService.publish(NewPaymentStepMessage.builder()
+                .paymentId(MAX_STEP_PAYMENT_NONCE)
+                .paymentStepType(VERIFY)
+                .build());
+
+        // We check the result =========================================================================================
+        await().until(this::allEventsAreTreated);
+        assertThat(paymentService.searchByPaymentId(MAX_STEP_PAYMENT_NONCE)).isPresent().get()
+                .satisfies(payment -> assertThat(payment.steps()).hasSize(MAX_STEPS_PER_PAYMENT));
+
+        assertThat(getLastEvent()).isNotNull()
+                .satisfies(event -> {
+                    assertThat(event.getStatus()).isEqualTo(ERROR);
+                    assertThat(event.getErrorMessage())
+                            .isEqualTo("Payment " + MAX_STEP_PAYMENT_NONCE + " has reached the maximum number of steps (" + MAX_STEPS_PER_PAYMENT + ")");
+                });
+
+        assertThat(paymentRepository.count()).isEqualTo(initialPaymentCount + 1);
     }
 
     /**

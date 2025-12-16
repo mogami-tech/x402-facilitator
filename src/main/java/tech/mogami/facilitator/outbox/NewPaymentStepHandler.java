@@ -43,6 +43,9 @@ import static tech.mogami.facilitator.provider.outbox.domain.OutboxEventType.NEW
 @SuppressWarnings({"checkstyle:DesignForExtension", "unused"})
 public class NewPaymentStepHandler implements OutboxEventHandler<NewPaymentStepMessage> {
 
+    /** Maximum number of steps allowed per payment to avoid infinite loops. */
+    public static final int MAX_STEPS_PER_PAYMENT = 30;
+
     /** Payment repository. */
     private final PaymentRepository paymentRepository;
 
@@ -69,6 +72,13 @@ public class NewPaymentStepHandler implements OutboxEventHandler<NewPaymentStepM
         try {
             Payment payment = getOrCreatePayment(message.paymentId());
             log.info("New payment step {} with id: {}", message.paymentId(), payment.getId());
+
+            // Max steps check
+            if (payment.getSteps().size() >= MAX_STEPS_PER_PAYMENT) {
+                final String error = String.format("Payment %s has reached the maximum number of steps (%d)", message.paymentId(), MAX_STEPS_PER_PAYMENT);
+                log.error(error);
+                return OutboxEventHandlerResult.error(error);
+            }
 
             final PaymentStep paymentStep = PaymentStep.builder()
                     .paymentStepId(UUID.randomUUID().toString())
