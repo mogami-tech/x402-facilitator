@@ -52,9 +52,7 @@
                 <h3 class="font-bold text-lg text-base-content" th:text="#{payment.step.modal.json.request}"></h3>
 
                 <!--/* JSON content */-->
-                <pre>
-                    <code class="language-json" th:text="${step.requestPayload()}"></code>
-                </pre>
+                <pre><code class="language-json" th:text="${step.formattedRequestPayload()}"></code></pre>
 
                 <!--/* Close button */-->
                 <div class="modal-action">
@@ -74,9 +72,7 @@
                 <h3 class="font-bold text-lg text-base-content" th:text="#{payment.step.modal.json.response}"></h3>
 
                 <!--/* JSON content */-->
-                <pre>
-                    <code class="language-json" th:text="${step.responsePayload()}"></code>
-                </pre>
+                <pre><code class="language-json" th:text="${step.formattedResponsePayload()}"></code></pre>
 
                 <!--/* Close button */-->
                 <div class="modal-action">

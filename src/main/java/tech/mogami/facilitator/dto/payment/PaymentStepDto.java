@@ -1,5 +1,7 @@
 package tech.mogami.facilitator.dto.payment;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import tech.mogami.facilitator.domain.payment.PaymentStepType;
@@ -27,6 +29,40 @@ public record PaymentStepDto(
         String errorMessage,
         Instant createdAt
 ) {
+
+    /**
+     * Get the formatted request payload as pretty JSON.
+     *
+     * @return the formatted request payload
+     */
+    public String formattedRequestPayload() {
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode node = objectMapper.readTree(requestPayload);
+            return objectMapper
+                    .writerWithDefaultPrettyPrinter()
+                    .writeValueAsString(node);
+        } catch (Exception e) {
+            return requestPayload;
+        }
+    }
+
+    /**
+     * Get the formatted response payload as pretty JSON.
+     *
+     * @return the formatted response payload
+     */
+    public String formattedResponsePayload() {
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode node = objectMapper.readTree(responsePayload);
+            return objectMapper
+                    .writerWithDefaultPrettyPrinter()
+                    .writeValueAsString(node);
+        } catch (Exception e) {
+            return responsePayload;
+        }
+    }
 
     /**
      * Indicates if the payment step has an error.
