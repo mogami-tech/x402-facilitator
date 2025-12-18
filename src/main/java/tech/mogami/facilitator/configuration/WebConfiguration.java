@@ -65,6 +65,9 @@ public class WebConfiguration implements WebMvcConfigurer {
         registry.addResourceHandler("/images/logo/**")
                 .addResourceLocations("classpath:/static/images/logo/")
                 .setCacheControl(DEFAULT_CACHE_DURATION);
+
+        registry.addResourceHandler("/android-icon-*.png")
+                .addResourceLocations("classpath:/static/images/favicon/");
     }
 
 }
