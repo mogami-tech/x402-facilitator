@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en"
+      layout:decorate="~{util/layouts/default/layout}"
+      xmlns="http://www.w3.org/1999/html" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org">
+
+<div class="w-full flex flex-col flex-grow justify-between items-center mb-8"
+     layout:fragment="content"
+     th:fragment="payment-fragment">
+
+    <!--/*
+        Global container for the page content (centered with horizontal padding).
+        w-full: Full width
+        max-w-9/10: Maximum width of 90% of the parent container
+        mx-auto: Center horizontally
+    */-->
+    <div class="w-full max-w-9/10 mx-auto">
+
+        <!--/* Payment summary =================================================================================== */-->
+        <div layout:replace="~{payment/payment_header}"></div>
+
+        <!--/* Payment steps ===================================================================================== */-->
+        <div layout:replace="~{payment/payment_steps}"></div>
+
+        <script>
+            Prism.highlightAll();
+        </script>
+
+    </div>
+
+</div>

@@ -11,39 +11,73 @@
     grow            :   Allows the element to grow and fill the available space in the flex container
     mt-[22vh]       :   Applies a top margin of 22% of the viewport height.
 */-->
-<div class="w-full flex flex-col flex-grow justify-between items-center mt-[11vh]"
+<div class="w-full flex flex-col flex-grow justify-between items-center mt-[22vh]"
      layout:fragment="content"
      th:fragment="home-fragment">
 
-    <div class="flex flex-col items-center justify-center text-center flex-grow px-4">
 
-        <h1 class="text-5xl font-bold mb-6">Welcome to Mogami Facilitator</h1>
+    <!--/* Search field ========================================================================================== */-->
+    <form class="w-full"
+          hx-params="*"
+          hx-push-url="true"
+          th:action="@{/search}"
+          th:method="GET">
 
-        <p class="text-lg max-w-3xl mb-4">
-            The <strong>Mogami Facilitator</strong> is the payment gateway for the
-            <a class="link link-primary" href="https://www.x402.org/x402-whitepaper.pdf" target="_blank">x402
-                protocol</a> —
-            an open standard for native Internet payments.
-            It verifies and settles <strong>stablecoin transactions</strong> instantly, enabling
-            <em>pay-per-call</em> monetization for APIs, apps, and AI agents.
-        </p>
+        <div class="flex flex-col items-center justify-center gap-2 w-full">
 
-        <p class="text-base max-w-3xl text-gray-500 mb-8">
-            No accounts, no subscriptions, no friction. Just instant value exchange.
-            Run your own facilitator, or use this hosted instance to verify x402 requests in real time.
-        </p>
+            <!--/* Title & description */-->
+            <h1 class="text-5xl font-bold mb-6 text-center" th:text="#{generic.application.name}"></h1>
+            <p class="text-lg max-w-3xl mb-4 text-center mx-auto" th:utext="#{home.description}"></p>
 
-        <div class="flex flex-wrap gap-3 justify-center">
-            <a class="btn btn-primary" href="https://mogami.tech" target="_blank">Learn More at mogami.tech</a>
+            <p class="text-xs text-base-content/60 italic mt-2 text-center" th:utext="#{search.title}"></p>
+
+            <label class="input input-bordered flex items-center gap-2 w-[70%] sm:w-[70%] md:w-[50%] lg:max-w-lg">
+
+                <!--/* Icon for search input */-->
+                <svg class="h-[1em] opacity-50" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <g fill="none"
+                       stroke="currentColor"
+                       stroke-linecap="round"
+                       stroke-linejoin="round"
+                       stroke-width="2.5">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <path d="m21 21-4.3-4.3"></path>
+                    </g>
+                </svg>
+
+                <!--/* Input field */-->
+                <label class="sr-only" for="query" th:text="#{search.helper}"></label>
+                <input @click="$el.select()"
+                       @focus="$el.select()"
+                       autocomplete="false"
+                       autofocus
+                       class="grow"
+                       hx-trigger="keyup[key=='Enter']"
+                       id="query"
+                       name="query"
+                       required
+                       spellcheck="false"
+                       th:placeholder="#{search.helper}"
+                       th:value="${query}"
+                       type="search"
+                       x-data="{}">
+
+            </label>
+
+            <!--/* Homepage message */-->
+            <!--/*
+                mt-12   :   Use mt-12 to add a margin-top.
+                text-sm :   Use text-sm to set the font-size to 0.875rem.
+            */-->
+            <div class="flex items-center justify-center mx-auto mt-12 text-sm" th:utext="#{home.message}"></div>
+
+            <!--/* Error management ============================================================================== */-->
+            <div th:if="${errorMessage}"
+                 th:insert="~{util/fragments/error_message :: error_message(${errorMessage})}">
+            </div>
+
         </div>
-
-    </div>
-
-
-    <!--/* Error management ====================================================================================== */-->
-    <div th:if="${errorMessage}"
-         th:insert="~{util/fragments/error_message :: error_message(${errorMessage})}">
-    </div>
+    </form>
 
 </div>
 

@@ -1,0 +1,86 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.4.xsd">
+    <changeSet author="straumat" id="1.2.0-table-payment">
+
+        <!-- Payment table - Store payment information -->
+        <createTable tableName="PAYMENT"
+                     remarks="Payment">
+
+            <!-- Keys -->
+            <column name="ID" type="BIGINT" remarks="Internal unique identifier">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_PAYMENT"/>
+            </column>
+            <column name="PAYMENT_ID" type="VARCHAR(255)" remarks="Unique payment id (usually the nonce)">
+                <constraints nullable="false" unique="true" uniqueConstraintName="UNIQUE_PAYMENT_PAYMENT_ID"/>
+            </column>
+
+            <!-- Foreign keys -->
+            <column name="FK_TENANT_ID" type="VARCHAR(255)" remarks="Tenant">
+                <constraints nullable="false" foreignKeyName="PAYMENT_FK_TENANT_ID"
+                             referencedTableName="TENANT"
+                             referencedColumnNames="TENANT_ID"/>
+            </column>
+
+            <!-- Data -->
+            <column name="X402_VERSION" type="varchar(50)" remarks="X402 version (ex: 1)"/>
+            <column name="FK_FROM_ADDRESS_ID" type="BIGINT" remarks="Source address">
+                <constraints foreignKeyName="PAYMENT_FK_FROM_ADDRESS_ID"
+                             referencedTableName="ADDRESS"
+                             referencedColumnNames="ID"/>
+            </column>
+            <column name="FK_TO_ADDRESS_ID" type="BIGINT" remarks="Destination address">
+                <constraints foreignKeyName="PAYMENT_FK_TO_ADDRESS_ID"
+                             referencedTableName="ADDRESS"
+                             referencedColumnNames="ID"/>
+            </column>
+            <column name="ASSET_AMOUNT" type="NUMERIC(78, 0)" remarks="Asset amount (in atomic units)"/>
+            <column name="FK_CONTRACT_ADDRESS_ID" type="BIGINT" remarks="Asset contract">
+                <constraints foreignKeyName="PAYMENT_FK_CONTRACT_ADDRESS_ID"
+                             referencedTableName="ADDRESS"
+                             referencedColumnNames="ID"/>
+            </column>
+            <column name="NETWORK_NAME" type="varchar(50)" remarks="Network name (ex: base-sepolia)"/>
+            <column name="STATUS" type="VARCHAR(50)" remarks="Payment status" defaultValue="PENDING">
+                <constraints nullable="false"/>
+            </column>
+
+            <!-- Technical columns -->
+            <column name="CREATED_AT" type="TIMESTAMP" remarks="The timestamp of creation">
+                <constraints nullable="false"/>
+            </column>
+            <column name="UPDATED_AT" type="TIMESTAMP" remarks="The timestamp of last update"/>
+
+        </createTable>
+
+        <!-- Auto increment on the unique identifier -->
+        <addAutoIncrement tableName="PAYMENT"
+                          columnName="ID"
+                          columnDataType="BIGINT"
+                          startWith="100"/>
+
+        <!-- Index on TENANT -->
+        <createIndex indexName="INDEX_PAYMENT_FK_TENANT_ID"
+                     tableName="PAYMENT">
+            <column name="FK_TENANT_ID"/>
+        </createIndex>
+
+        <!-- Index on FROM_ADDRESS -->
+        <createIndex indexName="INDEX_PAYMENT_FK_FROM_ADDRESS_ID"
+                     tableName="PAYMENT">
+            <column name="FK_FROM_ADDRESS_ID"/>
+        </createIndex>
+        <!-- Index on TO_ADDRESS -->
+        <createIndex indexName="INDEX_PAYMENT_FK_TO_ADDRESS_ID"
+                     tableName="PAYMENT">
+            <column name="FK_TO_ADDRESS_ID"/>
+        </createIndex>
+        <!-- Index on CONTRACT_ADDRESS -->
+        <createIndex indexName="INDEX_PAYMENT_FK_CONTRACT_ADDRESS_ID"
+                     tableName="PAYMENT">
+            <column name="FK_CONTRACT_ADDRESS_ID"/>
+        </createIndex>
+
+    </changeSet>
+</databaseChangeLog>

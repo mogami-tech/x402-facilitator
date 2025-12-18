@@ -1,0 +1,88 @@
+<!--/*@thymesVar id="result" type="tech.mogami.facilitator.dto.payment.PaymentDto"*/-->
+
+<!--/* Card displaying the step ================================================================================== */-->
+<div class="card my-1"
+     th:classappend="${step.hasError()} ? ' bg-error text-error-content' : ' bg-success text-success-content'"
+     th:each="step, iStat : ${result.steps()}"
+     th:id="'payment-step-' + ${iStat.index}"
+     x-data>
+    <div class="card-body">
+
+        <!--/* Card title */-->
+        <h2 class="card-title" th:id="'payment-step-' + ${iStat.index} + '-type'">
+            /<span th:text="${step.paymentStepType()}"></span>
+        </h2>
+
+        <!--/* If success */-->
+        <th:block th:if="${!step.hasError() && step.createdAt() != null}">
+            <p th:id="'payment-step-' + ${iStat.index} + '-status'"
+               th:text="#{payment.step.success.description(${ts})}"
+               th:with="ts=${#temporals.format(step.createdAt(),  'dd/MM/yyyy HH:mm z', T(java.time.ZoneId).of('Europe/Paris'))}">
+            </p>
+        </th:block>
+
+        <!--/* If error */-->
+        <th:block th:if="${step.hasError() && step.createdAt() != null}">
+            <p th:id="'payment-step-' + ${iStat.index} + '-status'"
+               th:if="${step.hasError() && step.createdAt() != null}"
+               th:text="#{payment.step.failure.description(${ts})}"
+               th:with="ts=${#temporals.format(step.createdAt(),  'dd/MM/yyyy HH:mm z', T(java.time.ZoneId).of('Europe/Paris'))}">
+            </p>
+            <p th:id="'payment-step-' + ${iStat.index} + '-error'"
+               th:utext="#{errorWithDetails(${step.errorCode()}, ${step.errorMessage()})}"></p>
+        </th:block>
+
+        <!--/* Buttons */-->
+        <div class="card-actions justify-end">
+            <button @click="$refs.stepRequest.showModal()"
+                    class="btn"
+                    th:text="#{payment.step.button.viewRequest}">
+            </button>
+            <button @click="$refs.stepResponse.showModal()"
+                    class="btn"
+                    th:text="#{payment.step.button.viewResponse}">
+            </button>
+        </div>
+
+        <!--/* Modal displaying the request ====================================================================== */-->
+        <dialog class="modal" data-theme="light" x-ref="stepRequest">
+            <div class="modal-box max-w-3xl">
+
+                <!--/* Title */-->
+                <h3 class="font-bold text-lg text-base-content" th:text="#{payment.step.modal.json.request}"></h3>
+
+                <!--/* JSON content */-->
+                <pre><code class="language-json" th:text="${step.formattedRequestPayload()}"></code></pre>
+
+                <!--/* Close button */-->
+                <div class="modal-action">
+                    <form method="dialog">
+                        <button class="btn btn-neutral" th:text="#{payment.step.event.button.close}"></button>
+                    </form>
+                </div>
+
+            </div>
+        </dialog>
+
+        <!--/* Modal displaying the response ===================================================================== */-->
+        <dialog class="modal" data-theme="light" x-ref="stepResponse">
+            <div class="modal-box max-w-3xl">
+
+                <!--/* Title */-->
+                <h3 class="font-bold text-lg text-base-content" th:text="#{payment.step.modal.json.response}"></h3>
+
+                <!--/* JSON content */-->
+                <pre><code class="language-json" th:text="${step.formattedResponsePayload()}"></code></pre>
+
+                <!--/* Close button */-->
+                <div class="modal-action">
+                    <form method="dialog">
+                        <button class="btn btn-neutral" th:text="#{payment.step.event.button.close}"></button>
+                    </form>
+                </div>
+
+            </div>
+        </dialog>
+
+    </div>
+</div>

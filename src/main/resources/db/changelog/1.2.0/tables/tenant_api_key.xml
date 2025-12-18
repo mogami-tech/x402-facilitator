@@ -1,0 +1,45 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.4.xsd">
+    <changeSet author="straumat" id="1.2.0-table-tenant_api_key">
+
+        <createTable tableName="TENANT_API_KEY"
+                     remarks="Table containing tenant api keys">
+
+            <!-- Keys -->
+            <column name="ID" type="BIGINT" remarks="Internal unique identifier">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_TENANT_API_KEY"/>
+            </column>
+            <column name="API_KEY_HASH" type="CHAR(64)" remarks="API key hash (SHA-256)">
+                <constraints nullable="false" unique="true" uniqueConstraintName="UNIQUE_TENANT_API_KEY_API_KEY_HASH"/>
+            </column>
+
+            <!-- Foreign keys -->
+            <column name="FK_TENANT_ID" type="BIGINT" remarks="Corresponding tenant">
+                <constraints nullable="false" foreignKeyName="TENANT_API_KEY_FK_TENANT_ID"
+                             referencedTableName="TENANT"
+                             referencedColumnNames="ID"/>
+            </column>
+
+            <!-- Data -->
+            <column name="NAME" type="VARCHAR(255)" remarks="Name of the API key"/>
+            <column name="REVOKED" type="BOOLEAN" remarks="Indicates if the API key is revoked"/>
+            <column name="CREATED_ON" type="TIMESTAMP" remarks="Data created on"/>
+
+        </createTable>
+
+        <!-- Auto increment on the unique identifier -->
+        <addAutoIncrement tableName="TENANT_API_KEY"
+                          columnName="ID"
+                          columnDataType="BIGINT"
+                          startWith="10"/>
+
+        <!-- Index on TENANT_API_KEY.FK_TENANT_ID -->
+        <createIndex indexName="INDEX_TENANT_API_KEY_FK_TENANT_ID"
+                     tableName="TENANT_API_KEY">
+            <column name="FK_TENANT_ID"/>
+        </createIndex>
+
+    </changeSet>
+</databaseChangeLog>
