@@ -4,7 +4,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import tech.mogami.commons.api.facilitator.verify.VerifyRequest;
+import tech.mogami.commons.api.facilitator.verify.VerificationRequest;
 import tech.mogami.commons.payment.PaymentPayload;
 import tech.mogami.commons.payment.PaymentRequirements;
 import tech.mogami.commons.payment.schemes.exact.ExactSchemePayload;
@@ -17,9 +17,9 @@ import static tech.mogami.commons.constant.version.X402Versions.X402_SUPPORTED_V
 import static tech.mogami.commons.payment.schemes.Schemes.EXACT_SCHEME;
 import static tech.mogami.commons.payment.schemes.exact.ExactSchemeConstants.EXACT_SCHEME_PARAMETER_NAME;
 import static tech.mogami.commons.payment.schemes.exact.ExactSchemeConstants.EXACT_SCHEME_PARAMETER_VERSION;
-import static tech.mogami.commons.test.BaseTestData.TEST_CLIENT_WALLET_ADDRESS_1;
-import static tech.mogami.commons.test.BaseTestData.TEST_SERVER_WALLET_ADDRESS_1;
-import static tech.mogami.commons.test.BaseTestData.TEST_SERVER_WALLET_ADDRESS_2;
+import static tech.mogami.commons.test.BaseMogamiTestData.TEST_CLIENT_WALLET_ADDRESS_1;
+import static tech.mogami.commons.test.BaseMogamiTestData.TEST_SERVER_WALLET_ADDRESS_1;
+import static tech.mogami.commons.test.BaseMogamiTestData.TEST_SERVER_WALLET_ADDRESS_2;
 
 @SpringBootTest
 @DisplayName("Payment address verifier tests")
@@ -34,8 +34,7 @@ public class PaymentAddressVerifierTest {
         PaymentRequirements paymentRequirements = PaymentRequirements.builder()
                 .scheme(EXACT_SCHEME.name())
                 .network(BASE_SEPOLIA.name())
-                .maxAmountRequired("10000")
-                .resource("http://localhost/weather")
+                .amount("10000")
                 .payTo(TEST_SERVER_WALLET_ADDRESS_2)
                 .asset("0x036CbD53842c5426634e7929541eC2318f3dCF7e")
                 .extra(EXACT_SCHEME_PARAMETER_NAME, "USDC")
@@ -43,8 +42,8 @@ public class PaymentAddressVerifierTest {
                 .build();
         PaymentPayload paymentPayload = PaymentPayload.builder()
                 .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
-                .scheme(EXACT_SCHEME.name())
-                .network(BASE_SEPOLIA.name())
+//                .scheme(EXACT_SCHEME.name())
+//                .network(BASE_SEPOLIA.name())
                 .payload(ExactSchemePayload.builder()
                         .signature("0xde533856d81c76984a8dbc8d563bbb6d6d4ca36ce6c4d6e8cf315de3bfc14ab26d6bcdc37549aeed78bf92e39d5180268f8f399a4ffb816cfbf500823882b6001c")
                         .authorization(ExactSchemePayload.Authorization.builder()
@@ -59,8 +58,7 @@ public class PaymentAddressVerifierTest {
                 .build();
 
         assertThat(paymentAddressVerifier.verify(
-                VerifyRequest.builder()
-                        .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
+                VerificationRequest.builder()
                         .paymentPayload(paymentPayload)
                         .paymentRequirements(paymentRequirements)
                         .build()))
@@ -78,8 +76,7 @@ public class PaymentAddressVerifierTest {
         var paymentRequirements = PaymentRequirements.builder()
                 .scheme(EXACT_SCHEME.name())
                 .network(BASE_SEPOLIA.name())
-                .maxAmountRequired("10000")
-                .resource("http://localhost/weather")
+                .amount("10000")
                 .payTo(TEST_SERVER_WALLET_ADDRESS_1)
                 .asset("0x036CbD53842c5426634e7929541eC2318f3dCF7e")
                 .extra(EXACT_SCHEME_PARAMETER_NAME, "USDC")
@@ -87,8 +84,8 @@ public class PaymentAddressVerifierTest {
                 .build();
         var paymentPayload = PaymentPayload.builder()
                 .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
-                .scheme(EXACT_SCHEME.name())
-                .network(BASE_SEPOLIA.name())
+//                .scheme(EXACT_SCHEME.name())
+//                .network(BASE_SEPOLIA.name())
                 .payload(ExactSchemePayload.builder()
                         .signature("0xde533856d81c76984a8dbc8d563bbb6d6d4ca36ce6c4d6e8cf315de3bfc14ab26d6bcdc37549aeed78bf92e39d5180268f8f399a4ffb816cfbf500823882b6001c")
                         .authorization(ExactSchemePayload.Authorization.builder()
@@ -103,8 +100,8 @@ public class PaymentAddressVerifierTest {
                 .build();
 
         assertThat(paymentAddressVerifier.verify(
-                VerifyRequest.builder()
-                        .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
+                VerificationRequest.builder()
+//                        .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
                         .paymentPayload(paymentPayload)
                         .paymentRequirements(paymentRequirements)
                         .build()))

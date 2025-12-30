@@ -7,16 +7,14 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.web3j.crypto.Credentials;
-import tech.mogami.commons.api.facilitator.settle.SettleRequest;
-import tech.mogami.commons.api.facilitator.verify.VerifyRequest;
+import tech.mogami.commons.api.facilitator.verify.VerificationRequest;
 import tech.mogami.commons.payment.PaymentPayload;
 import tech.mogami.commons.payment.PaymentRequirements;
 import tech.mogami.commons.payment.schemes.exact.ExactSchemePayload;
 import tech.mogami.commons.util.JsonUtil;
 import tech.mogami.commons.util.NonceUtil;
-import tech.mogami.java.client.helper.X402PaymentHelper;
 
+import static org.assertj.core.api.Fail.fail;
 import static org.springframework.http.MediaType.ALL;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.http.MediaType.TEXT_PLAIN;
@@ -28,9 +26,8 @@ import static tech.mogami.commons.constant.version.X402Versions.X402_SUPPORTED_V
 import static tech.mogami.commons.payment.schemes.Schemes.EXACT_SCHEME;
 import static tech.mogami.commons.payment.schemes.exact.ExactSchemeConstants.EXACT_SCHEME_PARAMETER_NAME;
 import static tech.mogami.commons.payment.schemes.exact.ExactSchemeConstants.EXACT_SCHEME_PARAMETER_VERSION;
-import static tech.mogami.commons.test.BaseTestData.TEST_CLIENT_WALLET_ADDRESS_1;
-import static tech.mogami.commons.test.BaseTestData.TEST_CLIENT_WALLET_ADDRESS_1_PRIVATE_KEY;
-import static tech.mogami.commons.test.BaseTestData.TEST_SERVER_WALLET_ADDRESS_1;
+import static tech.mogami.commons.test.BaseMogamiTestData.TEST_CLIENT_WALLET_ADDRESS_1;
+import static tech.mogami.commons.test.BaseMogamiTestData.TEST_SERVER_WALLET_ADDRESS_1;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -47,9 +44,8 @@ public class SettleControllerTest {
                         .contentType(APPLICATION_JSON)
                         .accept(APPLICATION_JSON, TEXT_PLAIN, ALL)
                         .content(JsonUtil.toJson(
-                                VerifyRequest.builder()
+                                VerificationRequest.builder()
                                         .paymentPayload(PaymentPayload.builder()
-                                                .scheme(EXACT_SCHEME.name())
                                                 .payload(ExactSchemePayload.builder()
                                                         .authorization(ExactSchemePayload.
                                                                 Authorization.builder()
@@ -72,8 +68,7 @@ public class SettleControllerTest {
         var paymentRequirements = PaymentRequirements.builder()
                 .scheme(EXACT_SCHEME.name())
                 .network(BASE_SEPOLIA.name())
-                .maxAmountRequired("200")
-                .resource("http://localhost/weather")
+                .amount("200")
                 .maxTimeoutSeconds(60)
                 .payTo(TEST_SERVER_WALLET_ADDRESS_1)
                 .asset("0x036CbD53842c5426634e7929541eC2318f3dCF7e")
@@ -82,8 +77,6 @@ public class SettleControllerTest {
                 .build();
         var paymentPayload = PaymentPayload.builder()
                 .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
-                .scheme(EXACT_SCHEME.name())
-                .network(BASE_SEPOLIA.name())
                 .payload(ExactSchemePayload.builder()
                         .authorization(ExactSchemePayload.Authorization.builder()
                                 .from(TEST_CLIENT_WALLET_ADDRESS_1)
@@ -97,23 +90,24 @@ public class SettleControllerTest {
                 .build();
 
         // We use Mogami client SDK to create a payment payload with insufficient funds.
-        var signedPayload = X402PaymentHelper.getSignedPayload(
-                Credentials.create(TEST_CLIENT_WALLET_ADDRESS_1_PRIVATE_KEY),
-                paymentRequirements,
-                paymentPayload);
-
-        mockMvc.perform(MockMvcRequestBuilders.post(SETTLE_ENDPOINT)
-                        .contentType(APPLICATION_JSON)
-                        .accept(APPLICATION_JSON, TEXT_PLAIN, ALL)
-                        .content(JsonUtil.toJson(SettleRequest.builder()
-                                .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
-                                .paymentPayload(signedPayload)
-                                .paymentRequirements(paymentRequirements)
-                                .build())))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.network").value(BASE_SEPOLIA.name()))
-                .andExpect(jsonPath("$.errorReason").isEmpty())
-                .andExpect(jsonPath("$.payer").value(TEST_CLIENT_WALLET_ADDRESS_1));
+        fail("Refactor this");
+//        var signedPayload = X402PaymentHelper.getSignedPayload(
+//                Credentials.create(TEST_CLIENT_WALLET_ADDRESS_1_PRIVATE_KEY),
+//                paymentRequirements,
+//                paymentPayload);
+//
+//        mockMvc.perform(MockMvcRequestBuilders.post(SETTLE_ENDPOINT)
+//                        .contentType(APPLICATION_JSON)
+//                        .accept(APPLICATION_JSON, TEXT_PLAIN, ALL)
+//                        .content(JsonUtil.toJson(SettleRequest.builder()
+//                                .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
+//                                .paymentPayload(signedPayload)
+//                                .paymentRequirements(paymentRequirements)
+//                                .build())))
+//                .andExpect(status().isOk())
+//                .andExpect(jsonPath("$.network").value(BASE_SEPOLIA.name()))
+//                .andExpect(jsonPath("$.errorReason").isEmpty())
+//                .andExpect(jsonPath("$.payer").value(TEST_CLIENT_WALLET_ADDRESS_1));
     }
 
 }

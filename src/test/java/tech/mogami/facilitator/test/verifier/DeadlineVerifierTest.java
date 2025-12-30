@@ -4,7 +4,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import tech.mogami.commons.api.facilitator.verify.VerifyRequest;
+import tech.mogami.commons.api.facilitator.verify.VerificationRequest;
 import tech.mogami.commons.payment.PaymentPayload;
 import tech.mogami.commons.payment.PaymentRequirements;
 import tech.mogami.commons.payment.schemes.exact.ExactSchemePayload;
@@ -27,10 +27,10 @@ public class DeadlineVerifierTest {
     @DisplayName("validBefore error")
     public void validBeforeError() {
         assertThat(deadlineVerifier.verify(
-                VerifyRequest.builder()
+                VerificationRequest.builder()
                         .paymentPayload(PaymentPayload.builder()
-                                .scheme(EXACT_SCHEME.name())
-                                .network(BASE_SEPOLIA.name())
+//                                .scheme(EXACT_SCHEME.name())
+//                                .network(BASE_SEPOLIA.name())
                                 .payload(ExactSchemePayload.builder()
                                         .authorization(
                                                 ExactSchemePayload.Authorization.builder()
@@ -57,10 +57,10 @@ public class DeadlineVerifierTest {
     @DisplayName("validAfter error")
     public void validAfterError() {
         assertThat(deadlineVerifier.verify(
-                VerifyRequest.builder()
+                VerificationRequest.builder()
                         .paymentPayload(PaymentPayload.builder()
-                                .scheme(EXACT_SCHEME.name())
-                                .network(BASE_SEPOLIA.name())
+//                                .scheme(EXACT_SCHEME.name())
+//                                .network(BASE_SEPOLIA.name())
                                 .payload(ExactSchemePayload.builder()
                                         .authorization(
                                                 ExactSchemePayload.Authorization.builder()

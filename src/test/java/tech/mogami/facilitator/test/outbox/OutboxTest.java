@@ -21,10 +21,10 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.awaitility.Awaitility.await;
 import static tech.mogami.commons.constant.X402Error.INVALID_EXACT_EVM_PAYLOAD_SIGNATURE;
 import static tech.mogami.commons.constant.network.Networks.BASE_SEPOLIA;
-import static tech.mogami.commons.constant.network.base.BaseContracts.BASE_SEPOLIA_USDC_CONTRACT;
+import static tech.mogami.commons.constant.network.contract.BaseContracts.BASE_SEPOLIA_USDC_CONTRACT;
 import static tech.mogami.commons.constant.version.X402Versions.V1;
-import static tech.mogami.commons.test.BaseTestData.TEST_CLIENT_WALLET_ADDRESS_1;
-import static tech.mogami.commons.test.BaseTestData.TEST_CLIENT_WALLET_ADDRESS_2;
+import static tech.mogami.commons.test.BaseMogamiTestData.TEST_CLIENT_WALLET_ADDRESS_1;
+import static tech.mogami.commons.test.BaseMogamiTestData.TEST_CLIENT_WALLET_ADDRESS_2;
 import static tech.mogami.facilitator.domain.payment.PaymentStepType.VERIFY;
 import static tech.mogami.facilitator.provider.outbox.domain.OutboxEventStatus.DONE;
 
@@ -66,7 +66,7 @@ public class OutboxTest extends BaseTest {
                                 NewPaymentStepMessage.builder()
                                         .paymentId(nonce)
                                         .paymentStepType(VERIFY)
-                                        .requestPayload(getVerifyRequest(
+                                        .requestPayload(getVerificationRequest(
                                                 V1,
                                                 BASE_SEPOLIA,
                                                 TEST_CLIENT_WALLET_ADDRESS_1,

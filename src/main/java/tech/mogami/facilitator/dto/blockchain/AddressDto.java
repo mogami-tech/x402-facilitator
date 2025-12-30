@@ -23,6 +23,8 @@ public record AddressDto(
 
     /**
      * Returns a shortened address.
+     *
+     * @return Shortened address.
      */
     public String shortenAddress() {
         if (StringUtils.length(address) == BLOCKCHAIN_ADDRESS_LENGTH) {

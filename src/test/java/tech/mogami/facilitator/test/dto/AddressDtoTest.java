@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import tech.mogami.facilitator.dto.blockchain.AddressDto;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static tech.mogami.commons.test.BaseTestData.TEST_CLIENT_WALLET_ADDRESS_1;
+import static tech.mogami.commons.test.BaseMogamiTestData.TEST_CLIENT_WALLET_ADDRESS_1;
 
 @DisplayName("AddressDto tests")
 public class AddressDtoTest {

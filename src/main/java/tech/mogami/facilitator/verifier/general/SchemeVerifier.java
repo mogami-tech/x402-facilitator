@@ -4,7 +4,7 @@ import jakarta.validation.Validator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
-import tech.mogami.commons.api.facilitator.verify.VerifyRequest;
+import tech.mogami.commons.api.facilitator.verify.VerificationRequest;
 import tech.mogami.facilitator.verifier.VerificationResult;
 import tech.mogami.facilitator.verifier.VerificationStep;
 import tech.mogami.facilitator.verifier.Verifier;
@@ -29,10 +29,10 @@ public class SchemeVerifier extends VerifierUtil implements Verifier {
     private final Validator validator;
 
     @Override
-    public VerificationResult verify(final VerifyRequest verifyRequest) {
+    public VerificationResult verify(final VerificationRequest verificationRequest) {
         return Stream.of(
-                        validator.validateProperty(verifyRequest, "paymentPayload.scheme"),
-                        validator.validateProperty(verifyRequest, "paymentRequirements.scheme")
+                        validator.validateProperty(verificationRequest, "paymentPayload.scheme"),
+                        validator.validateProperty(verificationRequest, "paymentRequirements.scheme")
                 )
                 .flatMap(Set::stream)
                 .findFirst()

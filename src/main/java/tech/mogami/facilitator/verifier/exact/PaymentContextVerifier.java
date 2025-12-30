@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
-import tech.mogami.commons.api.facilitator.verify.VerifyRequest;
+import tech.mogami.commons.api.facilitator.verify.VerificationRequest;
 import tech.mogami.commons.constant.network.Network;
 import tech.mogami.commons.payment.PaymentRequirements;
 import tech.mogami.commons.payment.schemes.exact.ExactSchemePayload;
@@ -37,12 +37,12 @@ public class PaymentContextVerifier extends VerifierUtil implements VerifierForE
     private final Validator validator;
 
     @Override
-    public VerificationResult verify(final VerifyRequest verifyRequest) {
+    public VerificationResult verify(final VerificationRequest verificationRequest) {
 
         // Check the networks ==========================================================================================
         var networkErrors = Stream.of(
-                        validator.validateProperty(verifyRequest, "paymentPayload.network"),
-                        validator.validateProperty(verifyRequest, "paymentRequirements.network")
+                        validator.validateProperty(verificationRequest, "paymentPayload.network"),
+                        validator.validateProperty(verificationRequest, "paymentRequirements.network")
                 )
                 .flatMap(Set::stream)
                 .findFirst();
@@ -51,30 +51,30 @@ public class PaymentContextVerifier extends VerifierUtil implements VerifierForE
         }
 
         // Getting the payload from payment payload ====================================================================
-        if (verifyRequest.paymentPayload().payload() == null) {
+        if (verificationRequest.paymentPayload().payload() == null) {
             return VerificationResult.fail(INVALID_NETWORK, "Payment payload is empty");
         }
-        if (!(verifyRequest.paymentPayload().payload() instanceof ExactSchemePayload)) {
+        if (!(verificationRequest.paymentPayload().payload() instanceof ExactSchemePayload)) {
             return VerificationResult.fail(INVALID_NETWORK, "Payment payload is not valid (Not an ExactSchemePayload)");
         }
 
         // Check the stablecoin name to use ============================================================================
-        PaymentRequirements paymentRequirements = verifyRequest.paymentRequirements();
+        PaymentRequirements paymentRequirements = verificationRequest.paymentRequirements();
         Optional<String> stableCoinName = paymentRequirements.getExtra(EXACT_SCHEME_PARAMETER_NAME);
         if (stableCoinName.isEmpty()) {
             return VerificationResult.fail(INVALID_NETWORK, "Stablecoin name is not provided in the payment requirements");
         } else {
-            Optional<Network> network = findByName(verifyRequest.paymentRequirements().network());
+            Optional<Network> network = findByName(verificationRequest.paymentRequirements().network());
 
             if (network.isEmpty()) {
-                return VerificationResult.fail(INVALID_NETWORK, "Unknown network: " + verifyRequest.paymentRequirements().network());
+                return VerificationResult.fail(INVALID_NETWORK, "Unknown network: " + verificationRequest.paymentRequirements().network());
             }
             // If it's not a valid value
             if (!StringUtils.equalsAnyIgnoreCase(stableCoinName.get(), "USDC", "USD Coin")) {
                 return VerificationResult.fail(INVALID_NETWORK, "Exact scheme parameter name invalid: " + stableCoinName.get());
             }
             // Checking specific network requirements
-            if (StringUtils.equalsIgnoreCase(verifyRequest.paymentRequirements().network(), network.get().name())
+            if (StringUtils.equalsIgnoreCase(verificationRequest.paymentRequirements().network(), network.get().name())
                     && !StringUtils.equalsIgnoreCase(stableCoinName.get(), network.get().usdc().displayName())) {
                 return VerificationResult.fail(INVALID_NETWORK, "On " + network.get().name() + ", the exact scheme parameter name must be '" + network.get().usdc().displayName() + "'");
             }
@@ -87,7 +87,7 @@ public class PaymentContextVerifier extends VerifierUtil implements VerifierForE
         }
 
         // Check the asset contract address ============================================================================
-        var assetErrors = validator.validateProperty(verifyRequest, "paymentRequirements.asset")
+        var assetErrors = validator.validateProperty(verificationRequest, "paymentRequirements.asset")
                 .stream()
                 .findFirst();
         return assetErrors.map(verifyRequestConstraintViolation -> VerificationResult.fail(INVALID_NETWORK, getErrorMessage(verifyRequestConstraintViolation))).orElseGet(VerificationResult::ok);

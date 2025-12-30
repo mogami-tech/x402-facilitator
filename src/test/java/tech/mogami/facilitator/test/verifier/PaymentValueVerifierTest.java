@@ -4,7 +4,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import tech.mogami.commons.api.facilitator.verify.VerifyRequest;
+import tech.mogami.commons.api.facilitator.verify.VerificationRequest;
 import tech.mogami.commons.payment.PaymentPayload;
 import tech.mogami.commons.payment.PaymentRequirements;
 import tech.mogami.commons.payment.schemes.exact.ExactSchemePayload;
@@ -24,7 +24,7 @@ public class PaymentValueVerifierTest {
     @DisplayName("Payload value is not enough")
     public void payloadValueIsNotEnough() {
         assertThat(paymentValueVerifier.verify(
-                VerifyRequest.builder()
+                VerificationRequest.builder()
                         .paymentPayload(PaymentPayload.builder()
                                 .payload(ExactSchemePayload.builder()
                                         .authorization(
@@ -34,7 +34,7 @@ public class PaymentValueVerifierTest {
                                         .build())
                                 .build())
                         .paymentRequirements(PaymentRequirements.builder()
-                                .maxAmountRequired("110")
+                                .amount("110")
                                 .build())
                         .build()))
                 .isNotNull()
@@ -49,7 +49,7 @@ public class PaymentValueVerifierTest {
     @DisplayName("Payload value is enough")
     public void payloadValueIsEnough() {
         assertThat(paymentValueVerifier.verify(
-                VerifyRequest.builder()
+                VerificationRequest.builder()
                         .paymentPayload(PaymentPayload.builder()
                                 .payload(ExactSchemePayload.builder()
                                         .authorization(
@@ -59,7 +59,7 @@ public class PaymentValueVerifierTest {
                                         .build())
                                 .build())
                         .paymentRequirements(PaymentRequirements.builder()
-                                .maxAmountRequired("110")
+                                .amount("110")
                                 .build())
                         .build()))
                 .isNotNull()
@@ -74,7 +74,7 @@ public class PaymentValueVerifierTest {
     @DisplayName("Payload value is superior to required amount")
     public void payloadValueIsSuperior() {
         assertThat(paymentValueVerifier.verify(
-                VerifyRequest.builder()
+                VerificationRequest.builder()
                         .paymentPayload(PaymentPayload.builder()
                                 .payload(ExactSchemePayload.builder()
                                         .authorization(
@@ -84,7 +84,7 @@ public class PaymentValueVerifierTest {
                                         .build())
                                 .build())
                         .paymentRequirements(PaymentRequirements.builder()
-                                .maxAmountRequired("110")
+                                .amount("110")
                                 .build())
                         .build()))
                 .isNotNull()

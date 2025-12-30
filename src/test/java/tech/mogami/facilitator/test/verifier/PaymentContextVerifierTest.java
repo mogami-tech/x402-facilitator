@@ -4,7 +4,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import tech.mogami.commons.api.facilitator.verify.VerifyRequest;
+import tech.mogami.commons.api.facilitator.verify.VerificationRequest;
 import tech.mogami.commons.payment.PaymentPayload;
 import tech.mogami.commons.payment.PaymentRequirements;
 import tech.mogami.commons.payment.schemes.exact.ExactSchemePayload;
@@ -30,9 +30,8 @@ public class PaymentContextVerifierTest {
     public void invalidNetwork() {
         // On payment payload.
         assertThat(paymentContextVerifier.verify(
-                VerifyRequest.builder()
+                VerificationRequest.builder()
                         .paymentPayload(PaymentPayload.builder()
-                                .scheme(EXACT_SCHEME.name())
                                 .payload(ExactSchemePayload.builder().build()).build())
                         .paymentRequirements(PaymentRequirements
                                 .builder()
@@ -46,10 +45,9 @@ public class PaymentContextVerifierTest {
                 });
 
         assertThat(paymentContextVerifier.verify(
-                VerifyRequest.builder()
+                VerificationRequest.builder()
                         .paymentPayload(PaymentPayload.builder()
-                                .scheme(EXACT_SCHEME.name())
-                                .network("INVALID_NETWORK")
+//                                .network("INVALID_NETWORK")
                                 .payload(ExactSchemePayload.builder().build())
                                 .build())
                         .paymentRequirements(PaymentRequirements.builder().scheme(EXACT_SCHEME.name()).build())
@@ -63,10 +61,10 @@ public class PaymentContextVerifierTest {
 
         // On payment requirements.
         assertThat(paymentContextVerifier.verify(
-                VerifyRequest.builder()
+                VerificationRequest.builder()
                         .paymentPayload(PaymentPayload.builder()
-                                .scheme(EXACT_SCHEME.name())
-                                .network(BASE_SEPOLIA.name())
+//                                .scheme(EXACT_SCHEME.name())
+//                                .network(BASE_SEPOLIA.name())
                                 .payload(ExactSchemePayload.builder().build())
                                 .build())
                         .paymentRequirements(PaymentRequirements.builder().scheme(EXACT_SCHEME.name()).build())
@@ -79,10 +77,10 @@ public class PaymentContextVerifierTest {
                 });
 
         assertThat(paymentContextVerifier.verify(
-                VerifyRequest.builder()
+                VerificationRequest.builder()
                         .paymentPayload(PaymentPayload.builder()
-                                .scheme(EXACT_SCHEME.name())
-                                .network(BASE_SEPOLIA.name())
+//                                .scheme(EXACT_SCHEME.name())
+//                                .network(BASE_SEPOLIA.name())
                                 .payload(ExactSchemePayload.builder().build())
                                 .build())
                         .paymentRequirements(PaymentRequirements.builder()
@@ -102,10 +100,10 @@ public class PaymentContextVerifierTest {
     @DisplayName("Invalid payload")
     public void invalidPayload() {
         assertThat(paymentContextVerifier.verify(
-                VerifyRequest.builder()
+                VerificationRequest.builder()
                         .paymentPayload(PaymentPayload.builder()
-                                .scheme(EXACT_SCHEME.name())
-                                .network(BASE_SEPOLIA.name())
+//                                .scheme(EXACT_SCHEME.name())
+//                                .network(BASE_SEPOLIA.name())
                                 .payload("Invalid Payload")
                                 .build())
                         .paymentRequirements(PaymentRequirements.builder()
@@ -125,10 +123,10 @@ public class PaymentContextVerifierTest {
     @DisplayName("Invalid stablecoin name in exact scheme parameter name")
     public void invalidStablecoinNameInExactSchemaParameterName() {
         assertThat(paymentContextVerifier.verify(
-                VerifyRequest.builder()
+                VerificationRequest.builder()
                         .paymentPayload(PaymentPayload.builder()
-                                .scheme(EXACT_SCHEME.name())
-                                .network(BASE_SEPOLIA.name())
+//                                .scheme(EXACT_SCHEME.name())
+//                                .network(BASE_SEPOLIA.name())
                                 .payload(ExactSchemePayload.builder().build())
                                 .build())
                         .paymentRequirements(PaymentRequirements.builder()
@@ -144,10 +142,10 @@ public class PaymentContextVerifierTest {
                 });
 
         assertThat(paymentContextVerifier.verify(
-                VerifyRequest.builder()
+                VerificationRequest.builder()
                         .paymentPayload(PaymentPayload.builder()
-                                .scheme(EXACT_SCHEME.name())
-                                .network(BASE_SEPOLIA.name())
+//                                .scheme(EXACT_SCHEME.name())
+//                                .network(BASE_SEPOLIA.name())
                                 .payload(ExactSchemePayload.builder().build())
                                 .build())
                         .paymentRequirements(PaymentRequirements.builder()
@@ -165,10 +163,10 @@ public class PaymentContextVerifierTest {
 
         // If network = "base sepolia", then the value of "name" is "USDC"
         assertThat(paymentContextVerifier.verify(
-                VerifyRequest.builder()
+                VerificationRequest.builder()
                         .paymentPayload(PaymentPayload.builder()
-                                .scheme(EXACT_SCHEME.name())
-                                .network(BASE_SEPOLIA.name())
+//                                .scheme(EXACT_SCHEME.name())
+//                                .network(BASE_SEPOLIA.name())
                                 .payload(ExactSchemePayload.builder().build())
                                 .build())
                         .paymentRequirements(PaymentRequirements.builder()
@@ -186,10 +184,10 @@ public class PaymentContextVerifierTest {
 
         // If network = "base", then the value of "name" is "USD Coin"
         assertThat(paymentContextVerifier.verify(
-                VerifyRequest.builder()
+                VerificationRequest.builder()
                         .paymentPayload(PaymentPayload.builder()
-                                .scheme(EXACT_SCHEME.name())
-                                .network(BASE_MAINNET.name())
+//                                .scheme(EXACT_SCHEME.name())
+//                                .network(BASE_MAINNET.name())
                                 .payload(ExactSchemePayload.builder().build())
                                 .build())
                         .paymentRequirements(PaymentRequirements.builder()
@@ -210,10 +208,10 @@ public class PaymentContextVerifierTest {
     @DisplayName("Invalid exact scheme version")
     public void invalidExactSchemeVersion() {
         assertThat(paymentContextVerifier.verify(
-                VerifyRequest.builder()
+                VerificationRequest.builder()
                         .paymentPayload(PaymentPayload.builder()
-                                .scheme(EXACT_SCHEME.name())
-                                .network(BASE_SEPOLIA.name())
+//                                .scheme(EXACT_SCHEME.name())
+//                                .network(BASE_SEPOLIA.name())
                                 .payload(ExactSchemePayload.builder().build())
                                 .build())
                         .paymentRequirements(PaymentRequirements.builder()
@@ -230,10 +228,10 @@ public class PaymentContextVerifierTest {
                 });
 
         assertThat(paymentContextVerifier.verify(
-                VerifyRequest.builder()
+                VerificationRequest.builder()
                         .paymentPayload(PaymentPayload.builder()
-                                .scheme(EXACT_SCHEME.name())
-                                .network(BASE_SEPOLIA.name())
+//                                .scheme(EXACT_SCHEME.name())
+//                                .network(BASE_SEPOLIA.name())
                                 .payload(ExactSchemePayload.builder().build())
                                 .build())
                         .paymentRequirements(PaymentRequirements.builder()
@@ -254,10 +252,10 @@ public class PaymentContextVerifierTest {
     @DisplayName("Invalid asset contract address")
     public void invalidAssetContractAddress() {
         assertThat(paymentContextVerifier.verify(
-                VerifyRequest.builder()
+                VerificationRequest.builder()
                         .paymentPayload(PaymentPayload.builder()
-                                .scheme(EXACT_SCHEME.name())
-                                .network(BASE_SEPOLIA.name())
+//                                .scheme(EXACT_SCHEME.name())
+//                                .network(BASE_SEPOLIA.name())
                                 .payload(ExactSchemePayload.builder().build())
                                 .build())
                         .paymentRequirements(PaymentRequirements.builder()
@@ -275,10 +273,10 @@ public class PaymentContextVerifierTest {
                 });
 
         assertThat(paymentContextVerifier.verify(
-                VerifyRequest.builder()
+                VerificationRequest.builder()
                         .paymentPayload(PaymentPayload.builder()
-                                .scheme(EXACT_SCHEME.name())
-                                .network(BASE_SEPOLIA.name())
+//                                .scheme(EXACT_SCHEME.name())
+//                                .network(BASE_SEPOLIA.name())
                                 .payload(ExactSchemePayload.builder().build())
                                 .build())
                         .paymentRequirements(PaymentRequirements.builder()
@@ -301,10 +299,10 @@ public class PaymentContextVerifierTest {
     @DisplayName("Valid schemes")
     public void validSchemes() {
         assertThat(paymentContextVerifier.verify(
-                VerifyRequest.builder()
+                VerificationRequest.builder()
                         .paymentPayload(PaymentPayload.builder()
-                                .scheme(EXACT_SCHEME.name())
-                                .network(BASE_SEPOLIA.name())
+//                                .scheme(EXACT_SCHEME.name())
+//                                .network(BASE_SEPOLIA.name())
                                 .payload(ExactSchemePayload.builder().build())
                                 .build())
                         .paymentRequirements(PaymentRequirements.builder()

@@ -2,9 +2,9 @@ package tech.mogami.facilitator.dto.payment;
 
 import lombok.Builder;
 import lombok.Singular;
+import tech.mogami.commons.constant.PaymentStatus;
 import tech.mogami.commons.constant.network.Network;
 import tech.mogami.commons.constant.version.X402Version;
-import tech.mogami.commons.payment.PaymentStatus;
 import tech.mogami.facilitator.dto.blockchain.AddressDto;
 
 import java.math.BigInteger;

@@ -4,7 +4,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import tech.mogami.commons.api.facilitator.verify.VerifyRequest;
+import tech.mogami.commons.api.facilitator.verify.VerificationRequest;
 import tech.mogami.commons.payment.PaymentPayload;
 import tech.mogami.commons.payment.PaymentRequirements;
 import tech.mogami.facilitator.verifier.general.SchemeVerifier;
@@ -24,7 +24,7 @@ public class SchemeVerifierTest {
     @DisplayName("Schemes is not set")
     public void schemesNotSet() {
         assertThat(schemeVerifier.verify(
-                VerifyRequest.builder()
+                VerificationRequest.builder()
                         .paymentPayload(PaymentPayload.builder().build())
                         .paymentRequirements(PaymentRequirements.builder().build())
                         .build()))
@@ -36,8 +36,8 @@ public class SchemeVerifierTest {
                 });
 
         assertThat(schemeVerifier.verify(
-                VerifyRequest.builder()
-                        .paymentPayload(PaymentPayload.builder().scheme(EXACT_SCHEME.name()).build())
+                VerificationRequest.builder()
+//                        .paymentPayload(PaymentPayload.builder().scheme(EXACT_SCHEME.name()).build())
                         .paymentRequirements(PaymentRequirements.builder().build())
                         .build()))
                 .isNotNull()
@@ -52,8 +52,8 @@ public class SchemeVerifierTest {
     @DisplayName("Invalid schemes")
     public void invalidSchemes() {
         assertThat(schemeVerifier.verify(
-                VerifyRequest.builder()
-                        .paymentPayload(PaymentPayload.builder().scheme("INVALID_PAYLOAD_SCHEME").build())
+                VerificationRequest.builder()
+//                        .paymentPayload(PaymentPayload.builder().scheme("INVALID_PAYLOAD_SCHEME").build())
                         .paymentRequirements(PaymentRequirements.builder().build())
                         .build()))
                 .isNotNull()
@@ -64,8 +64,8 @@ public class SchemeVerifierTest {
                 });
 
         assertThat(schemeVerifier.verify(
-                VerifyRequest.builder()
-                        .paymentPayload(PaymentPayload.builder().scheme(EXACT_SCHEME.name()).build())
+                VerificationRequest.builder()
+//                        .paymentPayload(PaymentPayload.builder().scheme(EXACT_SCHEME.name()).build())
                         .paymentRequirements(PaymentRequirements.builder().scheme("INVALID_PAYMENT_SCHEME").build())
                         .build()))
                 .isNotNull()
@@ -80,8 +80,8 @@ public class SchemeVerifierTest {
     @DisplayName("Valid schemes")
     public void validSchemes() {
         assertThat(schemeVerifier.verify(
-                VerifyRequest.builder()
-                        .paymentPayload(PaymentPayload.builder().scheme(EXACT_SCHEME.name()).build())
+                VerificationRequest.builder()
+//                        .paymentPayload(PaymentPayload.builder().scheme(EXACT_SCHEME.name()).build())
                         .paymentRequirements(PaymentRequirements.builder().scheme(EXACT_SCHEME.name()).build())
                         .build()))
                 .isNotNull()

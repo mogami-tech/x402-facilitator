@@ -3,7 +3,7 @@ package tech.mogami.facilitator.verifier.exact;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
-import tech.mogami.commons.api.facilitator.verify.VerifyRequest;
+import tech.mogami.commons.api.facilitator.verify.VerificationRequest;
 import tech.mogami.commons.crypto.signature.EIP712Helper;
 import tech.mogami.commons.payment.schemes.exact.ExactSchemePayload;
 import tech.mogami.facilitator.verifier.VerificationResult;
@@ -23,14 +23,14 @@ import static tech.mogami.facilitator.verifier.VerificationStep.SIGNATURE_FOR_EX
 public class SignatureVerifier implements VerifierForExactScheme {
 
     @Override
-    public VerificationResult verify(final VerifyRequest verifyRequest) {
+    public VerificationResult verify(final VerificationRequest verifyRequest) {
         try {
             // We retrieve the payload and signature from the request
             ExactSchemePayload payload = (ExactSchemePayload) verifyRequest.paymentPayload().payload();
             if (EIP712Helper.verify(
                     payload.signature(),
                     verifyRequest.paymentRequirements(),
-                    verifyRequest.paymentPayload(),
+                    ((ExactSchemePayload) verifyRequest.paymentPayload().payload()).authorization(),
                     payload.authorization().from())) {
                 return VerificationResult.ok();
             } else {

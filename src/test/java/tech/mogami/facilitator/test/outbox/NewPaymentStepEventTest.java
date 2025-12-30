@@ -21,12 +21,12 @@ import static tech.mogami.commons.constant.X402Error.INVALID_EXACT_EVM_PAYLOAD_S
 import static tech.mogami.commons.constant.X402Error.UNEXPECTED_SETTLE_ERROR;
 import static tech.mogami.commons.constant.network.Networks.BASE_MAINNET;
 import static tech.mogami.commons.constant.network.Networks.BASE_SEPOLIA;
-import static tech.mogami.commons.constant.network.base.BaseContracts.BASE_MAINNET_USDC_CONTRACT;
-import static tech.mogami.commons.constant.network.base.BaseContracts.BASE_SEPOLIA_USDC_CONTRACT;
+import static tech.mogami.commons.constant.network.contract.BaseContracts.BASE_MAINNET_USDC_CONTRACT;
+import static tech.mogami.commons.constant.network.contract.BaseContracts.BASE_SEPOLIA_USDC_CONTRACT;
 import static tech.mogami.commons.constant.version.X402Versions.V1;
 import static tech.mogami.commons.constant.version.X402Versions.V2;
-import static tech.mogami.commons.test.BaseTestData.TEST_CLIENT_WALLET_ADDRESS_1;
-import static tech.mogami.commons.test.BaseTestData.TEST_CLIENT_WALLET_ADDRESS_2;
+import static tech.mogami.commons.test.BaseMogamiTestData.TEST_CLIENT_WALLET_ADDRESS_1;
+import static tech.mogami.commons.test.BaseMogamiTestData.TEST_CLIENT_WALLET_ADDRESS_2;
 import static tech.mogami.facilitator.domain.payment.PaymentStepType.SETTLE;
 import static tech.mogami.facilitator.domain.payment.PaymentStepType.VERIFY;
 import static tech.mogami.facilitator.dto.payment.PaymentDto.UNKNOWN_FORMATTED_VALUE;
@@ -147,7 +147,7 @@ public class NewPaymentStepEventTest extends BaseTest {
         outboxService.publish(NewPaymentStepMessage.builder()
                 .paymentId(COMPLETE_PAYMENT_NONCE)
                 .paymentStepType(VERIFY)
-                .requestPayload(getVerifyRequest(
+                .requestPayload(getVerificationRequest(
                         V1,
                         BASE_SEPOLIA,
                         TEST_CLIENT_WALLET_ADDRESS_1,
@@ -204,7 +204,7 @@ public class NewPaymentStepEventTest extends BaseTest {
         outboxService.publish(NewPaymentStepMessage.builder()
                 .paymentId(COMPLETE_PAYMENT_NONCE)
                 .paymentStepType(VERIFY)
-                .requestPayload(getVerifyRequest(
+                .requestPayload(getVerificationRequest(
                         V2,
                         BASE_MAINNET,
                         "0xf6b42050A71Ca13f842eDa53C7d31B7C1BD22222",
@@ -295,7 +295,7 @@ public class NewPaymentStepEventTest extends BaseTest {
         outboxService.publish(NewPaymentStepMessage.builder()
                 .paymentId(COMPLETE_PAYMENT_NONCE)
                 .paymentStepType(VERIFY)
-                .requestPayload(getVerifyRequest(
+                .requestPayload(getVerificationRequest(
                         V2,
                         BASE_MAINNET,
                         "0xf6b42050A71Ca13f842eDa53C7d31B7C1BD44444",
@@ -384,7 +384,7 @@ public class NewPaymentStepEventTest extends BaseTest {
         outboxService.publish(NewPaymentStepMessage.builder()
                 .paymentId(COMPLETE_PAYMENT_NONCE)
                 .paymentStepType(VERIFY)
-                .requestPayload(getVerifyRequest(
+                .requestPayload(getVerificationRequest(
                         V1,
                         BASE_MAINNET,
                         "0xf6b42050A71Ca13f842eDa53C7d31B7C1BD55555",
@@ -405,7 +405,7 @@ public class NewPaymentStepEventTest extends BaseTest {
         outboxService.publish(NewPaymentStepMessage.builder()
                 .paymentId(COMPLETE_PAYMENT_NONCE)
                 .paymentStepType(VERIFY)
-                .requestPayload(getVerifyRequest(
+                .requestPayload(getVerificationRequest(
                         V1,
                         BASE_MAINNET,
                         "0xf6b42050A71Ca13f842eDa53C7d31B7C1BD66666",

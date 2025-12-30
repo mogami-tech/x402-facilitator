@@ -1,6 +1,6 @@
 package tech.mogami.facilitator.service.facilitator;
 
-import tech.mogami.commons.api.facilitator.verify.VerifyRequest;
+import tech.mogami.commons.api.facilitator.verify.VerificationRequest;
 import tech.mogami.facilitator.verifier.VerificationResult;
 
 /**
@@ -14,6 +14,6 @@ public interface VerifyService {
      * @param verifyRequest the request containing the payment details to verify
      * @return verification result
      */
-    VerificationResult verify(VerifyRequest verifyRequest);
+    VerificationResult verify(VerificationRequest verifyRequest);
 
 }

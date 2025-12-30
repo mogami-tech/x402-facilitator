@@ -7,8 +7,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import tech.mogami.commons.api.facilitator.verify.VerifyRequest;
-import tech.mogami.commons.api.facilitator.verify.VerifyResponse;
+import tech.mogami.commons.api.facilitator.verify.VerificationRequest;
+import tech.mogami.commons.api.facilitator.verify.VerificationResponse;
 import tech.mogami.commons.util.JsonUtil;
 import tech.mogami.facilitator.outbox.NewPaymentStepMessage;
 import tech.mogami.facilitator.provider.outbox.service.OutboxService;
@@ -37,34 +37,34 @@ public class VerifyController {
     /**
      * Verify a payment request.
      *
-     * @param verifyRequest the request containing the payment details to verify
+     * @param verificationRequest the request containing the payment details to verify
      * @return VerifyResponse containing the verification result
      */
     @PostMapping(VERIFY_ENDPOINT)
     @Operation(summary = "Verify a payment request")
-    VerifyResponse verify(@RequestBody final VerifyRequest verifyRequest) {
-        final String nonce = verifyRequest.getNonce()
+    VerificationResponse verify(@RequestBody final VerificationRequest verificationRequest) {
+        final String nonce = verificationRequest.getPaymentId()
                 .orElseThrow(() -> new IllegalArgumentException("Nonce is required in the payment payload"));
-        final String payer = verifyRequest.getFromAddress().orElse("PAYER_NOT_FOUND");
+        final String payer = verificationRequest.getFrom().orElse("PAYER_NOT_FOUND");
         String errorCode = null;
         String errorMessage = null;
-        VerifyResponse verifyResponse = null;
+        VerificationResponse verifyResponse = null;
 
         try {
             // Call the verification service to process the request.
-            VerificationResult verificationResult = verifierService.verify(verifyRequest);
+            VerificationResult verificationResult = verifierService.verify(verificationRequest);
             if (!verificationResult.isValid()) {
                 errorCode = verificationResult.verificationError().getCode();
                 errorMessage = verificationResult.errorMessage();
                 log.info("Verification error {}", verificationResult.errorMessage());
-                verifyResponse = VerifyResponse.builder()
+                verifyResponse = VerificationResponse.builder()
                         .isValid(false)
                         .invalidReason(verificationResult.verificationError().getCode())
                         .payer(payer)
                         .build();
             } else {
-                log.info("All verifiers passed for request: {}", verifyRequest);
-                verifyResponse = VerifyResponse.builder()
+                log.info("All verifiers passed for request: {}", verificationRequest);
+                verifyResponse = VerificationResponse.builder()
                         .isValid(true)
                         .payer(payer)
                         .build();
@@ -75,7 +75,7 @@ public class VerifyController {
                     NewPaymentStepMessage.builder()
                             .paymentId(nonce)
                             .paymentStepType(VERIFY)
-                            .requestPayload(JsonUtil.toJson(verifyRequest))
+                            .requestPayload(JsonUtil.toJson(verificationRequest))
                             .responsePayload(JsonUtil.toJson(verifyResponse))
                             .errorCode(errorCode)
                             .errorMessage(errorMessage)

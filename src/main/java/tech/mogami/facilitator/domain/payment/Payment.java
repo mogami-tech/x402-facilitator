@@ -13,7 +13,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import tech.mogami.commons.payment.PaymentStatus;
+import tech.mogami.commons.constant.PaymentStatus;
 import tech.mogami.facilitator.domain.blockchain.Address;
 import tech.mogami.facilitator.domain.util.base.BaseTenantEntity;
 
@@ -24,7 +24,7 @@ import java.util.List;
 import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.FetchType.EAGER;
 import static tech.mogami.commons.constant.BlockchainConstants.ATOMIC_AMOUNT_TYPE_PRECISION;
-import static tech.mogami.commons.payment.PaymentStatus.PENDING;
+import static tech.mogami.commons.constant.PaymentStatus.PENDING;
 
 /**
  * Represents a payment.
@@ -65,7 +65,7 @@ public class Payment extends BaseTenantEntity {
     @JoinColumn(name = "FK_CONTRACT_ADDRESS_ID", nullable = false)
     private Address assetContract;
 
-    /** Network name. */
+    /** Network name. TODO Change to NETWORK_ID */
     @Column(name = "NETWORK_NAME", nullable = false)
     private String networkName;
 

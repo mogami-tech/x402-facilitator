@@ -3,7 +3,7 @@ package tech.mogami.facilitator.verifier.exact;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
-import tech.mogami.commons.api.facilitator.verify.VerifyRequest;
+import tech.mogami.commons.api.facilitator.verify.VerificationRequest;
 import tech.mogami.commons.payment.schemes.exact.ExactSchemePayload;
 import tech.mogami.facilitator.verifier.VerificationResult;
 import tech.mogami.facilitator.verifier.VerificationStep;
@@ -23,7 +23,7 @@ import static tech.mogami.facilitator.verifier.VerificationStep.DEADLINES_FOR_EX
 public class DeadlineVerifier implements VerifierForExactScheme {
 
     @Override
-    public VerificationResult verify(final VerifyRequest verifyRequest) {
+    public VerificationResult verify(final VerificationRequest verifyRequest) {
         ExactSchemePayload payload = (ExactSchemePayload) verifyRequest.paymentPayload().payload();
         long currentTimeSeconds = System.currentTimeMillis() / 1000;
 

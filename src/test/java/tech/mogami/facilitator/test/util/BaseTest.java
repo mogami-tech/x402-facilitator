@@ -1,10 +1,10 @@
 package tech.mogami.facilitator.test.util;
 
 import org.apache.commons.lang3.StringUtils;
-import tech.mogami.commons.api.facilitator.settle.SettleRequest;
-import tech.mogami.commons.api.facilitator.settle.SettleResponse;
-import tech.mogami.commons.api.facilitator.verify.VerifyRequest;
-import tech.mogami.commons.api.facilitator.verify.VerifyResponse;
+import tech.mogami.commons.api.facilitator.settle.SettlementRequest;
+import tech.mogami.commons.api.facilitator.settle.SettlementResponse;
+import tech.mogami.commons.api.facilitator.verify.VerificationRequest;
+import tech.mogami.commons.api.facilitator.verify.VerificationResponse;
 import tech.mogami.commons.constant.X402Error;
 import tech.mogami.commons.constant.network.Network;
 import tech.mogami.commons.constant.version.X402Version;
@@ -29,7 +29,7 @@ public abstract class BaseTest {
                 .replace("\u2009", " "); // Thin space
     }
 
-    public String getVerifyRequest(
+    public String getVerificationRequest(
             final X402Version x402Version,
             final Network network,
             final String fromAddress,
@@ -38,41 +38,40 @@ public abstract class BaseTest {
             final String amount,
             final String nonce
     ) {
-        return JsonUtil.toPrettyJson(VerifyRequest.builder()
-                .x402Version(x402Version.version())
+        return JsonUtil.toPrettyJson(VerificationRequest.builder()
+//                .x402Version(x402Version.version())
                 .paymentPayload(PaymentPayload.builder()
-                        .x402Version(x402Version.version())
-                        .scheme(EXACT_SCHEME.name())
-                        .network(network.name())
-                        .payload(ExactSchemePayload.builder()
-                                .signature("")
-                                .authorization(
-                                        ExactSchemePayload.Authorization.builder()
-                                                .from(fromAddress)
-                                                .to(toAddress)
-                                                .value(amount)
-                                                .validAfter("1747601321")
-                                                .validBefore("1747601441")
-                                                .nonce(nonce)
-                                                .build()
+                                .x402Version(x402Version.version())
+//                        .scheme(EXACT_SCHEME.name())
+//                        .network(network.name())
+                                .payload(ExactSchemePayload.builder()
+                                        .signature("")
+                                        .authorization(
+                                                ExactSchemePayload.Authorization.builder()
+                                                        .from(fromAddress)
+                                                        .to(toAddress)
+                                                        .value(amount)
+                                                        .validAfter("1747601321")
+                                                        .validBefore("1747601441")
+                                                        .nonce(nonce)
+                                                        .build()
+                                        )
+                                        .build()
                                 )
                                 .build()
-                        )
-                        .build()
                 )
                 .paymentRequirements(PaymentRequirements.builder()
-                        .scheme(EXACT_SCHEME.name())
-                        .network(BASE_SEPOLIA.name())
-                        .maxAmountRequired("1000")
-                        .resource("http://localhost:4021/weather")
-                        .description("")
-                        .mimeType("")
-                        .payTo("0x2980bc24bBFB34DE1BBC91479Cb712ffbCE02F73")
-                        .maxTimeoutSeconds(60)
-                        .asset(assetContract)
-                        .extra("name", "USDC")
-                        .extra("version", "2")
-                        .build()
+                                .scheme(EXACT_SCHEME.name())
+                                .network(BASE_SEPOLIA.name())
+                                .amount("1000")
+//                        .description("")
+//                        .mimeType("")
+                                .payTo("0x2980bc24bBFB34DE1BBC91479Cb712ffbCE02F73")
+                                .maxTimeoutSeconds(60)
+                                .asset(assetContract)
+                                .extra("name", "USDC")
+                                .extra("version", "2")
+                                .build()
                 ).build());
     }
 
@@ -81,7 +80,7 @@ public abstract class BaseTest {
             final X402Error invalidReason,
             final String payer
     ) {
-        return JsonUtil.toPrettyJson(VerifyResponse.builder()
+        return JsonUtil.toPrettyJson(VerificationResponse.builder()
                 .isValid(isValid)
                 .invalidReason(invalidReason.getCode())
                 .payer(payer)
@@ -97,41 +96,40 @@ public abstract class BaseTest {
             final String amount,
             final String nonce
     ) {
-        return JsonUtil.toPrettyJson(SettleRequest.builder()
-                .x402Version(x402Version.version())
+        return JsonUtil.toPrettyJson(SettlementRequest.builder()
+//                .x402Version(x402Version.version())
                 .paymentPayload(PaymentPayload.builder()
-                        .x402Version(x402Version.version())
-                        .scheme(EXACT_SCHEME.name())
-                        .network(network.name())
-                        .payload(ExactSchemePayload.builder()
-                                .signature("")
-                                .authorization(
-                                        ExactSchemePayload.Authorization.builder()
-                                                .from(fromAddress)
-                                                .to(toAddress)
-                                                .value(amount)
-                                                .validAfter("1747601321")
-                                                .validBefore("1747601441")
-                                                .nonce(nonce)
-                                                .build()
+                                .x402Version(x402Version.version())
+//                        .scheme(EXACT_SCHEME.name())
+//                        .network(network.name())
+                                .payload(ExactSchemePayload.builder()
+                                        .signature("")
+                                        .authorization(
+                                                ExactSchemePayload.Authorization.builder()
+                                                        .from(fromAddress)
+                                                        .to(toAddress)
+                                                        .value(amount)
+                                                        .validAfter("1747601321")
+                                                        .validBefore("1747601441")
+                                                        .nonce(nonce)
+                                                        .build()
+                                        )
+                                        .build()
                                 )
                                 .build()
-                        )
-                        .build()
                 )
                 .paymentRequirements(PaymentRequirements.builder()
-                        .scheme(EXACT_SCHEME.name())
-                        .network(BASE_SEPOLIA.name())
-                        .maxAmountRequired("1000")
-                        .resource("http://localhost:4021/weather")
-                        .description("")
-                        .mimeType("")
-                        .payTo("0x2980bc24bBFB34DE1BBC91479Cb712ffbCE02F73")
-                        .maxTimeoutSeconds(60)
-                        .asset(assetContract)
-                        .extra("name", "USDC")
-                        .extra("version", "2")
-                        .build()
+                                .scheme(EXACT_SCHEME.name())
+                                .network(BASE_SEPOLIA.name())
+                                .amount("1000")
+//                        .description("")
+//                        .mimeType("")
+                                .payTo("0x2980bc24bBFB34DE1BBC91479Cb712ffbCE02F73")
+                                .maxTimeoutSeconds(60)
+                                .asset(assetContract)
+                                .extra("name", "USDC")
+                                .extra("version", "2")
+                                .build()
                 ).build());
     }
 
@@ -141,7 +139,7 @@ public abstract class BaseTest {
             final String transaction,
             final String payer
     ) {
-        return JsonUtil.toPrettyJson(SettleResponse.builder()
+        return JsonUtil.toPrettyJson(SettlementResponse.builder()
                 .success(success)
                 .errorReason(errorReason.getCode())
                 .transaction(transaction)

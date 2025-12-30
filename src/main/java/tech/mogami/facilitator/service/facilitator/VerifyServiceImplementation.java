@@ -2,7 +2,7 @@ package tech.mogami.facilitator.service.facilitator;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import tech.mogami.commons.api.facilitator.verify.VerifyRequest;
+import tech.mogami.commons.api.facilitator.verify.VerificationRequest;
 import tech.mogami.facilitator.verifier.VerificationResult;
 import tech.mogami.facilitator.verifier.Verifier;
 
@@ -32,15 +32,15 @@ public class VerifyServiceImplementation implements VerifyService {
     /**
      * Verifies a payment request.
      *
-     * @param verifyRequest the request containing the payment details to verify
+     * @param verificationRequest the request containing the payment details to verify
      * @return VerifyResponse containing the verification result
      */
     @Override
-    public VerificationResult verify(final VerifyRequest verifyRequest) {
+    public VerificationResult verify(final VerificationRequest verificationRequest) {
         // We run all verifiers in order, and return the first failure if any (Using @Order annotation).
         for (Verifier v : verifiers) {
-            log.info("Running verification with {}: {}", v.type(), verifyRequest);
-            VerificationResult result = v.verify(verifyRequest);
+            log.info("Running verification with {}: {}", v.type(), verificationRequest);
+            VerificationResult result = v.verify(verificationRequest);
             if (!result.isValid()) {
                 log.info("Verification error {} : {}", v.type(), result.errorMessage());
                 return result;
@@ -50,7 +50,7 @@ public class VerifyServiceImplementation implements VerifyService {
         }
 
         // No error, so we return a valid response.
-        log.info("All verifiers passed for request: {}", verifyRequest);
+        log.info("All verifiers passed for request: {}", verificationRequest);
         return VerificationResult.ok();
     }
 

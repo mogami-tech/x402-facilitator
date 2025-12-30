@@ -7,11 +7,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import tech.mogami.commons.api.facilitator.verify.VerifyRequest;
+import tech.mogami.commons.api.facilitator.verify.VerificationRequest;
 import tech.mogami.commons.payment.PaymentPayload;
 import tech.mogami.commons.payment.PaymentRequirements;
+import tech.mogami.commons.payment.PaymentResource;
 import tech.mogami.commons.payment.schemes.exact.ExactSchemePayload;
-import tech.mogami.commons.util.NonceUtil;
 import tech.mogami.facilitator.verifier.general.GlobalVerifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -20,10 +20,8 @@ import static tech.mogami.commons.constant.X402Error.UNKNOWN;
 import static tech.mogami.commons.constant.network.Networks.BASE_SEPOLIA;
 import static tech.mogami.commons.constant.version.X402Versions.X402_SUPPORTED_VERSION_BY_MOGAMI;
 import static tech.mogami.commons.payment.schemes.Schemes.EXACT_SCHEME;
-import static tech.mogami.commons.payment.schemes.exact.ExactSchemeConstants.EXACT_SCHEME_PARAMETER_NAME;
-import static tech.mogami.commons.payment.schemes.exact.ExactSchemeConstants.EXACT_SCHEME_PARAMETER_VERSION;
-import static tech.mogami.commons.test.BaseTestData.TEST_CLIENT_WALLET_ADDRESS_1;
-import static tech.mogami.commons.test.BaseTestData.TEST_SERVER_WALLET_ADDRESS_1;
+import static tech.mogami.commons.test.BaseMogamiTestData.TEST_CLIENT_WALLET_ADDRESS_1;
+import static tech.mogami.commons.test.BaseMogamiTestData.TEST_SERVER_WALLET_ADDRESS_1;
 
 @SpringBootTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -47,43 +45,11 @@ public class GlobalVerifierTest {
     }
 
     @Test
-    @Order(2)
-    @DisplayName("X402 version is null")
-    public void x402VersionIsNull() {
+    @Order(100)
+    @DisplayName("paymentPayload")
+    public void paymentPayload() {
         assertThat(globalVerifier.verify(
-                VerifyRequest.builder()
-                        .build()))
-                .isNotNull()
-                .satisfies(result -> {
-                    assertThat(result.isValid()).isFalse();
-                    assertThat(result.verificationError()).isEqualTo(INVALID_PAYLOAD);
-                    assertThat(result.errorMessage()).isEqualTo("x402 version in verify request is required");
-                });
-    }
-
-    @Test
-    @Order(3)
-    @DisplayName("x402 version is invalid")
-    public void x402VersionIsInvalid() {
-        assertThat(globalVerifier.verify(
-                VerifyRequest.builder()
-                        .x402Version(0)
-                        .build()))
-                .isNotNull()
-                .satisfies(result -> {
-                    assertThat(result.isValid()).isFalse();
-                    assertThat(result.verificationError()).isEqualTo(INVALID_PAYLOAD);
-                    assertThat(result.errorMessage()).isEqualTo("x402 version in verify request is invalid (Your value: 0)");
-                });
-    }
-
-    @Test
-    @Order(4)
-    @DisplayName("Payment payload is null")
-    public void paymentPayloadIsNull() {
-        assertThat(globalVerifier.verify(
-                VerifyRequest.builder()
-                        .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
+                VerificationRequest.builder()
                         .build()))
                 .isNotNull()
                 .satisfies(result -> {
@@ -94,12 +60,11 @@ public class GlobalVerifierTest {
     }
 
     @Test
-    @Order(5)
-    @DisplayName("Payment payload - X402 version is null")
-    public void paymentPayloadX402VersionIsNull() {
+    @Order(200)
+    @DisplayName("x402paymentPayload.x402Version")
+    public void paymentPayloadX402Version() {
         assertThat(globalVerifier.verify(
-                VerifyRequest.builder()
-                        .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
+                VerificationRequest.builder()
                         .paymentPayload(PaymentPayload.builder().build())
                         .build()))
                 .isNotNull()
@@ -108,15 +73,9 @@ public class GlobalVerifierTest {
                     assertThat(result.verificationError()).isEqualTo(INVALID_PAYLOAD);
                     assertThat(result.errorMessage()).isEqualTo("x402 version in payment payload is required");
                 });
-    }
 
-    @Test
-    @Order(6)
-    @DisplayName("Payment payload - X402 version is invalid")
-    public void paymentPayloadX402VersionIsInvalid() {
         assertThat(globalVerifier.verify(
-                VerifyRequest.builder()
-                        .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
+                VerificationRequest.builder()
                         .paymentPayload(PaymentPayload.builder()
                                 .x402Version(0)
                                 .build())
@@ -127,15 +86,28 @@ public class GlobalVerifierTest {
                     assertThat(result.verificationError()).isEqualTo(INVALID_PAYLOAD);
                     assertThat(result.errorMessage()).isEqualTo("x402 version in payment payload is invalid (Your value: 0)");
                 });
+
+        // TODO Add a verifier to check if the x402 version is supported
+//        assertThat(globalVerifier.verify(
+//                VerificationRequest.builder()
+//                        .paymentPayload(PaymentPayload.builder()
+//                                .x402Version(1)
+//                                .build())
+//                        .build()))
+//                .isNotNull()
+//                .satisfies(result -> {
+//                    assertThat(result.isValid()).isFalse();
+//                    assertThat(result.verificationError()).isEqualTo(INVALID_PAYLOAD);
+//                    assertThat(result.errorMessage()).isEqualTo("x402 version in payment payload is invalid (Your value: 0)");
+//                });
     }
 
     @Test
-    @Order(7)
-    @DisplayName("Payment payload - Scheme is null")
-    public void paymentPayloadSchemeIsNull() {
+    @Order(300)
+    @DisplayName("paymentPayload.resource")
+    public void paymentPayloadResource() {
         assertThat(globalVerifier.verify(
-                VerifyRequest.builder()
-                        .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
+                VerificationRequest.builder()
                         .paymentPayload(PaymentPayload.builder()
                                 .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
                                 .build())
@@ -144,82 +116,329 @@ public class GlobalVerifierTest {
                 .satisfies(result -> {
                     assertThat(result.isValid()).isFalse();
                     assertThat(result.verificationError()).isEqualTo(INVALID_PAYLOAD);
-                    assertThat(result.errorMessage()).isEqualTo("Scheme in payment payload is required");
+                    assertThat(result.errorMessage()).isEqualTo("Resource in payment payload is required");
                 });
     }
 
     @Test
-    @Order(8)
-    @DisplayName("Payment payload - Scheme is invalid")
-    public void paymentPayloadSchemeIsInvalid() {
+    @Order(301)
+    @DisplayName("paymentPayload.resource.url")
+    public void paymentPayloadResourceUrl() {
         assertThat(globalVerifier.verify(
-                VerifyRequest.builder()
-                        .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
+                VerificationRequest.builder()
                         .paymentPayload(PaymentPayload.builder()
                                 .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
-                                .scheme("invalid")
+                                .resource(PaymentResource.builder().build())
                                 .build())
                         .build()))
                 .isNotNull()
                 .satisfies(result -> {
                     assertThat(result.isValid()).isFalse();
                     assertThat(result.verificationError()).isEqualTo(INVALID_PAYLOAD);
-                    assertThat(result.errorMessage()).isEqualTo("Scheme in payment payload is invalid (Your value: invalid)");
+                    assertThat(result.errorMessage()).isEqualTo("URL of the protected resource is required");
                 });
     }
 
     @Test
-    @Order(9)
-    @DisplayName("Payment payload - Network is null")
-    public void paymentPayloadNetworkIsNull() {
+    @Order(400)
+    @DisplayName("paymentPayload.accepted")
+    public void paymentPayloadAccepted() {
         assertThat(globalVerifier.verify(
-                VerifyRequest.builder()
-                        .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
+                VerificationRequest.builder()
                         .paymentPayload(PaymentPayload.builder()
                                 .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
-                                .scheme(EXACT_SCHEME.name())
+                                .resource(PaymentResource.builder()
+                                        .url("https://example.com/protected/resource")
+                                        .build())
                                 .build())
                         .build()))
                 .isNotNull()
                 .satisfies(result -> {
                     assertThat(result.isValid()).isFalse();
                     assertThat(result.verificationError()).isEqualTo(INVALID_PAYLOAD);
-                    assertThat(result.errorMessage()).isEqualTo("Network in payment payload is required");
+                    assertThat(result.errorMessage()).isEqualTo("Payment requirements in payment payload is required");
                 });
     }
 
     @Test
-    @Order(10)
-    @DisplayName("Payment payload - Network is invalid")
-    public void paymentPayloadNetworkIsInvalid() {
+    @Order(401)
+    @DisplayName("paymentPayload.accepted.scheme")
+    public void paymentPayloadAcceptedScheme() {
         assertThat(globalVerifier.verify(
-                VerifyRequest.builder()
-                        .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
+                VerificationRequest.builder()
                         .paymentPayload(PaymentPayload.builder()
                                 .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
-                                .scheme(EXACT_SCHEME.name())
-                                .network("invalid")
+                                .resource(PaymentResource.builder()
+                                        .url("https://example.com/protected/resource")
+                                        .build())
+                                .accepted(PaymentRequirements.builder().build())
                                 .build())
                         .build()))
                 .isNotNull()
                 .satisfies(result -> {
                     assertThat(result.isValid()).isFalse();
                     assertThat(result.verificationError()).isEqualTo(INVALID_PAYLOAD);
-                    assertThat(result.errorMessage()).isEqualTo("Network in payment payload is invalid (Your value: invalid)");
+                    assertThat(result.errorMessage()).isEqualTo("Scheme in payment requirements is required");
+                });
+
+        assertThat(globalVerifier.verify(
+                VerificationRequest.builder()
+                        .paymentPayload(PaymentPayload.builder()
+                                .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
+                                .resource(PaymentResource.builder()
+                                        .url("https://example.com/protected/resource")
+                                        .build())
+                                .accepted(PaymentRequirements.builder()
+                                        .scheme("invalid")
+                                        .build())
+                                .build())
+                        .build()))
+                .isNotNull()
+                .satisfies(result -> {
+                    assertThat(result.isValid()).isFalse();
+                    assertThat(result.verificationError()).isEqualTo(INVALID_PAYLOAD);
+                    assertThat(result.errorMessage()).isEqualTo("Scheme in payment requirements is invalid (Your value: invalid)");
                 });
     }
 
     @Test
-    @Order(11)
-    @DisplayName("Payment payload - Payload is null")
-    public void paymentPayloadPayloadIsNull() {
+    @Order(402)
+    @DisplayName("paymentPayload.accepted.network")
+    public void paymentPayloadAcceptedNetwork() {
         assertThat(globalVerifier.verify(
-                VerifyRequest.builder()
-                        .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
+                VerificationRequest.builder()
                         .paymentPayload(PaymentPayload.builder()
                                 .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
-                                .scheme(EXACT_SCHEME.name())
-                                .network(BASE_SEPOLIA.name())
+                                .resource(PaymentResource.builder()
+                                        .url("https://example.com/protected/resource")
+                                        .build())
+                                .accepted(PaymentRequirements.builder()
+                                        .scheme(EXACT_SCHEME.name())
+                                        .build())
+                                .build())
+                        .build()))
+                .isNotNull()
+                .satisfies(result -> {
+                    assertThat(result.isValid()).isFalse();
+                    assertThat(result.verificationError()).isEqualTo(INVALID_PAYLOAD);
+                    assertThat(result.errorMessage()).isEqualTo("Network in payment requirements is required");
+                });
+
+        assertThat(globalVerifier.verify(
+                VerificationRequest.builder()
+                        .paymentPayload(PaymentPayload.builder()
+                                .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
+                                .resource(PaymentResource.builder()
+                                        .url("https://example.com/protected/resource")
+                                        .build())
+                                .accepted(PaymentRequirements.builder()
+                                        .scheme(EXACT_SCHEME.name())
+                                        .network("invalid")
+                                        .build())
+                                .build())
+                        .build()))
+                .isNotNull()
+                .satisfies(result -> {
+                    assertThat(result.isValid()).isFalse();
+                    assertThat(result.verificationError()).isEqualTo(INVALID_PAYLOAD);
+                    assertThat(result.errorMessage()).isEqualTo("Network in payment requirements is invalid (Your value: invalid)");
+                });
+    }
+
+    @Test
+    @Order(403)
+    @DisplayName("paymentPayload.accepted.amount")
+    public void paymentPayloadAcceptedAmount() {
+        assertThat(globalVerifier.verify(
+                VerificationRequest.builder()
+                        .paymentPayload(PaymentPayload.builder()
+                                .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
+                                .resource(PaymentResource.builder()
+                                        .url("https://example.com/protected/resource")
+                                        .build())
+                                .accepted(PaymentRequirements.builder()
+                                        .scheme(EXACT_SCHEME.name())
+                                        .network(BASE_SEPOLIA.networkId())
+                                        .build())
+                                .build())
+                        .build()))
+                .isNotNull()
+                .satisfies(result -> {
+                    assertThat(result.isValid()).isFalse();
+                    assertThat(result.verificationError()).isEqualTo(INVALID_PAYLOAD);
+                    assertThat(result.errorMessage()).isEqualTo("Amount in payment requirements is required");
+                });
+    }
+
+    @Test
+    @Order(404)
+    @DisplayName("paymentPayload.accepted.asset")
+    public void paymentPayloadAcceptedAsset() {
+        assertThat(globalVerifier.verify(
+                VerificationRequest.builder()
+                        .paymentPayload(PaymentPayload.builder()
+                                .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
+                                .resource(PaymentResource.builder()
+                                        .url("https://example.com/protected/resource")
+                                        .build())
+                                .accepted(PaymentRequirements.builder()
+                                        .scheme(EXACT_SCHEME.name())
+                                        .network(BASE_SEPOLIA.networkId())
+                                        .amount("100000")
+                                        .build())
+                                .build())
+                        .build()))
+                .isNotNull()
+                .satisfies(result -> {
+                    assertThat(result.isValid()).isFalse();
+                    assertThat(result.verificationError()).isEqualTo(INVALID_PAYLOAD);
+                    assertThat(result.errorMessage()).isEqualTo("Asset in payment requirements is required");
+                });
+
+        assertThat(globalVerifier.verify(
+                VerificationRequest.builder()
+                        .paymentPayload(PaymentPayload.builder()
+                                .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
+                                .resource(PaymentResource.builder()
+                                        .url("https://example.com/protected/resource")
+                                        .build())
+                                .accepted(PaymentRequirements.builder()
+                                        .scheme(EXACT_SCHEME.name())
+                                        .network(BASE_SEPOLIA.networkId())
+                                        .amount("100000")
+                                        .asset("invalid")
+                                        .build())
+                                .build())
+                        .build()))
+                .isNotNull()
+                .satisfies(result -> {
+                    assertThat(result.isValid()).isFalse();
+                    assertThat(result.verificationError()).isEqualTo(INVALID_PAYLOAD);
+                    assertThat(result.errorMessage()).isEqualTo("Asset in payment requirements is invalid (Your value: invalid)");
+                });
+    }
+
+    @Test
+    @Order(405)
+    @DisplayName("paymentPayload.accepted.payTo")
+    public void paymentPayloadAcceptedPayTo() {
+        assertThat(globalVerifier.verify(
+                VerificationRequest.builder()
+                        .paymentPayload(PaymentPayload.builder()
+                                .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
+                                .resource(PaymentResource.builder()
+                                        .url("https://example.com/protected/resource")
+                                        .build())
+                                .accepted(PaymentRequirements.builder()
+                                        .scheme(EXACT_SCHEME.name())
+                                        .network(BASE_SEPOLIA.networkId())
+                                        .amount("100000")
+                                        .asset(TEST_SERVER_WALLET_ADDRESS_1)
+                                        .build())
+                                .build())
+                        .build()))
+                .isNotNull()
+                .satisfies(result -> {
+                    assertThat(result.isValid()).isFalse();
+                    assertThat(result.verificationError()).isEqualTo(INVALID_PAYLOAD);
+                    assertThat(result.errorMessage()).isEqualTo("Pay-to field in payment requirements is required");
+                });
+
+        assertThat(globalVerifier.verify(
+                VerificationRequest.builder()
+                        .paymentPayload(PaymentPayload.builder()
+                                .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
+                                .resource(PaymentResource.builder()
+                                        .url("https://example.com/protected/resource")
+                                        .build())
+                                .accepted(PaymentRequirements.builder()
+                                        .scheme(EXACT_SCHEME.name())
+                                        .network(BASE_SEPOLIA.networkId())
+                                        .amount("100000")
+                                        .asset(TEST_SERVER_WALLET_ADDRESS_1)
+                                        .payTo("invalid")
+                                        .build())
+                                .build())
+                        .build()))
+                .isNotNull()
+                .satisfies(result -> {
+                    assertThat(result.isValid()).isFalse();
+                    assertThat(result.verificationError()).isEqualTo(INVALID_PAYLOAD);
+                    assertThat(result.errorMessage()).isEqualTo("Pay-to field in payment requirements is invalid (Your value: invalid)");
+                });
+    }
+
+    @Test
+    @Order(406)
+    @DisplayName("paymentPayload.accepted.maxTimeoutSeconds")
+    public void paymentPayloadAcceptedMaxTimeoutSeconds() {
+        assertThat(globalVerifier.verify(
+                VerificationRequest.builder()
+                        .paymentPayload(PaymentPayload.builder()
+                                .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
+                                .resource(PaymentResource.builder()
+                                        .url("https://example.com/protected/resource")
+                                        .build())
+                                .accepted(PaymentRequirements.builder()
+                                        .scheme(EXACT_SCHEME.name())
+                                        .network(BASE_SEPOLIA.networkId())
+                                        .amount("100000")
+                                        .asset(TEST_SERVER_WALLET_ADDRESS_1)
+                                        .payTo(TEST_CLIENT_WALLET_ADDRESS_1)
+                                        .build())
+                                .build())
+                        .build()))
+                .isNotNull()
+                .satisfies(result -> {
+                    assertThat(result.isValid()).isFalse();
+                    assertThat(result.verificationError()).isEqualTo(INVALID_PAYLOAD);
+                    assertThat(result.errorMessage()).isEqualTo("Maximum timeout seconds in payment requirements is required");
+                });
+
+        assertThat(globalVerifier.verify(
+                VerificationRequest.builder()
+                        .paymentPayload(PaymentPayload.builder()
+                                .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
+                                .resource(PaymentResource.builder()
+                                        .url("https://example.com/protected/resource")
+                                        .build())
+                                .accepted(PaymentRequirements.builder()
+                                        .scheme(EXACT_SCHEME.name())
+                                        .network(BASE_SEPOLIA.networkId())
+                                        .amount("100000")
+                                        .asset(TEST_SERVER_WALLET_ADDRESS_1)
+                                        .payTo(TEST_CLIENT_WALLET_ADDRESS_1)
+                                        .maxTimeoutSeconds(-2)
+                                        .build())
+                                .build())
+                        .build()))
+                .isNotNull()
+                .satisfies(result -> {
+                    assertThat(result.isValid()).isFalse();
+                    assertThat(result.verificationError()).isEqualTo(INVALID_PAYLOAD);
+                    assertThat(result.errorMessage()).isEqualTo("Maximum timeout seconds in payment requirements must be a positive integer (Your value: -2)");
+                });
+    }
+
+    @Test
+    @Order(500)
+    @DisplayName("paymentPayload.payload")
+    public void paymentPayloadPayload() {
+        assertThat(globalVerifier.verify(
+                VerificationRequest.builder()
+                        .paymentPayload(PaymentPayload.builder()
+                                .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
+                                .resource(PaymentResource.builder()
+                                        .url("https://example.com/protected/resource")
+                                        .build())
+                                .accepted(PaymentRequirements.builder()
+                                        .scheme(EXACT_SCHEME.name())
+                                        .network(BASE_SEPOLIA.networkId())
+                                        .amount("100000")
+                                        .asset(TEST_SERVER_WALLET_ADDRESS_1)
+                                        .payTo(TEST_CLIENT_WALLET_ADDRESS_1)
+                                        .maxTimeoutSeconds(60)
+                                        .build())
                                 .build())
                         .build()))
                 .isNotNull()
@@ -231,17 +450,25 @@ public class GlobalVerifierTest {
     }
 
     @Test
-    @Order(12)
-    @DisplayName("Payment payload - Payload signature is null")
-    public void paymentPayloadPayloadSignatureIsNull() {
+    @Order(501)
+    @DisplayName("paymentPayload.payload.signature")
+    public void paymentPayloadPayloadSignature() {
         assertThat(globalVerifier.verify(
-                VerifyRequest.builder()
-                        .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
+                VerificationRequest.builder()
                         .paymentPayload(PaymentPayload.builder()
                                 .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
-                                .scheme(EXACT_SCHEME.name())
-                                .network(BASE_SEPOLIA.name())
-                                .payload(ExactSchemePayload.builder().build())
+                                .resource(PaymentResource.builder()
+                                        .url("https://example.com/protected/resource")
+                                        .build())
+                                .accepted(PaymentRequirements.builder()
+                                        .scheme(EXACT_SCHEME.name())
+                                        .network(BASE_SEPOLIA.networkId())
+                                        .amount("100000")
+                                        .asset(TEST_SERVER_WALLET_ADDRESS_1)
+                                        .payTo(TEST_CLIENT_WALLET_ADDRESS_1)
+                                        .maxTimeoutSeconds(60)
+                                        .build())
+                                .payload(ExactSchemePayload.builder().build()) // Empty payload object
                                 .build())
                         .build()))
                 .isNotNull()
@@ -252,19 +479,27 @@ public class GlobalVerifierTest {
                 });
     }
 
-    @Order(13)
     @Test
-    @DisplayName("Payment payload - Payload authorization is null")
-    public void paymentPayloadPayloadAuthorizationIsNull() {
+    @Order(502)
+    @DisplayName("paymentPayload.payload.authorization")
+    public void paymentPayloadPayloadAuthorization() {
         assertThat(globalVerifier.verify(
-                VerifyRequest.builder()
-                        .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
+                VerificationRequest.builder()
                         .paymentPayload(PaymentPayload.builder()
                                 .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
-                                .scheme(EXACT_SCHEME.name())
-                                .network(BASE_SEPOLIA.name())
+                                .resource(PaymentResource.builder()
+                                        .url("https://example.com/protected/resource")
+                                        .build())
+                                .accepted(PaymentRequirements.builder()
+                                        .scheme(EXACT_SCHEME.name())
+                                        .network(BASE_SEPOLIA.networkId())
+                                        .amount("100000")
+                                        .asset(TEST_SERVER_WALLET_ADDRESS_1)
+                                        .payTo(TEST_CLIENT_WALLET_ADDRESS_1)
+                                        .maxTimeoutSeconds(60)
+                                        .build())
                                 .payload(ExactSchemePayload.builder()
-                                        .signature("0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef")
+                                        .signature("0xABCDEF1234567890")
                                         .build())
                                 .build())
                         .build()))
@@ -277,18 +512,26 @@ public class GlobalVerifierTest {
     }
 
     @Test
-    @Order(14)
-    @DisplayName("Payment payload - Payload authorization from is null")
-    public void paymentPayloadPayloadAuthorizationFromIsNull() {
+    @Order(503)
+    @DisplayName("paymentPayload.payload.authorization.from")
+    public void paymentPayloadPayloadAuthorizationFrom() {
         assertThat(globalVerifier.verify(
-                VerifyRequest.builder()
-                        .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
+                VerificationRequest.builder()
                         .paymentPayload(PaymentPayload.builder()
                                 .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
-                                .scheme(EXACT_SCHEME.name())
-                                .network(BASE_SEPOLIA.name())
+                                .resource(PaymentResource.builder()
+                                        .url("https://example.com/protected/resource")
+                                        .build())
+                                .accepted(PaymentRequirements.builder()
+                                        .scheme(EXACT_SCHEME.name())
+                                        .network(BASE_SEPOLIA.networkId())
+                                        .amount("100000")
+                                        .asset(TEST_SERVER_WALLET_ADDRESS_1)
+                                        .payTo(TEST_CLIENT_WALLET_ADDRESS_1)
+                                        .maxTimeoutSeconds(60)
+                                        .build())
                                 .payload(ExactSchemePayload.builder()
-                                        .signature("0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef")
+                                        .signature("0xABCDEF1234567890")
                                         .authorization(ExactSchemePayload.Authorization.builder().build())
                                         .build())
                                 .build())
@@ -299,21 +542,24 @@ public class GlobalVerifierTest {
                     assertThat(result.verificationError()).isEqualTo(INVALID_PAYLOAD);
                     assertThat(result.errorMessage()).isEqualTo("From in exact scheme payload authorization is required");
                 });
-    }
 
-    @Test
-    @Order(15)
-    @DisplayName("Payment payload - Payload authorization from address is invalid")
-    public void paymentPayloadPayloadAuthorizationFromIsInvalid() {
         assertThat(globalVerifier.verify(
-                VerifyRequest.builder()
-                        .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
+                VerificationRequest.builder()
                         .paymentPayload(PaymentPayload.builder()
                                 .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
-                                .scheme(EXACT_SCHEME.name())
-                                .network(BASE_SEPOLIA.name())
+                                .resource(PaymentResource.builder()
+                                        .url("https://example.com/protected/resource")
+                                        .build())
+                                .accepted(PaymentRequirements.builder()
+                                        .scheme(EXACT_SCHEME.name())
+                                        .network(BASE_SEPOLIA.networkId())
+                                        .amount("100000")
+                                        .asset(TEST_SERVER_WALLET_ADDRESS_1)
+                                        .payTo(TEST_CLIENT_WALLET_ADDRESS_1)
+                                        .maxTimeoutSeconds(60)
+                                        .build())
                                 .payload(ExactSchemePayload.builder()
-                                        .signature("0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef")
+                                        .signature("0xABCDEF1234567890")
                                         .authorization(ExactSchemePayload.Authorization.builder()
                                                 .from("invalid")
                                                 .build())
@@ -329,20 +575,28 @@ public class GlobalVerifierTest {
     }
 
     @Test
-    @Order(16)
-    @DisplayName("Payment payload - Payload authorization to is null")
-    public void paymentPayloadPayloadAuthorizationToIsNull() {
+    @Order(504)
+    @DisplayName("paymentPayload.payload.authorization.to")
+    public void paymentPayloadPayloadAuthorizationTo() {
         assertThat(globalVerifier.verify(
-                VerifyRequest.builder()
-                        .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
+                VerificationRequest.builder()
                         .paymentPayload(PaymentPayload.builder()
                                 .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
-                                .scheme(EXACT_SCHEME.name())
-                                .network(BASE_SEPOLIA.name())
+                                .resource(PaymentResource.builder()
+                                        .url("https://example.com/protected/resource")
+                                        .build())
+                                .accepted(PaymentRequirements.builder()
+                                        .scheme(EXACT_SCHEME.name())
+                                        .network(BASE_SEPOLIA.networkId())
+                                        .amount("100000")
+                                        .asset(TEST_SERVER_WALLET_ADDRESS_1)
+                                        .payTo(TEST_CLIENT_WALLET_ADDRESS_1)
+                                        .maxTimeoutSeconds(60)
+                                        .build())
                                 .payload(ExactSchemePayload.builder()
-                                        .signature("0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef")
+                                        .signature("0xABCDEF1234567890")
                                         .authorization(ExactSchemePayload.Authorization.builder()
-                                                .from("0x2980bc24bBFB34DE1BBC91479Cb712ffbCE02F73")
+                                                .from(TEST_CLIENT_WALLET_ADDRESS_1)
                                                 .build())
                                         .build())
                                 .build())
@@ -353,23 +607,26 @@ public class GlobalVerifierTest {
                     assertThat(result.verificationError()).isEqualTo(INVALID_PAYLOAD);
                     assertThat(result.errorMessage()).isEqualTo("To in exact scheme payload authorization is required");
                 });
-    }
 
-    @Test
-    @Order(17)
-    @DisplayName("Payment payload - Payload authorization to address is invalid")
-    public void paymentPayloadPayloadAuthorizationToIsInvalid() {
         assertThat(globalVerifier.verify(
-                VerifyRequest.builder()
-                        .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
+                VerificationRequest.builder()
                         .paymentPayload(PaymentPayload.builder()
                                 .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
-                                .scheme(EXACT_SCHEME.name())
-                                .network(BASE_SEPOLIA.name())
+                                .resource(PaymentResource.builder()
+                                        .url("https://example.com/protected/resource")
+                                        .build())
+                                .accepted(PaymentRequirements.builder()
+                                        .scheme(EXACT_SCHEME.name())
+                                        .network(BASE_SEPOLIA.networkId())
+                                        .amount("100000")
+                                        .asset(TEST_SERVER_WALLET_ADDRESS_1)
+                                        .payTo(TEST_CLIENT_WALLET_ADDRESS_1)
+                                        .maxTimeoutSeconds(60)
+                                        .build())
                                 .payload(ExactSchemePayload.builder()
-                                        .signature("0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef")
+                                        .signature("0xABCDEF1234567890")
                                         .authorization(ExactSchemePayload.Authorization.builder()
-                                                .from("0x2980bc24bBFB34DE1BBC91479Cb712ffbCE02F73")
+                                                .from(TEST_CLIENT_WALLET_ADDRESS_1)
                                                 .to("invalid")
                                                 .build())
                                         .build())
@@ -384,21 +641,29 @@ public class GlobalVerifierTest {
     }
 
     @Test
-    @Order(18)
-    @DisplayName("Payment payload - Payload authorization value is null")
-    public void paymentPayloadPayloadAuthorizationValueIsNull() {
+    @Order(505)
+    @DisplayName("paymentPayload.payload.authorization.value")
+    public void paymentPayloadPayloadAuthorizationValue() {
         assertThat(globalVerifier.verify(
-                VerifyRequest.builder()
-                        .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
+                VerificationRequest.builder()
                         .paymentPayload(PaymentPayload.builder()
                                 .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
-                                .scheme(EXACT_SCHEME.name())
-                                .network(BASE_SEPOLIA.name())
+                                .resource(PaymentResource.builder()
+                                        .url("https://example.com/protected/resource")
+                                        .build())
+                                .accepted(PaymentRequirements.builder()
+                                        .scheme(EXACT_SCHEME.name())
+                                        .network(BASE_SEPOLIA.networkId())
+                                        .amount("100000")
+                                        .asset(TEST_SERVER_WALLET_ADDRESS_1)
+                                        .payTo(TEST_CLIENT_WALLET_ADDRESS_1)
+                                        .maxTimeoutSeconds(60)
+                                        .build())
                                 .payload(ExactSchemePayload.builder()
-                                        .signature("0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef")
+                                        .signature("0xABCDEF1234567890")
                                         .authorization(ExactSchemePayload.Authorization.builder()
-                                                .from("0x2980bc24bBFB34DE1BBC91479Cb712ffbCE02F73")
-                                                .to("0x1234567890abcdef1234567890abcdef12345678")
+                                                .from(TEST_CLIENT_WALLET_ADDRESS_1)
+                                                .to(TEST_SERVER_WALLET_ADDRESS_1)
                                                 .build())
                                         .build())
                                 .build())
@@ -409,24 +674,27 @@ public class GlobalVerifierTest {
                     assertThat(result.verificationError()).isEqualTo(INVALID_PAYLOAD);
                     assertThat(result.errorMessage()).isEqualTo("Amount value in exact scheme payload authorization is required");
                 });
-    }
 
-    @Test
-    @Order(19)
-    @DisplayName("Payment payload - Payload authorization value is invalid")
-    public void paymentPayloadPayloadAuthorizationValueIsInvalid() {
         assertThat(globalVerifier.verify(
-                VerifyRequest.builder()
-                        .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
+                VerificationRequest.builder()
                         .paymentPayload(PaymentPayload.builder()
                                 .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
-                                .scheme(EXACT_SCHEME.name())
-                                .network(BASE_SEPOLIA.name())
+                                .resource(PaymentResource.builder()
+                                        .url("https://example.com/protected/resource")
+                                        .build())
+                                .accepted(PaymentRequirements.builder()
+                                        .scheme(EXACT_SCHEME.name())
+                                        .network(BASE_SEPOLIA.networkId())
+                                        .amount("100000")
+                                        .asset(TEST_SERVER_WALLET_ADDRESS_1)
+                                        .payTo(TEST_CLIENT_WALLET_ADDRESS_1)
+                                        .maxTimeoutSeconds(60)
+                                        .build())
                                 .payload(ExactSchemePayload.builder()
-                                        .signature("0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef")
+                                        .signature("0xABCDEF1234567890")
                                         .authorization(ExactSchemePayload.Authorization.builder()
-                                                .from("0x2980bc24bBFB34DE1BBC91479Cb712ffbCE02F73")
-                                                .to("0x1234567890abcdef1234567890abcdef12345678")
+                                                .from(TEST_CLIENT_WALLET_ADDRESS_1)
+                                                .to(TEST_SERVER_WALLET_ADDRESS_1)
                                                 .value("invalid")
                                                 .build())
                                         .build())
@@ -441,22 +709,30 @@ public class GlobalVerifierTest {
     }
 
     @Test
-    @Order(20)
-    @DisplayName("Payment payload - Payload authorization validAfter is null")
-    public void paymentPayloadPayloadAuthorizationValidAfterIsNull() {
+    @Order(506)
+    @DisplayName("paymentPayload.payload.authorization.validAfter")
+    public void paymentPayloadPayloadAuthorizationValidAfter() {
         assertThat(globalVerifier.verify(
-                VerifyRequest.builder()
-                        .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
+                VerificationRequest.builder()
                         .paymentPayload(PaymentPayload.builder()
                                 .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
-                                .scheme(EXACT_SCHEME.name())
-                                .network(BASE_SEPOLIA.name())
+                                .resource(PaymentResource.builder()
+                                        .url("https://example.com/protected/resource")
+                                        .build())
+                                .accepted(PaymentRequirements.builder()
+                                        .scheme(EXACT_SCHEME.name())
+                                        .network(BASE_SEPOLIA.networkId())
+                                        .amount("100000")
+                                        .asset(TEST_SERVER_WALLET_ADDRESS_1)
+                                        .payTo(TEST_CLIENT_WALLET_ADDRESS_1)
+                                        .maxTimeoutSeconds(60)
+                                        .build())
                                 .payload(ExactSchemePayload.builder()
-                                        .signature("0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef")
+                                        .signature("0xABCDEF1234567890")
                                         .authorization(ExactSchemePayload.Authorization.builder()
-                                                .from("0x2980bc24bBFB34DE1BBC91479Cb712ffbCE02F73")
-                                                .to("0x1234567890abcdef1234567890abcdef12345678")
-                                                .value("1000000000000000000")
+                                                .from(TEST_CLIENT_WALLET_ADDRESS_1)
+                                                .to(TEST_SERVER_WALLET_ADDRESS_1)
+                                                .value("100000")
                                                 .build())
                                         .build())
                                 .build())
@@ -467,26 +743,67 @@ public class GlobalVerifierTest {
                     assertThat(result.verificationError()).isEqualTo(INVALID_PAYLOAD);
                     assertThat(result.errorMessage()).isEqualTo("Valid after in exact scheme payload authorization is required");
                 });
+
+        assertThat(globalVerifier.verify(
+                VerificationRequest.builder()
+                        .paymentPayload(PaymentPayload.builder()
+                                .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
+                                .resource(PaymentResource.builder()
+                                        .url("https://example.com/protected/resource")
+                                        .build())
+                                .accepted(PaymentRequirements.builder()
+                                        .scheme(EXACT_SCHEME.name())
+                                        .network(BASE_SEPOLIA.networkId())
+                                        .amount("100000")
+                                        .asset(TEST_SERVER_WALLET_ADDRESS_1)
+                                        .payTo(TEST_CLIENT_WALLET_ADDRESS_1)
+                                        .maxTimeoutSeconds(60)
+                                        .build())
+                                .payload(ExactSchemePayload.builder()
+                                        .signature("0xABCDEF1234567890")
+                                        .authorization(ExactSchemePayload.Authorization.builder()
+                                                .from(TEST_CLIENT_WALLET_ADDRESS_1)
+                                                .to(TEST_SERVER_WALLET_ADDRESS_1)
+                                                .value("100000")
+                                                .validAfter("invalid")
+                                                .build())
+                                        .build())
+                                .build())
+                        .build()))
+                .isNotNull()
+                .satisfies(result -> {
+                    assertThat(result.isValid()).isFalse();
+                    assertThat(result.verificationError()).isEqualTo(INVALID_PAYLOAD);
+                    assertThat(result.errorMessage()).isEqualTo("Valid after in exact scheme payload authorization is invalid (Your value: invalid)");
+                });
     }
 
     @Test
-    @Order(21)
-    @DisplayName("Payment payload - Payload authorization validBefore is invalid")
-    public void paymentPayloadPayloadAuthorizationValidBeforeIsInvalid() {
+    @Order(507)
+    @DisplayName("paymentPayload.payload.authorization.validBefore")
+    public void paymentPayloadPayloadAuthorizationValidBefore() {
         assertThat(globalVerifier.verify(
-                VerifyRequest.builder()
-                        .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
+                VerificationRequest.builder()
                         .paymentPayload(PaymentPayload.builder()
                                 .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
-                                .scheme(EXACT_SCHEME.name())
-                                .network(BASE_SEPOLIA.name())
+                                .resource(PaymentResource.builder()
+                                        .url("https://example.com/protected/resource")
+                                        .build())
+                                .accepted(PaymentRequirements.builder()
+                                        .scheme(EXACT_SCHEME.name())
+                                        .network(BASE_SEPOLIA.networkId())
+                                        .amount("100000")
+                                        .asset(TEST_SERVER_WALLET_ADDRESS_1)
+                                        .payTo(TEST_CLIENT_WALLET_ADDRESS_1)
+                                        .maxTimeoutSeconds(60)
+                                        .build())
                                 .payload(ExactSchemePayload.builder()
-                                        .signature("0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef")
+                                        .signature("0xABCDEF1234567890")
                                         .authorization(ExactSchemePayload.Authorization.builder()
-                                                .from("0x2980bc24bBFB34DE1BBC91479Cb712ffbCE02F73")
-                                                .to("0x1234567890abcdef1234567890abcdef12345678")
-                                                .value("1000000000000000000")
-                                                .validAfter("1718542400")
+                                                .from(TEST_CLIENT_WALLET_ADDRESS_1)
+                                                .to(TEST_SERVER_WALLET_ADDRESS_1)
+                                                .value("100000")
+                                                .validAfter("1740672089")
                                                 .build())
                                         .build())
                                 .build())
@@ -497,27 +814,69 @@ public class GlobalVerifierTest {
                     assertThat(result.verificationError()).isEqualTo(INVALID_PAYLOAD);
                     assertThat(result.errorMessage()).isEqualTo("Valid before in exact scheme payload authorization is required");
                 });
+
+        assertThat(globalVerifier.verify(
+                VerificationRequest.builder()
+                        .paymentPayload(PaymentPayload.builder()
+                                .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
+                                .resource(PaymentResource.builder()
+                                        .url("https://example.com/protected/resource")
+                                        .build())
+                                .accepted(PaymentRequirements.builder()
+                                        .scheme(EXACT_SCHEME.name())
+                                        .network(BASE_SEPOLIA.networkId())
+                                        .amount("100000")
+                                        .asset(TEST_SERVER_WALLET_ADDRESS_1)
+                                        .payTo(TEST_CLIENT_WALLET_ADDRESS_1)
+                                        .maxTimeoutSeconds(60)
+                                        .build())
+                                .payload(ExactSchemePayload.builder()
+                                        .signature("0xABCDEF1234567890")
+                                        .authorization(ExactSchemePayload.Authorization.builder()
+                                                .from(TEST_CLIENT_WALLET_ADDRESS_1)
+                                                .to(TEST_SERVER_WALLET_ADDRESS_1)
+                                                .value("100000")
+                                                .validAfter("1740672089")
+                                                .validBefore("invalid")
+                                                .build())
+                                        .build())
+                                .build())
+                        .build()))
+                .isNotNull()
+                .satisfies(result -> {
+                    assertThat(result.isValid()).isFalse();
+                    assertThat(result.verificationError()).isEqualTo(INVALID_PAYLOAD);
+                    assertThat(result.errorMessage()).isEqualTo("Valid before in exact scheme payload authorization is invalid (Your value: invalid)");
+                });
     }
 
     @Test
-    @Order(22)
-    @DisplayName("Payment payload - Payload authorization nonce is null")
-    public void paymentPayloadPayloadAuthorizationNonceIsNull() {
+    @Order(508)
+    @DisplayName("paymentPayload.payload.authorization.nonce")
+    public void paymentPayloadPayloadAuthorizationNonce() {
         assertThat(globalVerifier.verify(
-                VerifyRequest.builder()
-                        .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
+                VerificationRequest.builder()
                         .paymentPayload(PaymentPayload.builder()
                                 .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
-                                .scheme(EXACT_SCHEME.name())
-                                .network(BASE_SEPOLIA.name())
+                                .resource(PaymentResource.builder()
+                                        .url("https://example.com/protected/resource")
+                                        .build())
+                                .accepted(PaymentRequirements.builder()
+                                        .scheme(EXACT_SCHEME.name())
+                                        .network(BASE_SEPOLIA.networkId())
+                                        .amount("100000")
+                                        .asset(TEST_SERVER_WALLET_ADDRESS_1)
+                                        .payTo(TEST_CLIENT_WALLET_ADDRESS_1)
+                                        .maxTimeoutSeconds(60)
+                                        .build())
                                 .payload(ExactSchemePayload.builder()
-                                        .signature("0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef")
+                                        .signature("0xABCDEF1234567890")
                                         .authorization(ExactSchemePayload.Authorization.builder()
-                                                .from("0x2980bc24bBFB34DE1BBC91479Cb712ffbCE02F73")
-                                                .to("0x1234567890abcdef1234567890abcdef12345678")
-                                                .value("1000000000000000000")
-                                                .validAfter("1718542400")
-                                                .validBefore("1718642400")
+                                                .from(TEST_CLIENT_WALLET_ADDRESS_1)
+                                                .to(TEST_SERVER_WALLET_ADDRESS_1)
+                                                .value("100000")
+                                                .validAfter("1740672089")
+                                                .validBefore("1740672154")
                                                 .build())
                                         .build())
                                 .build())
@@ -531,28 +890,37 @@ public class GlobalVerifierTest {
     }
 
     @Test
-    @Order(23)
-    @DisplayName("Payment requirements is null")
-    public void paymentRequirementsIsNull() {
+    @Order(500)
+    @DisplayName("paymentRequirements")
+    public void paymentRequirements() {
         assertThat(globalVerifier.verify(
-                VerifyRequest.builder()
-                        .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
+                VerificationRequest.builder()
                         .paymentPayload(PaymentPayload.builder()
                                 .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
-                                .scheme(EXACT_SCHEME.name())
-                                .network(BASE_SEPOLIA.name())
+                                .resource(PaymentResource.builder()
+                                        .url("https://example.com/protected/resource")
+                                        .build())
+                                .accepted(PaymentRequirements.builder()
+                                        .scheme(EXACT_SCHEME.name())
+                                        .network(BASE_SEPOLIA.networkId())
+                                        .amount("100000")
+                                        .asset(TEST_SERVER_WALLET_ADDRESS_1)
+                                        .payTo(TEST_CLIENT_WALLET_ADDRESS_1)
+                                        .maxTimeoutSeconds(60)
+                                        .build())
                                 .payload(ExactSchemePayload.builder()
-                                        .signature("0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef")
+                                        .signature("0xABCDEF1234567890")
                                         .authorization(ExactSchemePayload.Authorization.builder()
-                                                .from("0x2980bc24bBFB34DE1BBC91479Cb712ffbCE02F73")
-                                                .to("0x1234567890abcdef1234567890abcdef12345678")
-                                                .value("1000000000000000000")
-                                                .validAfter("1718542400")
-                                                .validBefore("1718642400")
-                                                .nonce("1")
+                                                .from(TEST_CLIENT_WALLET_ADDRESS_1)
+                                                .to(TEST_SERVER_WALLET_ADDRESS_1)
+                                                .value("100000")
+                                                .validAfter("1740672089")
+                                                .validBefore("1740672154")
+                                                .nonce("unique-nonce-123")
                                                 .build())
                                         .build())
                                 .build())
+                        .paymentRequirements(null) // Missing payment requirements
                         .build()))
                 .isNotNull()
                 .satisfies(result -> {
@@ -563,25 +931,33 @@ public class GlobalVerifierTest {
     }
 
     @Test
-    @Order(24)
-    @DisplayName("Payment requirements - Scheme is null")
-    public void paymentRequirementsSchemeIsNull() {
+    @Order(601)
+    @DisplayName("paymentRequirements.scheme")
+    public void paymentRequirementsScheme() {
         assertThat(globalVerifier.verify(
-                VerifyRequest.builder()
-                        .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
+                VerificationRequest.builder()
                         .paymentPayload(PaymentPayload.builder()
                                 .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
-                                .scheme(EXACT_SCHEME.name())
-                                .network(BASE_SEPOLIA.name())
+                                .resource(PaymentResource.builder()
+                                        .url("https://example.com/protected/resource")
+                                        .build())
+                                .accepted(PaymentRequirements.builder()
+                                        .scheme(EXACT_SCHEME.name())
+                                        .network(BASE_SEPOLIA.networkId())
+                                        .amount("100000")
+                                        .asset(TEST_SERVER_WALLET_ADDRESS_1)
+                                        .payTo(TEST_CLIENT_WALLET_ADDRESS_1)
+                                        .maxTimeoutSeconds(60)
+                                        .build())
                                 .payload(ExactSchemePayload.builder()
-                                        .signature("0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef")
+                                        .signature("0xABCDEF1234567890")
                                         .authorization(ExactSchemePayload.Authorization.builder()
-                                                .from("0x2980bc24bBFB34DE1BBC91479Cb712ffbCE02F73")
-                                                .to("0x1234567890abcdef1234567890abcdef12345678")
-                                                .value("1000000000000000000")
-                                                .validAfter("1718542400")
-                                                .validBefore("1718642400")
-                                                .nonce("1")
+                                                .from(TEST_CLIENT_WALLET_ADDRESS_1)
+                                                .to(TEST_SERVER_WALLET_ADDRESS_1)
+                                                .value("100000")
+                                                .validAfter("1740672089")
+                                                .validBefore("1740672154")
+                                                .nonce("unique-nonce-123")
                                                 .build())
                                         .build())
                                 .build())
@@ -593,69 +969,83 @@ public class GlobalVerifierTest {
                     assertThat(result.verificationError()).isEqualTo(INVALID_PAYLOAD);
                     assertThat(result.errorMessage()).isEqualTo("Scheme in payment requirements is required");
                 });
-    }
 
-    @Test
-    @Order(25)
-    @DisplayName("Payment requirements - Scheme is invalid")
-    public void paymentRequirementsSchemeIsInvalid() {
         assertThat(globalVerifier.verify(
-                VerifyRequest.builder()
-                        .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
+                VerificationRequest.builder()
                         .paymentPayload(PaymentPayload.builder()
                                 .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
-                                .scheme(EXACT_SCHEME.name())
-                                .network(BASE_SEPOLIA.name())
+                                .resource(PaymentResource.builder()
+                                        .url("https://example.com/protected/resource")
+                                        .build())
+                                .accepted(PaymentRequirements.builder()
+                                        .scheme(EXACT_SCHEME.name())
+                                        .network(BASE_SEPOLIA.networkId())
+                                        .amount("100000")
+                                        .asset(TEST_SERVER_WALLET_ADDRESS_1)
+                                        .payTo(TEST_CLIENT_WALLET_ADDRESS_1)
+                                        .maxTimeoutSeconds(60)
+                                        .build())
                                 .payload(ExactSchemePayload.builder()
-                                        .signature("0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef")
+                                        .signature("0xABCDEF1234567890")
                                         .authorization(ExactSchemePayload.Authorization.builder()
-                                                .from("0x2980bc24bBFB34DE1BBC91479Cb712ffbCE02F73")
-                                                .to("0x1234567890abcdef1234567890abcdef12345678")
-                                                .value("1000000000000000000")
-                                                .validAfter("1718542400")
-                                                .validBefore("1718642400")
-                                                .nonce("1")
+                                                .from(TEST_CLIENT_WALLET_ADDRESS_1)
+                                                .to(TEST_SERVER_WALLET_ADDRESS_1)
+                                                .value("100000")
+                                                .validAfter("1740672089")
+                                                .validBefore("1740672154")
+                                                .nonce("unique-nonce-123")
                                                 .build())
                                         .build())
                                 .build())
-                        .paymentRequirements(PaymentRequirements.builder()
-                                .scheme("invalid")
-                                .build())
+                        .paymentRequirements(
+                                PaymentRequirements.builder()
+                                        .scheme("INVALID_SCHEME") // Invalid scheme
+                                        .build())
                         .build()))
                 .isNotNull()
                 .satisfies(result -> {
                     assertThat(result.isValid()).isFalse();
                     assertThat(result.verificationError()).isEqualTo(INVALID_PAYLOAD);
-                    assertThat(result.errorMessage()).isEqualTo("Scheme in payment requirements is invalid (Your value: invalid)");
+                    assertThat(result.errorMessage()).isEqualTo("Scheme in payment requirements is invalid (Your value: INVALID_SCHEME)");
                 });
     }
 
     @Test
-    @Order(26)
-    @DisplayName("Payment requirements - Network is null")
-    public void paymentRequirementsNetworkIsNull() {
+    @Order(602)
+    @DisplayName("paymentRequirements.network")
+    public void paymentRequirementsNetwork() {
         assertThat(globalVerifier.verify(
-                VerifyRequest.builder()
-                        .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
+                VerificationRequest.builder()
                         .paymentPayload(PaymentPayload.builder()
                                 .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
-                                .scheme(EXACT_SCHEME.name())
-                                .network(BASE_SEPOLIA.name())
+                                .resource(PaymentResource.builder()
+                                        .url("https://example.com/protected/resource")
+                                        .build())
+                                .accepted(PaymentRequirements.builder()
+                                        .scheme(EXACT_SCHEME.name())
+                                        .network(BASE_SEPOLIA.networkId())
+                                        .amount("100000")
+                                        .asset(TEST_SERVER_WALLET_ADDRESS_1)
+                                        .payTo(TEST_CLIENT_WALLET_ADDRESS_1)
+                                        .maxTimeoutSeconds(60)
+                                        .build())
                                 .payload(ExactSchemePayload.builder()
-                                        .signature("0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef")
+                                        .signature("0xABCDEF1234567890")
                                         .authorization(ExactSchemePayload.Authorization.builder()
-                                                .from("0x2980bc24bBFB34DE1BBC91479Cb712ffbCE02F73")
-                                                .to("0x1234567890abcdef1234567890abcdef12345678")
-                                                .value("1000000000000000000")
-                                                .validAfter("1718542400")
-                                                .validBefore("1718642400")
-                                                .nonce("1")
+                                                .from(TEST_CLIENT_WALLET_ADDRESS_1)
+                                                .to(TEST_SERVER_WALLET_ADDRESS_1)
+                                                .value("100000")
+                                                .validAfter("1740672089")
+                                                .validBefore("1740672154")
+                                                .nonce("unique-nonce-123")
                                                 .build())
                                         .build())
                                 .build())
-                        .paymentRequirements(PaymentRequirements.builder()
-                                .scheme(EXACT_SCHEME.name())
-                                .build())
+                        .paymentRequirements(
+                                PaymentRequirements.builder()
+                                        .scheme(EXACT_SCHEME.name())
+                                        // Missing network
+                                        .build())
                         .build()))
                 .isNotNull()
                 .satisfies(result -> {
@@ -663,433 +1053,47 @@ public class GlobalVerifierTest {
                     assertThat(result.verificationError()).isEqualTo(INVALID_PAYLOAD);
                     assertThat(result.errorMessage()).isEqualTo("Network in payment requirements is required");
                 });
-    }
 
-    @Test
-    @Order(27)
-    @DisplayName("Payment requirements - Network is invalid")
-    public void paymentRequirementsNetworkIsInvalid() {
         assertThat(globalVerifier.verify(
-                VerifyRequest.builder()
-                        .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
+                VerificationRequest.builder()
                         .paymentPayload(PaymentPayload.builder()
                                 .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
-                                .scheme(EXACT_SCHEME.name())
-                                .network(BASE_SEPOLIA.name())
-                                .payload(ExactSchemePayload.builder()
-                                        .signature("0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef")
-                                        .authorization(ExactSchemePayload.Authorization.builder()
-                                                .from("0x2980bc24bBFB34DE1BBC91479Cb712ffbCE02F73")
-                                                .to("0x1234567890abcdef1234567890abcdef12345678")
-                                                .value("1000000000000000000")
-                                                .validAfter("1718542400")
-                                                .validBefore("1718642400")
-                                                .nonce("1")
-                                                .build())
+                                .resource(PaymentResource.builder()
+                                        .url("https://example.com/protected/resource")
                                         .build())
-                                .build())
-                        .paymentRequirements(PaymentRequirements.builder()
-                                .scheme(EXACT_SCHEME.name())
-                                .network("invalid")
-                                .build())
-                        .build()))
-                .isNotNull()
-                .satisfies(result -> {
-                    assertThat(result.isValid()).isFalse();
-                    assertThat(result.verificationError()).isEqualTo(INVALID_PAYLOAD);
-                    assertThat(result.errorMessage()).isEqualTo("Network in payment requirements is invalid (Your value: invalid)");
-                });
-    }
-
-    @Test
-    @Order(28)
-    @DisplayName("Payment requirements - Max amount required is null")
-    public void paymentRequirementsMaxAmountRequiredIsNull() {
-        assertThat(globalVerifier.verify(
-                VerifyRequest.builder()
-                        .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
-                        .paymentPayload(PaymentPayload.builder()
-                                .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
-                                .scheme(EXACT_SCHEME.name())
-                                .network(BASE_SEPOLIA.name())
-                                .payload(ExactSchemePayload.builder()
-                                        .signature("0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef")
-                                        .authorization(ExactSchemePayload.Authorization.builder()
-                                                .from("0x2980bc24bBFB34DE1BBC91479Cb712ffbCE02F73")
-                                                .to("0x1234567890abcdef1234567890abcdef12345678")
-                                                .value("1000000000000000000")
-                                                .validAfter("1718542400")
-                                                .validBefore("1718642400")
-                                                .nonce("1")
-                                                .build())
+                                .accepted(PaymentRequirements.builder()
+                                        .scheme(EXACT_SCHEME.name())
+                                        .network(BASE_SEPOLIA.networkId())
+                                        .amount("100000")
+                                        .asset(TEST_SERVER_WALLET_ADDRESS_1)
+                                        .payTo(TEST_CLIENT_WALLET_ADDRESS_1)
+                                        .maxTimeoutSeconds(60)
                                         .build())
-                                .build())
-                        .paymentRequirements(PaymentRequirements.builder()
-                                .scheme(EXACT_SCHEME.name())
-                                .network(BASE_SEPOLIA.name())
-                                .build())
-                        .build()))
-                .isNotNull()
-                .satisfies(result -> {
-                    assertThat(result.isValid()).isFalse();
-                    assertThat(result.verificationError()).isEqualTo(INVALID_PAYLOAD);
-                    assertThat(result.errorMessage()).isEqualTo("Maximum amount required in payment requirements is required");
-                });
-    }
-
-    @Test
-    @Order(29)
-    @DisplayName("Payment requirements - Max amount required is invalid")
-    public void paymentRequirementsMaxAmountRequiredIsInvalid() {
-        assertThat(globalVerifier.verify(
-                VerifyRequest.builder()
-                        .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
-                        .paymentPayload(PaymentPayload.builder()
-                                .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
-                                .scheme(EXACT_SCHEME.name())
-                                .network(BASE_SEPOLIA.name())
                                 .payload(ExactSchemePayload.builder()
-                                        .signature("0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef")
-                                        .authorization(ExactSchemePayload.Authorization.builder()
-                                                .from("0x2980bc24bBFB34DE1BBC91479Cb712ffbCE02F73")
-                                                .to("0x1234567890abcdef1234567890abcdef12345678")
-                                                .value("1000000000000000000")
-                                                .validAfter("1718542400")
-                                                .validBefore("1718642400")
-                                                .nonce("1")
-                                                .build())
-                                        .build())
-                                .build())
-                        .paymentRequirements(PaymentRequirements.builder()
-                                .scheme(EXACT_SCHEME.name())
-                                .network(BASE_SEPOLIA.name())
-                                .maxAmountRequired("invalid")
-                                .build())
-                        .build()))
-                .isNotNull()
-                .satisfies(result -> {
-                    assertThat(result.isValid()).isFalse();
-                    assertThat(result.verificationError()).isEqualTo(INVALID_PAYLOAD);
-                    assertThat(result.errorMessage()).isEqualTo("Maximum amount required in payment requirements is invalid (Your value: invalid)");
-                });
-    }
-
-    @Test
-    @Order(30)
-    @DisplayName("Payment requirements - Resource is null")
-    public void paymentRequirementsResourceIsNull() {
-        assertThat(globalVerifier.verify(
-                VerifyRequest.builder()
-                        .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
-                        .paymentPayload(PaymentPayload.builder()
-                                .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
-                                .scheme(EXACT_SCHEME.name())
-                                .network(BASE_SEPOLIA.name())
-                                .payload(ExactSchemePayload.builder()
-                                        .signature("0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef")
-                                        .authorization(ExactSchemePayload.Authorization.builder()
-                                                .from("0x2980bc24bBFB34DE1BBC91479Cb712ffbCE02F73")
-                                                .to("0x1234567890abcdef1234567890abcdef12345678")
-                                                .value("1000000000000000000")
-                                                .validAfter("1718542400")
-                                                .validBefore("1718642400")
-                                                .nonce("1")
-                                                .build())
-                                        .build())
-                                .build())
-                        .paymentRequirements(PaymentRequirements.builder()
-                                .scheme(EXACT_SCHEME.name())
-                                .network(BASE_SEPOLIA.name())
-                                .maxAmountRequired("1000000000000000000")
-                                .build())
-                        .build()))
-                .isNotNull()
-                .satisfies(result -> {
-                    assertThat(result.isValid()).isFalse();
-                    assertThat(result.verificationError()).isEqualTo(INVALID_PAYLOAD);
-                    assertThat(result.errorMessage()).isEqualTo("Resource in payment requirements is required");
-                });
-    }
-
-    @Test
-    @Order(31)
-    @DisplayName("Payment requirements - payTo is null")
-    public void paymentRequirementsPayToIsNull() {
-        assertThat(globalVerifier.verify(
-                VerifyRequest.builder()
-                        .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
-                        .paymentPayload(PaymentPayload.builder()
-                                .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
-                                .scheme(EXACT_SCHEME.name())
-                                .network(BASE_SEPOLIA.name())
-                                .payload(ExactSchemePayload.builder()
-                                        .signature("0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef")
-                                        .authorization(ExactSchemePayload.Authorization.builder()
-                                                .from("0x2980bc24bBFB34DE1BBC91479Cb712ffbCE02F73")
-                                                .to("0x1234567890abcdef1234567890abcdef12345678")
-                                                .value("1000000000000000000")
-                                                .validAfter("1718542400")
-                                                .validBefore("1718642400")
-                                                .nonce("1")
-                                                .build())
-                                        .build())
-                                .build())
-                        .paymentRequirements(PaymentRequirements.builder()
-                                .scheme(EXACT_SCHEME.name())
-                                .network(BASE_SEPOLIA.name())
-                                .maxAmountRequired("1000000000000000000")
-                                .resource("https://example.com/resource")
-                                .build())
-                        .build()))
-                .isNotNull()
-                .satisfies(result -> {
-                    assertThat(result.isValid()).isFalse();
-                    assertThat(result.verificationError()).isEqualTo(INVALID_PAYLOAD);
-                    assertThat(result.errorMessage()).isEqualTo("Pay-to field in payment requirements is required");
-                });
-    }
-
-    @Test
-    @Order(32)
-    @DisplayName("Payment requirements - payTo address is invalid")
-    public void paymentRequirementsPayToIsInvalid() {
-        assertThat(globalVerifier.verify(
-                VerifyRequest.builder()
-                        .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
-                        .paymentPayload(PaymentPayload.builder()
-                                .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
-                                .scheme(EXACT_SCHEME.name())
-                                .network(BASE_SEPOLIA.name())
-                                .payload(ExactSchemePayload.builder()
-                                        .signature("0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef")
-                                        .authorization(ExactSchemePayload.Authorization.builder()
-                                                .from("0x2980bc24bBFB34DE1BBC91479Cb712ffbCE02F73")
-                                                .to("0x1234567890abcdef1234567890abcdef12345678")
-                                                .value("1000000000000000000")
-                                                .validAfter("1718542400")
-                                                .validBefore("1718642400")
-                                                .nonce("1")
-                                                .build())
-                                        .build())
-                                .build())
-                        .paymentRequirements(PaymentRequirements.builder()
-                                .scheme(EXACT_SCHEME.name())
-                                .network(BASE_SEPOLIA.name())
-                                .maxAmountRequired("1000000000000000000")
-                                .resource("https://example.com/resource")
-                                .payTo("invalid")
-                                .build())
-                        .build()))
-                .isNotNull()
-                .satisfies(result -> {
-                    assertThat(result.isValid()).isFalse();
-                    assertThat(result.verificationError()).isEqualTo(INVALID_PAYLOAD);
-                    assertThat(result.errorMessage()).isEqualTo("Pay-to field in payment requirements is invalid (Your value: invalid)");
-                });
-    }
-
-    @Test
-    @Order(33)
-    @DisplayName("Payment requirements - maxTimeoutSeconds is null")
-    public void paymentRequirementsMaxTimeoutSecondsIsNull() {
-        assertThat(globalVerifier.verify(
-                VerifyRequest.builder()
-                        .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
-                        .paymentPayload(PaymentPayload.builder()
-                                .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
-                                .scheme(EXACT_SCHEME.name())
-                                .network(BASE_SEPOLIA.name())
-                                .payload(ExactSchemePayload.builder()
-                                        .signature("0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef")
-                                        .authorization(ExactSchemePayload.Authorization.builder()
-                                                .from("0x2980bc24bBFB34DE1BBC91479Cb712ffbCE02F73")
-                                                .to("0x1234567890abcdef1234567890abcdef12345678")
-                                                .value("1000000000000000000")
-                                                .validAfter("1718542400")
-                                                .validBefore("1718642400")
-                                                .nonce("1")
-                                                .build())
-                                        .build())
-                                .build())
-                        .paymentRequirements(PaymentRequirements.builder()
-                                .scheme(EXACT_SCHEME.name())
-                                .network(BASE_SEPOLIA.name())
-                                .maxAmountRequired("1000000000000000000")
-                                .resource("https://example.com/resource")
-                                .payTo("0x1234567890abcdef1234567890abcdef12345678")
-                                .build())
-                        .build()))
-                .isNotNull()
-                .satisfies(result -> {
-                    assertThat(result.isValid()).isFalse();
-                    assertThat(result.verificationError()).isEqualTo(INVALID_PAYLOAD);
-                    assertThat(result.errorMessage()).isEqualTo("Maximum timeout seconds in payment requirements is required");
-                });
-    }
-
-    @Test
-    @Order(34)
-    @DisplayName("Payment requirements - maxTimeoutSeconds is invalid")
-    public void paymentRequirementsMaxTimeoutSecondsIsInvalid() {
-        assertThat(globalVerifier.verify(
-                VerifyRequest.builder()
-                        .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
-                        .paymentPayload(PaymentPayload.builder()
-                                .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
-                                .scheme(EXACT_SCHEME.name())
-                                .network(BASE_SEPOLIA.name())
-                                .payload(ExactSchemePayload.builder()
-                                        .signature("0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef")
-                                        .authorization(ExactSchemePayload.Authorization.builder()
-                                                .from("0x2980bc24bBFB34DE1BBC91479Cb712ffbCE02F73")
-                                                .to("0x1234567890abcdef1234567890abcdef12345678")
-                                                .value("1000000000000000000")
-                                                .validAfter("1718542400")
-                                                .validBefore("1718642400")
-                                                .nonce("1")
-                                                .build())
-                                        .build())
-                                .build())
-                        .paymentRequirements(PaymentRequirements.builder()
-                                .scheme(EXACT_SCHEME.name())
-                                .network(BASE_SEPOLIA.name())
-                                .maxAmountRequired("1000000000000000000")
-                                .resource("https://example.com/resource")
-                                .payTo("0x1234567890abcdef1234567890abcdef12345678")
-                                .maxTimeoutSeconds(-1)
-                                .build())
-                        .build()))
-                .isNotNull()
-                .satisfies(result -> {
-                    assertThat(result.isValid()).isFalse();
-                    assertThat(result.verificationError()).isEqualTo(INVALID_PAYLOAD);
-                    assertThat(result.errorMessage()).isEqualTo("Maximum timeout seconds in payment requirements must be a positive integer (Your value: -1)");
-                });
-    }
-
-    @Test
-    @Order(35)
-    @DisplayName("Payment requirements - Asset is null")
-    public void paymentRequirementsAssetIsNull() {
-        assertThat(globalVerifier.verify(
-                VerifyRequest.builder()
-                        .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
-                        .paymentPayload(PaymentPayload.builder()
-                                .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
-                                .scheme(EXACT_SCHEME.name())
-                                .network(BASE_SEPOLIA.name())
-                                .payload(ExactSchemePayload.builder()
-                                        .signature("0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef")
-                                        .authorization(ExactSchemePayload.Authorization.builder()
-                                                .from("0x2980bc24bBFB34DE1BBC91479Cb712ffbCE02F73")
-                                                .to("0x1234567890abcdef1234567890abcdef12345678")
-                                                .value("1000000000000000000")
-                                                .validAfter("1718542400")
-                                                .validBefore("1718642400")
-                                                .nonce("1")
-                                                .build())
-                                        .build())
-                                .build())
-                        .paymentRequirements(PaymentRequirements.builder()
-                                .scheme(EXACT_SCHEME.name())
-                                .network(BASE_SEPOLIA.name())
-                                .maxAmountRequired("1000000000000000000")
-                                .resource("https://example.com/resource")
-                                .payTo("0x1234567890abcdef1234567890abcdef12345678")
-                                .maxTimeoutSeconds(60)
-                                .build())
-                        .build()))
-                .isNotNull()
-                .satisfies(result -> {
-                    assertThat(result.isValid()).isFalse();
-                    assertThat(result.verificationError()).isEqualTo(INVALID_PAYLOAD);
-                    assertThat(result.errorMessage()).isEqualTo("Asset in payment requirements is required");
-                });
-    }
-
-    @Test
-    @Order(36)
-    @DisplayName("Payment requirements - Asset is invalid")
-    public void paymentRequirementsAssetIsInvalid() {
-        assertThat(globalVerifier.verify(
-                VerifyRequest.builder()
-                        .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
-                        .paymentPayload(PaymentPayload.builder()
-                                .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
-                                .scheme(EXACT_SCHEME.name())
-                                .network(BASE_SEPOLIA.name())
-                                .payload(ExactSchemePayload.builder()
-                                        .signature("0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef")
-                                        .authorization(ExactSchemePayload.Authorization.builder()
-                                                .from("0x2980bc24bBFB34DE1BBC91479Cb712ffbCE02F73")
-                                                .to("0x1234567890abcdef1234567890abcdef12345678")
-                                                .value("1000000000000000000")
-                                                .validAfter("1718542400")
-                                                .validBefore("1718642400")
-                                                .nonce("1")
-                                                .build())
-                                        .build())
-                                .build())
-                        .paymentRequirements(PaymentRequirements.builder()
-                                .scheme(EXACT_SCHEME.name())
-                                .network(BASE_SEPOLIA.name())
-                                .maxAmountRequired("1000000000000000000")
-                                .resource("https://example.com/resource")
-                                .payTo("0x1234567890abcdef1234567890abcdef12345678")
-                                .maxTimeoutSeconds(60)
-                                .asset("invalid")
-                                .build())
-                        .build()))
-                .isNotNull()
-                .satisfies(result -> {
-                    assertThat(result.isValid()).isFalse();
-                    assertThat(result.verificationError()).isEqualTo(INVALID_PAYLOAD);
-                    assertThat(result.errorMessage()).isEqualTo("Asset in payment requirements is invalid (Your value: invalid)");
-                });
-    }
-
-    @Test
-    @Order(37)
-    @DisplayName("No validation errors - all fields are valid")
-    public void noValidationErrors() {
-        long now = System.currentTimeMillis() / 1000;
-        assertThat(globalVerifier.verify(
-                VerifyRequest.builder()
-                        .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
-                        .paymentPayload(PaymentPayload.builder()
-                                .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
-                                .scheme(EXACT_SCHEME.name())
-                                .network(BASE_SEPOLIA.name())
-                                .payload(ExactSchemePayload.builder()
-                                        .signature("0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef")
+                                        .signature("0xABCDEF1234567890")
                                         .authorization(ExactSchemePayload.Authorization.builder()
                                                 .from(TEST_CLIENT_WALLET_ADDRESS_1)
                                                 .to(TEST_SERVER_WALLET_ADDRESS_1)
-                                                .value("20000")
-                                                .validAfter(String.valueOf(now))
-                                                .validBefore(String.valueOf(now + 10))
-                                                .nonce(NonceUtil.generateNonce())
+                                                .value("100000")
+                                                .validAfter("1740672089")
+                                                .validBefore("1740672154")
+                                                .nonce("unique-nonce-123")
                                                 .build())
                                         .build())
                                 .build())
-                        .paymentRequirements(PaymentRequirements.builder()
-                                .scheme(EXACT_SCHEME.name())
-                                .network(BASE_SEPOLIA.name())
-                                .maxAmountRequired("20000")
-                                .resource("http://localhost/weather")
-                                .payTo(TEST_SERVER_WALLET_ADDRESS_1)
-                                .maxTimeoutSeconds(60)
-                                .asset("0x036CbD53842c5426634e7929541eC2318f3dCF7e")
-                                .extra(EXACT_SCHEME_PARAMETER_NAME, "USDC")
-                                .extra(EXACT_SCHEME_PARAMETER_VERSION, "2")
-                                .build())
+                        .paymentRequirements(
+                                PaymentRequirements.builder()
+                                        .scheme(EXACT_SCHEME.name())
+                                        .network("INVALID_NETWORK") // Invalid network
+                                        .build())
                         .build()))
                 .isNotNull()
                 .satisfies(result -> {
-                    assertThat(result.isValid()).isTrue();
-                    assertThat(result.verificationError()).isNull();
-                    assertThat(result.errorMessage()).isNull();
+                    assertThat(result.isValid()).isFalse();
+                    assertThat(result.verificationError()).isEqualTo(INVALID_PAYLOAD);
+                    assertThat(result.errorMessage()).isEqualTo("Network in payment requirements is invalid (Your value: INVALID_NETWORK)");
                 });
     }
+
 
 }

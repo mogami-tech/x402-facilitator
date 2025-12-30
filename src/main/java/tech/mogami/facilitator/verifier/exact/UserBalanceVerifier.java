@@ -5,7 +5,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.web3j.protocol.Web3j;
 import org.web3j.tx.ClientTransactionManager;
-import tech.mogami.commons.api.facilitator.verify.VerifyRequest;
+import tech.mogami.commons.api.facilitator.verify.VerificationRequest;
 import tech.mogami.commons.constant.network.Network;
 import tech.mogami.commons.constant.network.Networks;
 import tech.mogami.commons.crypto.contract.ERC20;
@@ -38,7 +38,7 @@ public class UserBalanceVerifier implements VerifierForExactScheme {
     private final GasService gasService;
 
     @Override
-    public VerificationResult verify(final VerifyRequest verifyRequest) {
+    public VerificationResult verify(final VerificationRequest verifyRequest) {
         Network network = Networks.findByName(verifyRequest.paymentRequirements().network())
                 .orElseThrow(() -> new IllegalArgumentException("Unsupported network: " + verifyRequest.paymentRequirements().network()));
 
@@ -54,7 +54,7 @@ public class UserBalanceVerifier implements VerifierForExactScheme {
             );
             // Compare the balance with the required amount.
             BigInteger rawBalance = token.balanceOf(payload.authorization().from()).send();
-            if (rawBalance.compareTo(new BigInteger(verifyRequest.paymentRequirements().maxAmountRequired())) < 0) {
+            if (rawBalance.compareTo(new BigInteger(verifyRequest.paymentRequirements().amount())) < 0) {
                 return VerificationResult.fail(
                         INSUFFICIENT_FUNDS,
                         "Insufficient funds: " + rawBalance + " available");

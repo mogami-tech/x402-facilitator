@@ -6,10 +6,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import tech.mogami.commons.api.facilitator.RequestCommonData;
-import tech.mogami.commons.api.facilitator.settle.SettleRequest;
-import tech.mogami.commons.api.facilitator.settle.SettleResponse;
-import tech.mogami.commons.api.facilitator.verify.VerifyRequest;
+import tech.mogami.commons.api.facilitator.PaymentContext;
+import tech.mogami.commons.api.facilitator.settle.SettlementResponse;
 import tech.mogami.commons.util.JsonUtil;
 import tech.mogami.facilitator.domain.payment.Payment;
 import tech.mogami.facilitator.domain.payment.PaymentStep;
@@ -28,8 +26,8 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.springframework.transaction.annotation.Propagation.REQUIRES_NEW;
-import static tech.mogami.commons.payment.PaymentStatus.COMPLETED;
-import static tech.mogami.commons.payment.PaymentStatus.FAILED;
+import static tech.mogami.commons.constant.PaymentStatus.COMPLETED;
+import static tech.mogami.commons.constant.PaymentStatus.FAILED;
 import static tech.mogami.facilitator.domain.payment.PaymentStepType.SETTLE;
 import static tech.mogami.facilitator.domain.payment.PaymentStepType.VERIFY;
 import static tech.mogami.facilitator.provider.outbox.domain.OutboxEventType.NEW_PAYMENT_STEP;
@@ -96,25 +94,18 @@ public class NewPaymentStepHandler implements OutboxEventHandler<NewPaymentStepM
             // We determine the steps to treat =========================================================================
             getStepsToProcess(payment.getSteps())
                     .forEach(step -> {
-                        RequestCommonData request = null;
-                        SettleResponse settleResponse = null;
+                        PaymentContext request = null;
+                        SettlementResponse settleResponse = null;
 
                         // We retrieve the JSON data ===================================================================
-                        if (step.getPaymentStepType() == VERIFY) {
-                            try {
-                                request = JsonUtil.fromJson(step.getRequestPayload(), VerifyRequest.class);
-                            } catch (IllegalArgumentException e) {
-                                log.warn("Unable to parse VerifyRequest from payment step id {}: {}", step.getPaymentStepId(), e.getMessage());
-                            }
+                        try {
+                            request = JsonUtil.fromJson(step.getRequestPayload(), PaymentContext.class);
+                        } catch (IllegalArgumentException e) {
+                            log.warn("Unable to parse VerificationRequest from payment step id {}: {}", step.getPaymentStepId(), e.getMessage());
                         }
                         if (step.getPaymentStepType() == SETTLE) {
                             try {
-                                request = JsonUtil.fromJson(step.getRequestPayload(), SettleRequest.class);
-                            } catch (IllegalArgumentException e) {
-                                log.warn("Unable to parse SettleRequest from payment step id {}: {}", step.getPaymentStepId(), e.getMessage());
-                            }
-                            try {
-                                settleResponse = JsonUtil.fromJson(step.getResponsePayload(), SettleResponse.class);
+                                settleResponse = JsonUtil.fromJson(step.getResponsePayload(), SettlementResponse.class);
                             } catch (IllegalArgumentException e) {
                                 log.warn("Unable to parse SettleResponse from payment step id {}: {}", step.getPaymentStepId(), e.getMessage());
                             }
@@ -125,11 +116,11 @@ public class NewPaymentStepHandler implements OutboxEventHandler<NewPaymentStepM
                             request.getVersion().ifPresent(x402Version -> {
                                 payment.setX402Version(x402Version.canonical());
                             });
-                            request.getFromAddress().ifPresent(addressAsString -> {
+                            request.getFrom().ifPresent(addressAsString -> {
                                 participantService.getOrCreateAddress(addressAsString);
                                 addressRepository.findByAddress(addressAsString).ifPresent(payment::setFrom);
                             });
-                            request.getToAddress().ifPresent(addressAsString -> {
+                            request.getTo().ifPresent(addressAsString -> {
                                 participantService.getOrCreateAddress(addressAsString);
                                 addressRepository.findByAddress(addressAsString).ifPresent(payment::setTo);
                             });
