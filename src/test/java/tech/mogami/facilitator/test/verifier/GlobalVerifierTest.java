@@ -341,7 +341,7 @@ public class GlobalVerifierTest {
                 .satisfies(result -> {
                     assertThat(result.isValid()).isFalse();
                     assertThat(result.verificationError()).isEqualTo(INVALID_PAYLOAD);
-                    assertThat(result.errorMessage()).isEqualTo("Pay-to field in payment requirements is required");
+                    assertThat(result.errorMessage()).isEqualTo("Pay-to in payment requirements is required");
                 });
 
         assertThat(globalVerifier.verify(
@@ -364,7 +364,7 @@ public class GlobalVerifierTest {
                 .satisfies(result -> {
                     assertThat(result.isValid()).isFalse();
                     assertThat(result.verificationError()).isEqualTo(INVALID_PAYLOAD);
-                    assertThat(result.errorMessage()).isEqualTo("Pay-to field in payment requirements is invalid (Your value: invalid)");
+                    assertThat(result.errorMessage()).isEqualTo("Pay-to in payment requirements is invalid (Your value: invalid)");
                 });
     }
 
@@ -1095,5 +1095,413 @@ public class GlobalVerifierTest {
                 });
     }
 
+    @Test
+    @Order(603)
+    @DisplayName("paymentRequirements.amount")
+    public void paymentRequirementsAmount() {
+        assertThat(globalVerifier.verify(
+                VerificationRequest.builder()
+                        .paymentPayload(PaymentPayload.builder()
+                                .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
+                                .resource(PaymentResource.builder()
+                                        .url("https://example.com/protected/resource")
+                                        .build())
+                                .accepted(PaymentRequirements.builder()
+                                        .scheme(EXACT_SCHEME.name())
+                                        .network(BASE_SEPOLIA.networkId())
+                                        .amount("100000")
+                                        .asset(TEST_SERVER_WALLET_ADDRESS_1)
+                                        .payTo(TEST_CLIENT_WALLET_ADDRESS_1)
+                                        .maxTimeoutSeconds(60)
+                                        .build())
+                                .payload(ExactSchemePayload.builder()
+                                        .signature("0xABCDEF1234567890")
+                                        .authorization(ExactSchemePayload.Authorization.builder()
+                                                .from(TEST_CLIENT_WALLET_ADDRESS_1)
+                                                .to(TEST_SERVER_WALLET_ADDRESS_1)
+                                                .value("100000")
+                                                .validAfter("1740672089")
+                                                .validBefore("1740672154")
+                                                .nonce("unique-nonce-123")
+                                                .build())
+                                        .build())
+                                .build())
+                        .paymentRequirements(
+                                PaymentRequirements.builder()
+                                        .scheme(EXACT_SCHEME.name())
+                                        .network(BASE_SEPOLIA.networkId())
+                                        // Missing amount
+                                        .build())
+                        .build()))
+                .isNotNull()
+                .satisfies(result -> {
+                    assertThat(result.isValid()).isFalse();
+                    assertThat(result.verificationError()).isEqualTo(INVALID_PAYLOAD);
+                    assertThat(result.errorMessage()).isEqualTo("Amount in payment requirements is required");
+                });
+
+        assertThat(globalVerifier.verify(
+                VerificationRequest.builder()
+                        .paymentPayload(PaymentPayload.builder()
+                                .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
+                                .resource(PaymentResource.builder()
+                                        .url("https://example.com/protected/resource")
+                                        .build())
+                                .accepted(PaymentRequirements.builder()
+                                        .scheme(EXACT_SCHEME.name())
+                                        .network(BASE_SEPOLIA.networkId())
+                                        .amount("100000")
+                                        .asset(TEST_SERVER_WALLET_ADDRESS_1)
+                                        .payTo(TEST_CLIENT_WALLET_ADDRESS_1)
+                                        .maxTimeoutSeconds(60)
+                                        .build())
+                                .payload(ExactSchemePayload.builder()
+                                        .signature("0xABCDEF1234567890")
+                                        .authorization(ExactSchemePayload.Authorization.builder()
+                                                .from(TEST_CLIENT_WALLET_ADDRESS_1)
+                                                .to(TEST_SERVER_WALLET_ADDRESS_1)
+                                                .value("100000")
+                                                .validAfter("1740672089")
+                                                .validBefore("1740672154")
+                                                .nonce("unique-nonce-123")
+                                                .build())
+                                        .build())
+                                .build())
+                        .paymentRequirements(
+                                PaymentRequirements.builder()
+                                        .scheme(EXACT_SCHEME.name())
+                                        .network(BASE_SEPOLIA.networkId())
+                                        .amount("invalid") // Invalid amount
+                                        .build())
+                        .build()))
+                .isNotNull()
+                .satisfies(result -> {
+                    assertThat(result.isValid()).isFalse();
+                    assertThat(result.verificationError()).isEqualTo(INVALID_PAYLOAD);
+                    assertThat(result.errorMessage()).isEqualTo("Amount in payment requirements is invalid (Your value: invalid)");
+                });
+    }
+
+    @Test
+    @Order(604)
+    @DisplayName("paymentRequirements.asset")
+    public void paymentRequirementsAsset() {
+        assertThat(globalVerifier.verify(
+                VerificationRequest.builder()
+                        .paymentPayload(PaymentPayload.builder()
+                                .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
+                                .resource(PaymentResource.builder()
+                                        .url("https://example.com/protected/resource")
+                                        .build())
+                                .accepted(PaymentRequirements.builder()
+                                        .scheme(EXACT_SCHEME.name())
+                                        .network(BASE_SEPOLIA.networkId())
+                                        .amount("100000")
+                                        .asset(TEST_SERVER_WALLET_ADDRESS_1)
+                                        .payTo(TEST_CLIENT_WALLET_ADDRESS_1)
+                                        .maxTimeoutSeconds(60)
+                                        .build())
+                                .payload(ExactSchemePayload.builder()
+                                        .signature("0xABCDEF1234567890")
+                                        .authorization(ExactSchemePayload.Authorization.builder()
+                                                .from(TEST_CLIENT_WALLET_ADDRESS_1)
+                                                .to(TEST_SERVER_WALLET_ADDRESS_1)
+                                                .value("100000")
+                                                .validAfter("1740672089")
+                                                .validBefore("1740672154")
+                                                .nonce("unique-nonce-123")
+                                                .build())
+                                        .build())
+                                .build())
+                        .paymentRequirements(
+                                PaymentRequirements.builder()
+                                        .scheme(EXACT_SCHEME.name())
+                                        .network(BASE_SEPOLIA.networkId())
+                                        .amount("100000")
+                                        // Missing asset
+                                        .build())
+                        .build()))
+                .isNotNull()
+                .satisfies(result -> {
+                    assertThat(result.isValid()).isFalse();
+                    assertThat(result.verificationError()).isEqualTo(INVALID_PAYLOAD);
+                    assertThat(result.errorMessage()).isEqualTo("Asset in payment requirements is required");
+                });
+
+        assertThat(globalVerifier.verify(
+                VerificationRequest.builder()
+                        .paymentPayload(PaymentPayload.builder()
+                                .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
+                                .resource(PaymentResource.builder()
+                                        .url("https://example.com/protected/resource")
+                                        .build())
+                                .accepted(PaymentRequirements.builder()
+                                        .scheme(EXACT_SCHEME.name())
+                                        .network(BASE_SEPOLIA.networkId())
+                                        .amount("100000")
+                                        .asset(TEST_SERVER_WALLET_ADDRESS_1)
+                                        .payTo(TEST_CLIENT_WALLET_ADDRESS_1)
+                                        .maxTimeoutSeconds(60)
+                                        .build())
+                                .payload(ExactSchemePayload.builder()
+                                        .signature("0xABCDEF1234567890")
+                                        .authorization(ExactSchemePayload.Authorization.builder()
+                                                .from(TEST_CLIENT_WALLET_ADDRESS_1)
+                                                .to(TEST_SERVER_WALLET_ADDRESS_1)
+                                                .value("100000")
+                                                .validAfter("1740672089")
+                                                .validBefore("1740672154")
+                                                .nonce("unique-nonce-123")
+                                                .build())
+                                        .build())
+                                .build())
+                        .paymentRequirements(
+                                PaymentRequirements.builder()
+                                        .scheme(EXACT_SCHEME.name())
+                                        .network(BASE_SEPOLIA.networkId())
+                                        .amount("100000")
+                                        .asset("invalid-asset-address") // Invalid asset
+                                        .build())
+                        .build()))
+                .isNotNull()
+                .satisfies(result -> {
+                    assertThat(result.isValid()).isFalse();
+                    assertThat(result.verificationError()).isEqualTo(INVALID_PAYLOAD);
+                    assertThat(result.errorMessage()).isEqualTo("Asset in payment requirements is invalid (Your value: invalid-asset-address)");
+                });
+    }
+
+    @Test
+    @Order(605)
+    @DisplayName("paymentRequirements.payTo")
+    public void paymentRequirementsPayTo() {
+        assertThat(globalVerifier.verify(
+                VerificationRequest.builder()
+                        .paymentPayload(PaymentPayload.builder()
+                                .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
+                                .resource(PaymentResource.builder()
+                                        .url("https://example.com/protected/resource")
+                                        .build())
+                                .accepted(PaymentRequirements.builder()
+                                        .scheme(EXACT_SCHEME.name())
+                                        .network(BASE_SEPOLIA.networkId())
+                                        .amount("100000")
+                                        .asset(TEST_SERVER_WALLET_ADDRESS_1)
+                                        .payTo(TEST_CLIENT_WALLET_ADDRESS_1)
+                                        .maxTimeoutSeconds(60)
+                                        .build())
+                                .payload(ExactSchemePayload.builder()
+                                        .signature("0xABCDEF1234567890")
+                                        .authorization(ExactSchemePayload.Authorization.builder()
+                                                .from(TEST_CLIENT_WALLET_ADDRESS_1)
+                                                .to(TEST_SERVER_WALLET_ADDRESS_1)
+                                                .value("100000")
+                                                .validAfter("1740672089")
+                                                .validBefore("1740672154")
+                                                .nonce("unique-nonce-123")
+                                                .build())
+                                        .build())
+                                .build())
+                        .paymentRequirements(
+                                PaymentRequirements.builder()
+                                        .scheme(EXACT_SCHEME.name())
+                                        .network(BASE_SEPOLIA.networkId())
+                                        .amount("100000")
+                                        .asset(TEST_SERVER_WALLET_ADDRESS_1)
+                                        // Missing payTo
+                                        .build())
+                        .build()))
+                .isNotNull()
+                .satisfies(result -> {
+                    assertThat(result.isValid()).isFalse();
+                    assertThat(result.verificationError()).isEqualTo(INVALID_PAYLOAD);
+                    assertThat(result.errorMessage()).isEqualTo("Pay-to in payment requirements is required");
+                });
+
+        assertThat(globalVerifier.verify(
+                VerificationRequest.builder()
+                        .paymentPayload(PaymentPayload.builder()
+                                .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
+                                .resource(PaymentResource.builder()
+                                        .url("https://example.com/protected/resource")
+                                        .build())
+                                .accepted(PaymentRequirements.builder()
+                                        .scheme(EXACT_SCHEME.name())
+                                        .network(BASE_SEPOLIA.networkId())
+                                        .amount("100000")
+                                        .asset(TEST_SERVER_WALLET_ADDRESS_1)
+                                        .payTo(TEST_CLIENT_WALLET_ADDRESS_1)
+                                        .maxTimeoutSeconds(60)
+                                        .build())
+                                .payload(ExactSchemePayload.builder()
+                                        .signature("0xABCDEF1234567890")
+                                        .authorization(ExactSchemePayload.Authorization.builder()
+                                                .from(TEST_CLIENT_WALLET_ADDRESS_1)
+                                                .to(TEST_SERVER_WALLET_ADDRESS_1)
+                                                .value("100000")
+                                                .validAfter("1740672089")
+                                                .validBefore("1740672154")
+                                                .nonce("unique-nonce-123")
+                                                .build())
+                                        .build())
+                                .build())
+                        .paymentRequirements(
+                                PaymentRequirements.builder()
+                                        .scheme(EXACT_SCHEME.name())
+                                        .network(BASE_SEPOLIA.networkId())
+                                        .amount("100000")
+                                        .asset(TEST_SERVER_WALLET_ADDRESS_1)
+                                        .payTo("invalid-payto-address") // Invalid payTo
+                                        .build())
+                        .build()))
+                .isNotNull()
+                .satisfies(result -> {
+                    assertThat(result.isValid()).isFalse();
+                    assertThat(result.verificationError()).isEqualTo(INVALID_PAYLOAD);
+                    assertThat(result.errorMessage()).isEqualTo("Pay-to in payment requirements is invalid (Your value: invalid-payto-address)");
+                });
+    }
+
+    @Test
+    @Order(606)
+    @DisplayName("paymentRequirements.maxTimeoutSeconds")
+    public void paymentRequirementsMaxTimeoutSeconds() {
+        assertThat(globalVerifier.verify(
+                VerificationRequest.builder()
+                        .paymentPayload(PaymentPayload.builder()
+                                .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
+                                .resource(PaymentResource.builder()
+                                        .url("https://example.com/protected/resource")
+                                        .build())
+                                .accepted(PaymentRequirements.builder()
+                                        .scheme(EXACT_SCHEME.name())
+                                        .network(BASE_SEPOLIA.networkId())
+                                        .amount("100000")
+                                        .asset(TEST_SERVER_WALLET_ADDRESS_1)
+                                        .payTo(TEST_CLIENT_WALLET_ADDRESS_1)
+                                        .maxTimeoutSeconds(60)
+                                        .build())
+                                .payload(ExactSchemePayload.builder()
+                                        .signature("0xABCDEF1234567890")
+                                        .authorization(ExactSchemePayload.Authorization.builder()
+                                                .from(TEST_CLIENT_WALLET_ADDRESS_1)
+                                                .to(TEST_SERVER_WALLET_ADDRESS_1)
+                                                .value("100000")
+                                                .validAfter("1740672089")
+                                                .validBefore("1740672154")
+                                                .nonce("unique-nonce-123")
+                                                .build())
+                                        .build())
+                                .build())
+                        .paymentRequirements(
+                                PaymentRequirements.builder()
+                                        .scheme(EXACT_SCHEME.name())
+                                        .network(BASE_SEPOLIA.networkId())
+                                        .amount("100000")
+                                        .asset(TEST_SERVER_WALLET_ADDRESS_1)
+                                        .payTo(TEST_CLIENT_WALLET_ADDRESS_1)
+                                        // maxTimeoutSeconds missing
+                                        .build())
+                        .build()))
+                .isNotNull()
+                .satisfies(result -> {
+                    assertThat(result.isValid()).isFalse();
+                    assertThat(result.verificationError()).isEqualTo(INVALID_PAYLOAD);
+                    assertThat(result.errorMessage()).isEqualTo("Maximum timeout seconds in payment requirements is required");
+                });
+
+        assertThat(globalVerifier.verify(
+                VerificationRequest.builder()
+                        .paymentPayload(PaymentPayload.builder()
+                                .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
+                                .resource(PaymentResource.builder()
+                                        .url("https://example.com/protected/resource")
+                                        .build())
+                                .accepted(PaymentRequirements.builder()
+                                        .scheme(EXACT_SCHEME.name())
+                                        .network(BASE_SEPOLIA.networkId())
+                                        .amount("100000")
+                                        .asset(TEST_SERVER_WALLET_ADDRESS_1)
+                                        .payTo(TEST_CLIENT_WALLET_ADDRESS_1)
+                                        .maxTimeoutSeconds(60)
+                                        .build())
+                                .payload(ExactSchemePayload.builder()
+                                        .signature("0xABCDEF1234567890")
+                                        .authorization(ExactSchemePayload.Authorization.builder()
+                                                .from(TEST_CLIENT_WALLET_ADDRESS_1)
+                                                .to(TEST_SERVER_WALLET_ADDRESS_1)
+                                                .value("100000")
+                                                .validAfter("1740672089")
+                                                .validBefore("1740672154")
+                                                .nonce("unique-nonce-123")
+                                                .build())
+                                        .build())
+                                .build())
+                        .paymentRequirements(
+                                PaymentRequirements.builder()
+                                        .scheme(EXACT_SCHEME.name())
+                                        .network(BASE_SEPOLIA.networkId())
+                                        .amount("100000")
+                                        .asset(TEST_SERVER_WALLET_ADDRESS_1)
+                                        .payTo(TEST_CLIENT_WALLET_ADDRESS_1)
+                                        .maxTimeoutSeconds(-10) // Invalid maxTimeoutSeconds
+                                        .build())
+                        .build()))
+                .isNotNull()
+                .satisfies(result -> {
+                    assertThat(result.isValid()).isFalse();
+                    assertThat(result.verificationError()).isEqualTo(INVALID_PAYLOAD);
+                    assertThat(result.errorMessage()).isEqualTo("Maximum timeout seconds in payment requirements must be a positive integer (Your value: -10)");
+                });
+    }
+
+    @Test
+    @Order(999)
+    @DisplayName("Valid request")
+    public void validRequest() {
+        assertThat(globalVerifier.verify(
+                VerificationRequest.builder()
+                        .paymentPayload(PaymentPayload.builder()
+                                .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
+                                .resource(PaymentResource.builder()
+                                        .url("https://example.com/protected/resource")
+                                        .build())
+                                .accepted(PaymentRequirements.builder()
+                                        .scheme(EXACT_SCHEME.name())
+                                        .network(BASE_SEPOLIA.networkId())
+                                        .amount("100000")
+                                        .asset(TEST_SERVER_WALLET_ADDRESS_1)
+                                        .payTo(TEST_CLIENT_WALLET_ADDRESS_1)
+                                        .maxTimeoutSeconds(60)
+                                        .build())
+                                .payload(ExactSchemePayload.builder()
+                                        .signature("0xABCDEF1234567890")
+                                        .authorization(ExactSchemePayload.Authorization.builder()
+                                                .from(TEST_CLIENT_WALLET_ADDRESS_1)
+                                                .to(TEST_SERVER_WALLET_ADDRESS_1)
+                                                .value("100000")
+                                                .validAfter("1740672089")
+                                                .validBefore("1740672154")
+                                                .nonce("unique-nonce-123")
+                                                .build())
+                                        .build())
+                                .build())
+                        .paymentRequirements(
+                                PaymentRequirements.builder()
+                                        .scheme(EXACT_SCHEME.name())
+                                        .network(BASE_SEPOLIA.networkId())
+                                        .amount("100000")
+                                        .asset(TEST_SERVER_WALLET_ADDRESS_1)
+                                        .payTo(TEST_CLIENT_WALLET_ADDRESS_1)
+                                        .maxTimeoutSeconds(10)
+                                        .build())
+                        .build()))
+                .isNotNull()
+                .satisfies(result -> {
+                    assertThat(result.isValid()).isTrue();
+                    assertThat(result.verificationError()).isNull();
+                    assertThat(result.errorMessage()).isNull();
+                });
+    }
 
 }
