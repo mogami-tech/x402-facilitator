@@ -51,7 +51,7 @@ public class VerifyServiceImplementation implements VerifyService {
 
         // No error, so we return a valid response.
         log.info("All verifiers passed for request: {}", verificationRequest);
-        return VerificationResult.ok();
+        return VerificationResult.success();
     }
 
 }

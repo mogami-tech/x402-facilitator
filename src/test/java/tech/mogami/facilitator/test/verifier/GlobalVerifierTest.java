@@ -15,7 +15,11 @@ import tech.mogami.commons.payment.schemes.exact.ExactSchemePayload;
 import tech.mogami.facilitator.verifier.general.GlobalVerifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static tech.mogami.commons.constant.X402Error.INVALID_NETWORK;
 import static tech.mogami.commons.constant.X402Error.INVALID_PAYLOAD;
+import static tech.mogami.commons.constant.X402Error.INVALID_PAYMENT_REQUIREMENTS;
+import static tech.mogami.commons.constant.X402Error.INVALID_SCHEME;
+import static tech.mogami.commons.constant.X402Error.INVALID_X402_VERSION;
 import static tech.mogami.commons.constant.X402Error.UNKNOWN;
 import static tech.mogami.commons.constant.network.Networks.BASE_SEPOLIA;
 import static tech.mogami.commons.constant.version.X402Versions.X402_SUPPORTED_VERSION_BY_MOGAMI;
@@ -70,7 +74,7 @@ public class GlobalVerifierTest {
                 .isNotNull()
                 .satisfies(result -> {
                     assertThat(result.isValid()).isFalse();
-                    assertThat(result.verificationError()).isEqualTo(INVALID_PAYLOAD);
+                    assertThat(result.verificationError()).isEqualTo(INVALID_X402_VERSION);
                     assertThat(result.errorMessage()).isEqualTo("x402 version in payment payload is required");
                 });
 
@@ -83,23 +87,9 @@ public class GlobalVerifierTest {
                 .isNotNull()
                 .satisfies(result -> {
                     assertThat(result.isValid()).isFalse();
-                    assertThat(result.verificationError()).isEqualTo(INVALID_PAYLOAD);
+                    assertThat(result.verificationError()).isEqualTo(INVALID_X402_VERSION);
                     assertThat(result.errorMessage()).isEqualTo("x402 version in payment payload is invalid (Your value: 0)");
                 });
-
-        // TODO Add a verifier to check if the x402 version is supported
-//        assertThat(globalVerifier.verify(
-//                VerificationRequest.builder()
-//                        .paymentPayload(PaymentPayload.builder()
-//                                .x402Version(1)
-//                                .build())
-//                        .build()))
-//                .isNotNull()
-//                .satisfies(result -> {
-//                    assertThat(result.isValid()).isFalse();
-//                    assertThat(result.verificationError()).isEqualTo(INVALID_PAYLOAD);
-//                    assertThat(result.errorMessage()).isEqualTo("x402 version in payment payload is invalid (Your value: 0)");
-//                });
     }
 
     @Test
@@ -155,7 +145,7 @@ public class GlobalVerifierTest {
                 .isNotNull()
                 .satisfies(result -> {
                     assertThat(result.isValid()).isFalse();
-                    assertThat(result.verificationError()).isEqualTo(INVALID_PAYLOAD);
+                    assertThat(result.verificationError()).isEqualTo(INVALID_PAYMENT_REQUIREMENTS);
                     assertThat(result.errorMessage()).isEqualTo("Payment requirements in payment payload is required");
                 });
     }
@@ -177,7 +167,7 @@ public class GlobalVerifierTest {
                 .isNotNull()
                 .satisfies(result -> {
                     assertThat(result.isValid()).isFalse();
-                    assertThat(result.verificationError()).isEqualTo(INVALID_PAYLOAD);
+                    assertThat(result.verificationError()).isEqualTo(INVALID_SCHEME);
                     assertThat(result.errorMessage()).isEqualTo("Scheme in payment requirements is required");
                 });
 
@@ -196,7 +186,7 @@ public class GlobalVerifierTest {
                 .isNotNull()
                 .satisfies(result -> {
                     assertThat(result.isValid()).isFalse();
-                    assertThat(result.verificationError()).isEqualTo(INVALID_PAYLOAD);
+                    assertThat(result.verificationError()).isEqualTo(INVALID_SCHEME);
                     assertThat(result.errorMessage()).isEqualTo("Scheme in payment requirements is invalid (Your value: invalid)");
                 });
     }
@@ -220,7 +210,7 @@ public class GlobalVerifierTest {
                 .isNotNull()
                 .satisfies(result -> {
                     assertThat(result.isValid()).isFalse();
-                    assertThat(result.verificationError()).isEqualTo(INVALID_PAYLOAD);
+                    assertThat(result.verificationError()).isEqualTo(INVALID_NETWORK);
                     assertThat(result.errorMessage()).isEqualTo("Network in payment requirements is required");
                 });
 
@@ -240,7 +230,7 @@ public class GlobalVerifierTest {
                 .isNotNull()
                 .satisfies(result -> {
                     assertThat(result.isValid()).isFalse();
-                    assertThat(result.verificationError()).isEqualTo(INVALID_PAYLOAD);
+                    assertThat(result.verificationError()).isEqualTo(INVALID_NETWORK);
                     assertThat(result.errorMessage()).isEqualTo("Network in payment requirements is invalid (Your value: invalid)");
                 });
     }
@@ -265,7 +255,7 @@ public class GlobalVerifierTest {
                 .isNotNull()
                 .satisfies(result -> {
                     assertThat(result.isValid()).isFalse();
-                    assertThat(result.verificationError()).isEqualTo(INVALID_PAYLOAD);
+                    assertThat(result.verificationError()).isEqualTo(INVALID_PAYMENT_REQUIREMENTS);
                     assertThat(result.errorMessage()).isEqualTo("Amount in payment requirements is required");
                 });
     }
@@ -291,7 +281,7 @@ public class GlobalVerifierTest {
                 .isNotNull()
                 .satisfies(result -> {
                     assertThat(result.isValid()).isFalse();
-                    assertThat(result.verificationError()).isEqualTo(INVALID_PAYLOAD);
+                    assertThat(result.verificationError()).isEqualTo(INVALID_PAYMENT_REQUIREMENTS);
                     assertThat(result.errorMessage()).isEqualTo("Asset in payment requirements is required");
                 });
 
@@ -313,7 +303,7 @@ public class GlobalVerifierTest {
                 .isNotNull()
                 .satisfies(result -> {
                     assertThat(result.isValid()).isFalse();
-                    assertThat(result.verificationError()).isEqualTo(INVALID_PAYLOAD);
+                    assertThat(result.verificationError()).isEqualTo(INVALID_PAYMENT_REQUIREMENTS);
                     assertThat(result.errorMessage()).isEqualTo("Asset in payment requirements is invalid (Your value: invalid)");
                 });
     }
@@ -340,7 +330,7 @@ public class GlobalVerifierTest {
                 .isNotNull()
                 .satisfies(result -> {
                     assertThat(result.isValid()).isFalse();
-                    assertThat(result.verificationError()).isEqualTo(INVALID_PAYLOAD);
+                    assertThat(result.verificationError()).isEqualTo(INVALID_PAYMENT_REQUIREMENTS);
                     assertThat(result.errorMessage()).isEqualTo("Pay-to in payment requirements is required");
                 });
 
@@ -363,7 +353,7 @@ public class GlobalVerifierTest {
                 .isNotNull()
                 .satisfies(result -> {
                     assertThat(result.isValid()).isFalse();
-                    assertThat(result.verificationError()).isEqualTo(INVALID_PAYLOAD);
+                    assertThat(result.verificationError()).isEqualTo(INVALID_PAYMENT_REQUIREMENTS);
                     assertThat(result.errorMessage()).isEqualTo("Pay-to in payment requirements is invalid (Your value: invalid)");
                 });
     }
@@ -391,7 +381,7 @@ public class GlobalVerifierTest {
                 .isNotNull()
                 .satisfies(result -> {
                     assertThat(result.isValid()).isFalse();
-                    assertThat(result.verificationError()).isEqualTo(INVALID_PAYLOAD);
+                    assertThat(result.verificationError()).isEqualTo(INVALID_PAYMENT_REQUIREMENTS);
                     assertThat(result.errorMessage()).isEqualTo("Maximum timeout seconds in payment requirements is required");
                 });
 
@@ -415,7 +405,7 @@ public class GlobalVerifierTest {
                 .isNotNull()
                 .satisfies(result -> {
                     assertThat(result.isValid()).isFalse();
-                    assertThat(result.verificationError()).isEqualTo(INVALID_PAYLOAD);
+                    assertThat(result.verificationError()).isEqualTo(INVALID_PAYMENT_REQUIREMENTS);
                     assertThat(result.errorMessage()).isEqualTo("Maximum timeout seconds in payment requirements must be a positive integer (Your value: -2)");
                 });
     }
@@ -925,7 +915,7 @@ public class GlobalVerifierTest {
                 .isNotNull()
                 .satisfies(result -> {
                     assertThat(result.isValid()).isFalse();
-                    assertThat(result.verificationError()).isEqualTo(INVALID_PAYLOAD);
+                    assertThat(result.verificationError()).isEqualTo(INVALID_PAYMENT_REQUIREMENTS);
                     assertThat(result.errorMessage()).isEqualTo("Payment requirements in verify request are required");
                 });
     }
@@ -966,7 +956,7 @@ public class GlobalVerifierTest {
                 .isNotNull()
                 .satisfies(result -> {
                     assertThat(result.isValid()).isFalse();
-                    assertThat(result.verificationError()).isEqualTo(INVALID_PAYLOAD);
+                    assertThat(result.verificationError()).isEqualTo(INVALID_SCHEME);
                     assertThat(result.errorMessage()).isEqualTo("Scheme in payment requirements is required");
                 });
 
@@ -1005,7 +995,7 @@ public class GlobalVerifierTest {
                 .isNotNull()
                 .satisfies(result -> {
                     assertThat(result.isValid()).isFalse();
-                    assertThat(result.verificationError()).isEqualTo(INVALID_PAYLOAD);
+                    assertThat(result.verificationError()).isEqualTo(INVALID_SCHEME);
                     assertThat(result.errorMessage()).isEqualTo("Scheme in payment requirements is invalid (Your value: INVALID_SCHEME)");
                 });
     }
@@ -1050,7 +1040,7 @@ public class GlobalVerifierTest {
                 .isNotNull()
                 .satisfies(result -> {
                     assertThat(result.isValid()).isFalse();
-                    assertThat(result.verificationError()).isEqualTo(INVALID_PAYLOAD);
+                    assertThat(result.verificationError()).isEqualTo(INVALID_NETWORK);
                     assertThat(result.errorMessage()).isEqualTo("Network in payment requirements is required");
                 });
 
@@ -1090,7 +1080,7 @@ public class GlobalVerifierTest {
                 .isNotNull()
                 .satisfies(result -> {
                     assertThat(result.isValid()).isFalse();
-                    assertThat(result.verificationError()).isEqualTo(INVALID_PAYLOAD);
+                    assertThat(result.verificationError()).isEqualTo(INVALID_NETWORK);
                     assertThat(result.errorMessage()).isEqualTo("Network in payment requirements is invalid (Your value: INVALID_NETWORK)");
                 });
     }
@@ -1136,7 +1126,7 @@ public class GlobalVerifierTest {
                 .isNotNull()
                 .satisfies(result -> {
                     assertThat(result.isValid()).isFalse();
-                    assertThat(result.verificationError()).isEqualTo(INVALID_PAYLOAD);
+                    assertThat(result.verificationError()).isEqualTo(INVALID_PAYMENT_REQUIREMENTS);
                     assertThat(result.errorMessage()).isEqualTo("Amount in payment requirements is required");
                 });
 
@@ -1177,7 +1167,7 @@ public class GlobalVerifierTest {
                 .isNotNull()
                 .satisfies(result -> {
                     assertThat(result.isValid()).isFalse();
-                    assertThat(result.verificationError()).isEqualTo(INVALID_PAYLOAD);
+                    assertThat(result.verificationError()).isEqualTo(INVALID_PAYMENT_REQUIREMENTS);
                     assertThat(result.errorMessage()).isEqualTo("Amount in payment requirements is invalid (Your value: invalid)");
                 });
     }
@@ -1224,7 +1214,7 @@ public class GlobalVerifierTest {
                 .isNotNull()
                 .satisfies(result -> {
                     assertThat(result.isValid()).isFalse();
-                    assertThat(result.verificationError()).isEqualTo(INVALID_PAYLOAD);
+                    assertThat(result.verificationError()).isEqualTo(INVALID_PAYMENT_REQUIREMENTS);
                     assertThat(result.errorMessage()).isEqualTo("Asset in payment requirements is required");
                 });
 
@@ -1266,7 +1256,7 @@ public class GlobalVerifierTest {
                 .isNotNull()
                 .satisfies(result -> {
                     assertThat(result.isValid()).isFalse();
-                    assertThat(result.verificationError()).isEqualTo(INVALID_PAYLOAD);
+                    assertThat(result.verificationError()).isEqualTo(INVALID_PAYMENT_REQUIREMENTS);
                     assertThat(result.errorMessage()).isEqualTo("Asset in payment requirements is invalid (Your value: invalid-asset-address)");
                 });
     }
@@ -1314,7 +1304,7 @@ public class GlobalVerifierTest {
                 .isNotNull()
                 .satisfies(result -> {
                     assertThat(result.isValid()).isFalse();
-                    assertThat(result.verificationError()).isEqualTo(INVALID_PAYLOAD);
+                    assertThat(result.verificationError()).isEqualTo(INVALID_PAYMENT_REQUIREMENTS);
                     assertThat(result.errorMessage()).isEqualTo("Pay-to in payment requirements is required");
                 });
 
@@ -1357,7 +1347,7 @@ public class GlobalVerifierTest {
                 .isNotNull()
                 .satisfies(result -> {
                     assertThat(result.isValid()).isFalse();
-                    assertThat(result.verificationError()).isEqualTo(INVALID_PAYLOAD);
+                    assertThat(result.verificationError()).isEqualTo(INVALID_PAYMENT_REQUIREMENTS);
                     assertThat(result.errorMessage()).isEqualTo("Pay-to in payment requirements is invalid (Your value: invalid-payto-address)");
                 });
     }
@@ -1406,7 +1396,7 @@ public class GlobalVerifierTest {
                 .isNotNull()
                 .satisfies(result -> {
                     assertThat(result.isValid()).isFalse();
-                    assertThat(result.verificationError()).isEqualTo(INVALID_PAYLOAD);
+                    assertThat(result.verificationError()).isEqualTo(INVALID_PAYMENT_REQUIREMENTS);
                     assertThat(result.errorMessage()).isEqualTo("Maximum timeout seconds in payment requirements is required");
                 });
 
@@ -1450,7 +1440,7 @@ public class GlobalVerifierTest {
                 .isNotNull()
                 .satisfies(result -> {
                     assertThat(result.isValid()).isFalse();
-                    assertThat(result.verificationError()).isEqualTo(INVALID_PAYLOAD);
+                    assertThat(result.verificationError()).isEqualTo(INVALID_PAYMENT_REQUIREMENTS);
                     assertThat(result.errorMessage()).isEqualTo("Maximum timeout seconds in payment requirements must be a positive integer (Your value: -10)");
                 });
     }

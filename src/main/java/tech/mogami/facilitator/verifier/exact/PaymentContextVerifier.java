@@ -47,50 +47,51 @@ public class PaymentContextVerifier extends VerifierUtil implements VerifierForE
                 .flatMap(Set::stream)
                 .findFirst();
         if (networkErrors.isPresent()) {
-            return VerificationResult.fail(INVALID_NETWORK, getErrorMessage(networkErrors.get()));
+            return VerificationResult.failure(INVALID_NETWORK, getErrorMessage(networkErrors.get()));
         }
 
         // Getting the payload from payment payload ====================================================================
         if (verificationRequest.paymentPayload().payload() == null) {
-            return VerificationResult.fail(INVALID_NETWORK, "Payment payload is empty");
+            return VerificationResult.failure(INVALID_NETWORK, "Payment payload is empty");
         }
         if (!(verificationRequest.paymentPayload().payload() instanceof ExactSchemePayload)) {
-            return VerificationResult.fail(INVALID_NETWORK, "Payment payload is not valid (Not an ExactSchemePayload)");
+            return VerificationResult.failure(INVALID_NETWORK, "Payment payload is not valid (Not an ExactSchemePayload)");
         }
 
         // Check the stablecoin name to use ============================================================================
+        // TODO - this logic may need to be updated when more stablecoins are supported
         PaymentRequirements paymentRequirements = verificationRequest.paymentRequirements();
         Optional<String> stableCoinName = paymentRequirements.getExtra(EXACT_SCHEME_PARAMETER_NAME);
         if (stableCoinName.isEmpty()) {
-            return VerificationResult.fail(INVALID_NETWORK, "Stablecoin name is not provided in the payment requirements");
+            return VerificationResult.failure(INVALID_NETWORK, "Stablecoin name is not provided in the payment requirements");
         } else {
             Optional<Network> network = findByName(verificationRequest.paymentRequirements().network());
 
             if (network.isEmpty()) {
-                return VerificationResult.fail(INVALID_NETWORK, "Unknown network: " + verificationRequest.paymentRequirements().network());
+                return VerificationResult.failure(INVALID_NETWORK, "Unknown network: " + verificationRequest.paymentRequirements().network());
             }
             // If it's not a valid value
             if (!StringUtils.equalsAnyIgnoreCase(stableCoinName.get(), "USDC", "USD Coin")) {
-                return VerificationResult.fail(INVALID_NETWORK, "Exact scheme parameter name invalid: " + stableCoinName.get());
+                return VerificationResult.failure(INVALID_NETWORK, "Exact scheme parameter name invalid: " + stableCoinName.get());
             }
             // Checking specific network requirements
             if (StringUtils.equalsIgnoreCase(verificationRequest.paymentRequirements().network(), network.get().name())
                     && !StringUtils.equalsIgnoreCase(stableCoinName.get(), network.get().usdc().displayName())) {
-                return VerificationResult.fail(INVALID_NETWORK, "On " + network.get().name() + ", the exact scheme parameter name must be '" + network.get().usdc().displayName() + "'");
+                return VerificationResult.failure(INVALID_NETWORK, "On " + network.get().name() + ", the exact scheme parameter name must be '" + network.get().usdc().displayName() + "'");
             }
         }
 
         // Check the exact scheme version ==============================================================================
         Optional<String> version = paymentRequirements.getExtra(EXACT_SCHEME_PARAMETER_VERSION);
         if (version.isEmpty()) {
-            return VerificationResult.fail(INVALID_NETWORK, "Exact scheme version is not provided in the payment requirements");
+            return VerificationResult.failure(INVALID_NETWORK, "Exact scheme version is not provided in the payment requirements");
         }
 
         // Check the asset contract address ============================================================================
         var assetErrors = validator.validateProperty(verificationRequest, "paymentRequirements.asset")
                 .stream()
                 .findFirst();
-        return assetErrors.map(verifyRequestConstraintViolation -> VerificationResult.fail(INVALID_NETWORK, getErrorMessage(verifyRequestConstraintViolation))).orElseGet(VerificationResult::ok);
+        return assetErrors.map(verifyRequestConstraintViolation -> VerificationResult.failure(INVALID_NETWORK, getErrorMessage(verifyRequestConstraintViolation))).orElseGet(VerificationResult::success);
     }
 
     @Override

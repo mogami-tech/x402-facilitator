@@ -28,14 +28,16 @@ public class PaymentAddressVerifier implements VerifierForExactScheme {
         ExactSchemePayload payload = (ExactSchemePayload) verificationRequest.paymentPayload().payload();
 
         // Check if the payment address is valid
-        if (!StringUtils.equalsIgnoreCase(payload.authorization().to(), verificationRequest.paymentRequirements().payTo())) {
-            return VerificationResult.fail(
+        if (!StringUtils.equalsIgnoreCase(
+                payload.authorization().to(),
+                verificationRequest.paymentPayload().accepted().payTo())) {
+            return VerificationResult.failure(
                     INVALID_EXACT_EVM_PAYLOAD_RECIPIENT_MISMATCH,
                     "Authorization 'to' address does not match the payment requirements 'payTo' address");
         }
 
         // If everything is fine, we return an OK result
-        return VerificationResult.ok();
+        return VerificationResult.success();
     }
 
     @Override

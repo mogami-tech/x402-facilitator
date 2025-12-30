@@ -32,14 +32,14 @@ public class SignatureVerifier implements VerifierForExactScheme {
                     verifyRequest.paymentRequirements(),
                     ((ExactSchemePayload) verifyRequest.paymentPayload().payload()).authorization(),
                     payload.authorization().from())) {
-                return VerificationResult.ok();
+                return VerificationResult.success();
             } else {
-                return VerificationResult.fail(
+                return VerificationResult.failure(
                         INVALID_EXACT_EVM_PAYLOAD_SIGNATURE,
                         "Signature verification failed for exact scheme");
             }
         } catch (Exception e) {
-            return VerificationResult.fail(
+            return VerificationResult.failure(
                     INVALID_EXACT_EVM_PAYLOAD_SIGNATURE,
                     "Signature verification exception: " + e.getMessage());
         }

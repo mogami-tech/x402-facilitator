@@ -3,9 +3,11 @@ package tech.mogami.facilitator.verifier.general;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import tech.mogami.commons.api.facilitator.verify.VerificationRequest;
+import tech.mogami.commons.constant.X402Error;
 import tech.mogami.facilitator.verifier.VerificationResult;
 import tech.mogami.facilitator.verifier.VerificationStep;
 import tech.mogami.facilitator.verifier.Verifier;
@@ -14,6 +16,7 @@ import tech.mogami.facilitator.verifier.VerifierUtil;
 import java.util.Comparator;
 
 import static tech.mogami.commons.constant.X402Error.INVALID_PAYLOAD;
+import static tech.mogami.commons.constant.X402Error.INVALID_PAYMENT_REQUIREMENTS;
 import static tech.mogami.commons.constant.X402Error.UNKNOWN;
 import static tech.mogami.facilitator.verifier.VerificationStep.GLOBAL_VERIFIER;
 
@@ -72,7 +75,7 @@ public class GlobalVerifier extends VerifierUtil implements Verifier {
     @Override
     public VerificationResult verify(final VerificationRequest verifyRequest) {
         if (verifyRequest == null) {
-            return VerificationResult.fail(
+            return VerificationResult.failure(
                     UNKNOWN,
                     "The request object received is null");
         }
@@ -80,10 +83,28 @@ public class GlobalVerifier extends VerifierUtil implements Verifier {
         // Return the first violation found, sorted by property path.
         return validator.validate(verifyRequest).stream()
                 .min(VIOLATION_COMPARATOR)
-                .map(violation -> VerificationResult.fail(
-                        INVALID_PAYLOAD,
-                        getErrorMessage(violation)))
-                .orElseGet(VerificationResult::ok);
+                .map(violation -> {
+
+                    X402Error error = INVALID_PAYLOAD;
+                    final String path = violation.getPropertyPath().toString();
+
+                    if (StringUtils.startsWith(path, "paymentPayload.x402Version")) {
+                        error = X402Error.INVALID_X402_VERSION;
+                    } else if (StringUtils.endsWith(path, ".scheme")) {
+                        error = X402Error.INVALID_SCHEME;
+                    } else if (StringUtils.endsWith(path, ".network")) {
+                        error = X402Error.INVALID_NETWORK;
+                    } else if (StringUtils.startsWith(path, "paymentPayload.accepted")) {
+                        error = INVALID_PAYMENT_REQUIREMENTS;
+                    } else if (StringUtils.startsWith(path, "paymentRequirements")) {
+                        error = INVALID_PAYMENT_REQUIREMENTS;
+                    }
+
+                    return VerificationResult.failure(
+                            error,
+                            getErrorMessage(violation));
+                })
+                .orElseGet(VerificationResult::success);
     }
 
     @Override

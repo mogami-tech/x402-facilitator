@@ -30,18 +30,18 @@ public class DeadlineVerifier implements VerifierForExactScheme {
         // Check validBefore.
         String validBefore = payload.authorization().validBefore();
         if (validBefore == null || Long.parseLong(validBefore) < (currentTimeSeconds + 6)) {
-            return VerificationResult.fail(
+            return VerificationResult.failure(
                     INVALID_EXACT_EVM_PAYLOAD_AUTHORIZATION_VALID_BEFORE,
                     "Authorization 'validBefore' is in the past or too close to the current time");
         }
         // Check validAfter.
         String validAfter = payload.authorization().validAfter();
         if (validAfter == null || Long.parseLong(validAfter) > currentTimeSeconds) {
-            return VerificationResult.fail(
+            return VerificationResult.failure(
                     INVALID_EXACT_EVM_PAYLOAD_AUTHORIZATION_VALID_AFTER,
                     "Authorization 'validAfter' is in the future");
         }
-        return VerificationResult.ok();
+        return VerificationResult.success();
     }
 
     @Override

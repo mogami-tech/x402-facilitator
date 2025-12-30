@@ -55,16 +55,16 @@ public class UserBalanceVerifier implements VerifierForExactScheme {
             // Compare the balance with the required amount.
             BigInteger rawBalance = token.balanceOf(payload.authorization().from()).send();
             if (rawBalance.compareTo(new BigInteger(verifyRequest.paymentRequirements().amount())) < 0) {
-                return VerificationResult.fail(
+                return VerificationResult.failure(
                         INSUFFICIENT_FUNDS,
                         "Insufficient funds: " + rawBalance + " available");
             }
         } catch (Exception e) {
-            return VerificationResult.fail(
+            return VerificationResult.failure(
                     INSUFFICIENT_FUNDS,
                     "Error getting balance: " + e.getMessage());
         }
-        return VerificationResult.ok();
+        return VerificationResult.success();
     }
 
     @Override

@@ -31,15 +31,15 @@ public class SchemeVerifier extends VerifierUtil implements Verifier {
     @Override
     public VerificationResult verify(final VerificationRequest verificationRequest) {
         return Stream.of(
-                        validator.validateProperty(verificationRequest, "paymentPayload.scheme"),
+                        validator.validateProperty(verificationRequest, "paymentPayload.accepted.scheme"),
                         validator.validateProperty(verificationRequest, "paymentRequirements.scheme")
                 )
                 .flatMap(Set::stream)
                 .findFirst()
-                .map(violation -> VerificationResult.fail(
+                .map(violation -> VerificationResult.failure(
                         UNSUPPORTED_SCHEME,
                         getErrorMessage(violation)))
-                .orElseGet(VerificationResult::ok);
+                .orElseGet(VerificationResult::success);
     }
 
     @Override
