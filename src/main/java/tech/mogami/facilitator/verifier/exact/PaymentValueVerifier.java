@@ -30,8 +30,6 @@ public class PaymentValueVerifier implements VerifierForExactScheme {
 
         // Check if the payment value is enough.
         BigDecimal payloadValue = new BigDecimal(payload.authorization().value());
-        System.out.println("=> Payload value: " + verifyRequest.paymentPayload());
-        System.out.println("=> Payload value: " + verifyRequest.paymentPayload().accepted());
         BigDecimal amount = new BigDecimal(verifyRequest.paymentPayload().accepted().amount());
         if (payloadValue.compareTo(amount) < 0) {
             return VerificationResult.failure(

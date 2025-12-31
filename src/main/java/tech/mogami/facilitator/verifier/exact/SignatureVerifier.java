@@ -26,10 +26,7 @@ public class SignatureVerifier implements VerifierForExactScheme {
     public VerificationResult verify(final VerificationRequest verifyRequest) {
         try {
             // We retrieve the payload and signature from the request
-            System.out.println("ICI 1");
-            System.out.println("=> verifyRequest.paymentPayload() = " + verifyRequest.paymentPayload());
             ExactSchemePayload payload = (ExactSchemePayload) verifyRequest.paymentPayload().getTypedPayload();
-            System.out.println("ICI 2");
             if (EIP712Helper.verify(
                     payload.signature(),
                     verifyRequest.paymentRequirements(),

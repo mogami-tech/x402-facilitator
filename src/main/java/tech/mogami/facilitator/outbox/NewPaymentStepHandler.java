@@ -7,7 +7,9 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import tech.mogami.commons.api.facilitator.PaymentContext;
+import tech.mogami.commons.api.facilitator.settle.SettlementRequest;
 import tech.mogami.commons.api.facilitator.settle.SettlementResponse;
+import tech.mogami.commons.api.facilitator.verify.VerificationRequest;
 import tech.mogami.commons.util.JsonUtil;
 import tech.mogami.facilitator.domain.payment.Payment;
 import tech.mogami.facilitator.domain.payment.PaymentStep;
@@ -98,12 +100,19 @@ public class NewPaymentStepHandler implements OutboxEventHandler<NewPaymentStepM
                         SettlementResponse settleResponse = null;
 
                         // We retrieve the JSON data ===================================================================
-                        try {
-                            request = JsonUtil.fromJson(step.getRequestPayload(), PaymentContext.class);
-                        } catch (IllegalArgumentException e) {
-                            log.warn("Unable to parse VerificationRequest from payment step id {}: {}", step.getPaymentStepId(), e.getMessage());
+                        if (step.getPaymentStepType() == VERIFY) {
+                            try {
+                                request = JsonUtil.fromJson(step.getRequestPayload(), VerificationRequest.class);
+                            } catch (IllegalArgumentException e) {
+                                log.warn("Unable to parse VerificationRequest from payment step id {}: {}", step.getPaymentStepId(), e.getMessage());
+                            }
                         }
                         if (step.getPaymentStepType() == SETTLE) {
+                            try {
+                                request = JsonUtil.fromJson(step.getRequestPayload(), SettlementRequest.class);
+                            } catch (IllegalArgumentException e) {
+                                log.warn("Unable to parse SettlementRequest from payment step id {}: {}", step.getPaymentStepId(), e.getMessage());
+                            }
                             try {
                                 settleResponse = JsonUtil.fromJson(step.getResponsePayload(), SettlementResponse.class);
                             } catch (IllegalArgumentException e) {
