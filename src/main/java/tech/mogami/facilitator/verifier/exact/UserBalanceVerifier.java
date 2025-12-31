@@ -45,7 +45,7 @@ public class UserBalanceVerifier implements VerifierForExactScheme {
         try {
             final Web3j web3j = web3jClients.get(network);
             // Retrieve the balance of the user.
-            ExactSchemePayload payload = (ExactSchemePayload) verifyRequest.paymentPayload().payload();
+            ExactSchemePayload payload = (ExactSchemePayload) verifyRequest.paymentPayload().getTypedPayload();
             ERC20 token = ERC20.load(
                     verifyRequest.paymentRequirements().asset(),
                     web3j,

@@ -24,7 +24,7 @@ public class DeadlineVerifier implements VerifierForExactScheme {
 
     @Override
     public VerificationResult verify(final VerificationRequest verifyRequest) {
-        ExactSchemePayload payload = (ExactSchemePayload) verifyRequest.paymentPayload().payload();
+        ExactSchemePayload payload = (ExactSchemePayload) verifyRequest.paymentPayload().getTypedPayload();
         long currentTimeSeconds = System.currentTimeMillis() / 1000;
 
         // Check validBefore.

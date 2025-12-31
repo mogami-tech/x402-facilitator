@@ -41,8 +41,9 @@ public class HomeControllerTest extends BaseWebTest {
                 // Checking the search form is filled without value coming from parameter.
                 .andExpect(content().string(containsString("value=\"\"")))
                 // Checking that the supported networks are displayed.
-                .andExpect(content().string(containsString("base-sepolia / exact")))
-                .andExpect(content().string(containsString("base / exact")))
+                // TODO Improve the display of supported kinds.
+                .andExpect(content().string(containsString("x402:V2/eip155:84532/exact")))
+                .andExpect(content().string(containsString("x402:V2/eip155:8453/exact")))
                 // Checking that the facilitator address is displayed.
                 .andExpect(content().string(containsString("0xb02166b97d37551cb8154c657d4c01b835404fc4")));
 

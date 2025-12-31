@@ -52,7 +52,9 @@ public class UserBalanceVerifierTest {
                                 .nonce("0x9b750f5097972d82c02ac371278b83ecf3ca3be8387db59e664eb38c98f97a3d")
                                 .build()
                         ).build()
-                ).build();
+                )
+                .accepted(paymentRequirements)
+                .build();
 
         assertThat(userBalanceVerifier.verify(
                 VerificationRequest.builder()
@@ -92,6 +94,7 @@ public class UserBalanceVerifierTest {
                                 .nonce("0x9b750f5097972d82c02ac371278b83ecf3ca3be8387db59e664eb38c98f97a3d")
                                 .build())
                         .build())
+                .accepted(paymentRequirements)
                 .build();
 
         assertThat(userBalanceVerifier.verify(

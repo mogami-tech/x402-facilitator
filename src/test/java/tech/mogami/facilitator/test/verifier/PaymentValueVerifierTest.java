@@ -12,6 +12,7 @@ import tech.mogami.facilitator.verifier.exact.PaymentValueVerifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static tech.mogami.commons.constant.X402Error.INVALID_EXACT_EVM_PAYLOAD_AUTHORIZATION_VALUE;
+import static tech.mogami.commons.payment.schemes.Schemes.EXACT_SCHEME;
 
 @SpringBootTest
 @DisplayName("Payment value verifier tests")
@@ -27,6 +28,7 @@ public class PaymentValueVerifierTest {
                 VerificationRequest.builder()
                         .paymentPayload(PaymentPayload.builder()
                                 .accepted(PaymentRequirements.builder()
+                                        .scheme(EXACT_SCHEME.name())
                                         .amount("110")
                                         .build())
                                 .payload(ExactSchemePayload.builder()
@@ -36,6 +38,7 @@ public class PaymentValueVerifierTest {
                                                         .build())
                                         .build())
                                 .build())
+
                         .build()))
                 .isNotNull()
                 .satisfies(result -> {
@@ -52,6 +55,7 @@ public class PaymentValueVerifierTest {
                 VerificationRequest.builder()
                         .paymentPayload(PaymentPayload.builder()
                                 .accepted(PaymentRequirements.builder()
+                                        .scheme(EXACT_SCHEME.name())
                                         .amount("110")
                                         .build())
                                 .payload(ExactSchemePayload.builder()
@@ -77,6 +81,7 @@ public class PaymentValueVerifierTest {
                 VerificationRequest.builder()
                         .paymentPayload(PaymentPayload.builder()
                                 .accepted(PaymentRequirements.builder()
+                                        .scheme(EXACT_SCHEME.name())
                                         .amount("110")
                                         .build())
                                 .payload(ExactSchemePayload.builder()

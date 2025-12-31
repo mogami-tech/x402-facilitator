@@ -103,7 +103,6 @@ public class CompletePaymentTest extends BaseWebTest {
                         .header("User-Agent", "axios/1.8.4")
                         .header("Accept-Encoding", "identity")
                         .content(JsonUtil.toJson(VerificationRequest.builder()
-//                                .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
                                 .paymentPayload(paymentPayload)
                                 .paymentRequirements(paymentRequirements)
                                 .build())))

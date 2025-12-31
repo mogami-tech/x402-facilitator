@@ -25,7 +25,7 @@ public class PaymentAddressVerifier implements VerifierForExactScheme {
     @Override
     public VerificationResult verify(final VerificationRequest verificationRequest) {
         // Verify that payment was made to the correct address
-        ExactSchemePayload payload = (ExactSchemePayload) verificationRequest.paymentPayload().payload();
+        ExactSchemePayload payload = (ExactSchemePayload) verificationRequest.paymentPayload().getTypedPayload();
 
         // Check if the payment address is valid
         if (!StringUtils.equalsIgnoreCase(
