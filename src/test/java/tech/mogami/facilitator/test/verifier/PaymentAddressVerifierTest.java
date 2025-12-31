@@ -31,19 +31,17 @@ public class PaymentAddressVerifierTest {
     @Test
     @DisplayName("Address mismatch")
     public void addressMismatch() {
-        PaymentRequirements paymentRequirements = PaymentRequirements.builder()
-                .scheme(EXACT_SCHEME.name())
-                .network(BASE_SEPOLIA.name())
-                .amount("10000")
-                .payTo(TEST_SERVER_WALLET_ADDRESS_2)
-                .asset("0x036CbD53842c5426634e7929541eC2318f3dCF7e")
-                .extra(EXACT_SCHEME_PARAMETER_NAME, "USDC")
-                .extra(EXACT_SCHEME_PARAMETER_VERSION, "2")
-                .build();
         PaymentPayload paymentPayload = PaymentPayload.builder()
                 .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
-//                .scheme(EXACT_SCHEME.name())
-//                .network(BASE_SEPOLIA.name())
+                .accepted(PaymentRequirements.builder()
+                        .scheme(EXACT_SCHEME.name())
+                        .network(BASE_SEPOLIA.name())
+                        .amount("10000")
+                        .payTo(TEST_SERVER_WALLET_ADDRESS_2)
+                        .asset("0x036CbD53842c5426634e7929541eC2318f3dCF7e")
+                        .extra(EXACT_SCHEME_PARAMETER_NAME, "USDC")
+                        .extra(EXACT_SCHEME_PARAMETER_VERSION, "2")
+                        .build())
                 .payload(ExactSchemePayload.builder()
                         .signature("0xde533856d81c76984a8dbc8d563bbb6d6d4ca36ce6c4d6e8cf315de3bfc14ab26d6bcdc37549aeed78bf92e39d5180268f8f399a4ffb816cfbf500823882b6001c")
                         .authorization(ExactSchemePayload.Authorization.builder()
@@ -60,7 +58,6 @@ public class PaymentAddressVerifierTest {
         assertThat(paymentAddressVerifier.verify(
                 VerificationRequest.builder()
                         .paymentPayload(paymentPayload)
-                        .paymentRequirements(paymentRequirements)
                         .build()))
                 .isNotNull()
                 .satisfies(result -> {
@@ -71,21 +68,19 @@ public class PaymentAddressVerifierTest {
     }
 
     @Test
-    @DisplayName("Valid address")
-    public void validAddress() {
-        var paymentRequirements = PaymentRequirements.builder()
-                .scheme(EXACT_SCHEME.name())
-                .network(BASE_SEPOLIA.name())
-                .amount("10000")
-                .payTo(TEST_SERVER_WALLET_ADDRESS_1)
-                .asset("0x036CbD53842c5426634e7929541eC2318f3dCF7e")
-                .extra(EXACT_SCHEME_PARAMETER_NAME, "USDC")
-                .extra(EXACT_SCHEME_PARAMETER_VERSION, "2")
-                .build();
+    @DisplayName("Address match")
+    public void addressMatch() {
         var paymentPayload = PaymentPayload.builder()
                 .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
-//                .scheme(EXACT_SCHEME.name())
-//                .network(BASE_SEPOLIA.name())
+                .accepted(PaymentRequirements.builder()
+                        .scheme(EXACT_SCHEME.name())
+                        .network(BASE_SEPOLIA.name())
+                        .amount("10000")
+                        .payTo(TEST_SERVER_WALLET_ADDRESS_1)
+                        .asset("0x036CbD53842c5426634e7929541eC2318f3dCF7e")
+                        .extra(EXACT_SCHEME_PARAMETER_NAME, "USDC")
+                        .extra(EXACT_SCHEME_PARAMETER_VERSION, "2")
+                        .build())
                 .payload(ExactSchemePayload.builder()
                         .signature("0xde533856d81c76984a8dbc8d563bbb6d6d4ca36ce6c4d6e8cf315de3bfc14ab26d6bcdc37549aeed78bf92e39d5180268f8f399a4ffb816cfbf500823882b6001c")
                         .authorization(ExactSchemePayload.Authorization.builder()
@@ -101,9 +96,7 @@ public class PaymentAddressVerifierTest {
 
         assertThat(paymentAddressVerifier.verify(
                 VerificationRequest.builder()
-//                        .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
                         .paymentPayload(paymentPayload)
-                        .paymentRequirements(paymentRequirements)
                         .build()))
                 .isNotNull()
                 .satisfies(result -> {

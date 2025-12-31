@@ -6,15 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import tech.mogami.commons.api.facilitator.verify.VerificationRequest;
 import tech.mogami.commons.payment.PaymentPayload;
-import tech.mogami.commons.payment.PaymentRequirements;
 import tech.mogami.commons.payment.schemes.exact.ExactSchemePayload;
 import tech.mogami.facilitator.verifier.exact.DeadlineVerifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static tech.mogami.commons.constant.X402Error.INVALID_EXACT_EVM_PAYLOAD_AUTHORIZATION_VALID_AFTER;
 import static tech.mogami.commons.constant.X402Error.INVALID_EXACT_EVM_PAYLOAD_AUTHORIZATION_VALID_BEFORE;
-import static tech.mogami.commons.constant.network.Networks.BASE_SEPOLIA;
-import static tech.mogami.commons.payment.schemes.Schemes.EXACT_SCHEME;
 
 @SpringBootTest
 @DisplayName("Deadline verifier tests")
@@ -29,8 +26,6 @@ public class DeadlineVerifierTest {
         assertThat(deadlineVerifier.verify(
                 VerificationRequest.builder()
                         .paymentPayload(PaymentPayload.builder()
-//                                .scheme(EXACT_SCHEME.name())
-//                                .network(BASE_SEPOLIA.name())
                                 .payload(ExactSchemePayload.builder()
                                         .authorization(
                                                 ExactSchemePayload.Authorization.builder()
@@ -39,10 +34,6 @@ public class DeadlineVerifierTest {
                                                         .build()
                                         )
                                         .build())
-                                .build())
-                        .paymentRequirements(PaymentRequirements.builder()
-                                .scheme(EXACT_SCHEME.name())
-                                .network(BASE_SEPOLIA.name())
                                 .build())
                         .build()))
                 .isNotNull()
@@ -59,8 +50,6 @@ public class DeadlineVerifierTest {
         assertThat(deadlineVerifier.verify(
                 VerificationRequest.builder()
                         .paymentPayload(PaymentPayload.builder()
-//                                .scheme(EXACT_SCHEME.name())
-//                                .network(BASE_SEPOLIA.name())
                                 .payload(ExactSchemePayload.builder()
                                         .authorization(
                                                 ExactSchemePayload.Authorization.builder()
@@ -69,10 +58,6 @@ public class DeadlineVerifierTest {
                                                         .build()
                                         )
                                         .build())
-                                .build())
-                        .paymentRequirements(PaymentRequirements.builder()
-                                .scheme(EXACT_SCHEME.name())
-                                .network(BASE_SEPOLIA.name())
                                 .build())
                         .build()))
                 .isNotNull()

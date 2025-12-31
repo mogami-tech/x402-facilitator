@@ -16,7 +16,7 @@ import static tech.mogami.facilitator.verifier.VerificationStep.SIGNATURE_FOR_EX
 /**
  * Signature verifier.
  */
-@Order(11)
+@Order(10)
 @Component
 @RequiredArgsConstructor
 @SuppressWarnings({"checkstyle:DesignForExtension", "unused", "checkstyle:MagicNumber"})

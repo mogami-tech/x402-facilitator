@@ -33,7 +33,7 @@ public class SignatureVerifierTest {
         // We change just one parameter, validBefore, to make the signature invalid.
         var paymentRequirements = PaymentRequirements.builder()
                 .scheme(EXACT_SCHEME.name())
-                .network(BASE_SEPOLIA.name())
+                .network(BASE_SEPOLIA.networkId())
                 .amount("10000")
                 .payTo(TEST_SERVER_WALLET_ADDRESS_1)
                 .asset("0x036CbD53842c5426634e7929541eC2318f3dCF7e")
@@ -42,8 +42,7 @@ public class SignatureVerifierTest {
                 .build();
         var paymentPayload = PaymentPayload.builder()
                 .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
-//                .scheme(EXACT_SCHEME.name())
-//                .network(BASE_SEPOLIA.name())
+                .accepted(paymentRequirements)
                 .payload(ExactSchemePayload.builder()
                         .signature("0xde533856d81c76984a8dbc8d563bbb6d6d4ca36ce6c4d6e8cf315de3bfc14ab26d6bcdc37549aeed78bf92e39d5180268f8f399a4ffb816cfbf500823882b6001c")
                         .authorization(ExactSchemePayload.Authorization.builder()
@@ -75,7 +74,7 @@ public class SignatureVerifierTest {
     public void validSignature() {
         var paymentRequirements = PaymentRequirements.builder()
                 .scheme(EXACT_SCHEME.name())
-                .network(BASE_SEPOLIA.name())
+                .network(BASE_SEPOLIA.networkId())
                 .amount("10000")
                 .payTo(TEST_SERVER_WALLET_ADDRESS_1)
                 .asset("0x036CbD53842c5426634e7929541eC2318f3dCF7e")
@@ -84,8 +83,7 @@ public class SignatureVerifierTest {
                 .build();
         var paymentPayload = PaymentPayload.builder()
                 .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
-//                .scheme(EXACT_SCHEME.name())
-//                .network(BASE_SEPOLIA.name())
+                .accepted(paymentRequirements)
                 .payload(ExactSchemePayload.builder()
                         .signature("0x7d9463e2c7c98e33c08747882521be88cc02443a8c46f3a1f5b51ae8d1bdd9581fa41ab35c1cebfe70a79471640a1bde9ffadd377e38d708b5ca6a38b30300f61b")
                         .authorization(ExactSchemePayload.Authorization.builder()
@@ -101,7 +99,6 @@ public class SignatureVerifierTest {
 
         assertThat(signatureVerifier.verify(
                 VerificationRequest.builder()
-//                        .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
                         .paymentPayload(paymentPayload)
                         .paymentRequirements(paymentRequirements)
                         .build()))

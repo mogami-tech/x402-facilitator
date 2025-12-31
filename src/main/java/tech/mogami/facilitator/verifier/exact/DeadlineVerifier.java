@@ -16,7 +16,7 @@ import static tech.mogami.facilitator.verifier.VerificationStep.DEADLINES_FOR_EX
 /**
  * Deadline verifier.
  */
-@Order(13)
+@Order(12)
 @Component
 @RequiredArgsConstructor
 @SuppressWarnings({"checkstyle:DesignForExtension", "unused", "checkstyle:MagicNumber"})

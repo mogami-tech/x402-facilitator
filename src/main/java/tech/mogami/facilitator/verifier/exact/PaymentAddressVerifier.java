@@ -16,7 +16,7 @@ import static tech.mogami.facilitator.verifier.VerificationStep.PAYMENT_ADDRESS_
 /**
  * Payment address verifier.
  */
-@Order(12)
+@Order(11)
 @Component
 @RequiredArgsConstructor
 @SuppressWarnings({"checkstyle:DesignForExtension", "unused", "checkstyle:MagicNumber"})

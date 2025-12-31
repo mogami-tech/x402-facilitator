@@ -26,15 +26,15 @@ public class PaymentValueVerifierTest {
         assertThat(paymentValueVerifier.verify(
                 VerificationRequest.builder()
                         .paymentPayload(PaymentPayload.builder()
+                                .accepted(PaymentRequirements.builder()
+                                        .amount("110")
+                                        .build())
                                 .payload(ExactSchemePayload.builder()
                                         .authorization(
                                                 ExactSchemePayload.Authorization.builder()
                                                         .value("100") // Value is less than required
                                                         .build())
                                         .build())
-                                .build())
-                        .paymentRequirements(PaymentRequirements.builder()
-                                .amount("110")
                                 .build())
                         .build()))
                 .isNotNull()
@@ -51,15 +51,15 @@ public class PaymentValueVerifierTest {
         assertThat(paymentValueVerifier.verify(
                 VerificationRequest.builder()
                         .paymentPayload(PaymentPayload.builder()
+                                .accepted(PaymentRequirements.builder()
+                                        .amount("110")
+                                        .build())
                                 .payload(ExactSchemePayload.builder()
                                         .authorization(
                                                 ExactSchemePayload.Authorization.builder()
                                                         .value("110") // Value is enough
                                                         .build())
                                         .build())
-                                .build())
-                        .paymentRequirements(PaymentRequirements.builder()
-                                .amount("110")
                                 .build())
                         .build()))
                 .isNotNull()
@@ -76,15 +76,15 @@ public class PaymentValueVerifierTest {
         assertThat(paymentValueVerifier.verify(
                 VerificationRequest.builder()
                         .paymentPayload(PaymentPayload.builder()
+                                .accepted(PaymentRequirements.builder()
+                                        .amount("110")
+                                        .build())
                                 .payload(ExactSchemePayload.builder()
                                         .authorization(
                                                 ExactSchemePayload.Authorization.builder()
                                                         .value("120") // Value is superior to required
                                                         .build())
                                         .build())
-                                .build())
-                        .paymentRequirements(PaymentRequirements.builder()
-                                .amount("110")
                                 .build())
                         .build()))
                 .isNotNull()

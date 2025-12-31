@@ -17,7 +17,7 @@ import static tech.mogami.commons.constant.X402Error.INVALID_EXACT_EVM_PAYLOAD_A
  * Payment value verifier.
  * Verify value in payload is enough to cover paymentRequirements.maxAmountRequired
  */
-@Order(14)
+@Order(13)
 @Component
 @RequiredArgsConstructor
 @SuppressWarnings({"checkstyle:DesignForExtension", "unused", "checkstyle:MagicNumber"})
