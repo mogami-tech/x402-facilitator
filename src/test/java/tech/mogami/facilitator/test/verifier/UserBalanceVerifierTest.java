@@ -32,9 +32,8 @@ public class UserBalanceVerifierTest {
     public void userBalanceInsufficient() {
         var paymentRequirements = PaymentRequirements.builder()
                 .scheme(EXACT_SCHEME.name())
-                .network(BASE_SEPOLIA.name())
+                .network(BASE_SEPOLIA.networkId())
                 .amount("10000")
-//                .resource("http://localhost/weather")
                 .payTo(TEST_SERVER_WALLET_ADDRESS_1)
                 .asset("0x036CbD53842c5426634e7929541eC2318f3dCF7e")
                 .extra(EXACT_SCHEME_PARAMETER_NAME, "USDC")
@@ -42,8 +41,6 @@ public class UserBalanceVerifierTest {
                 .build();
         var paymentPayload = PaymentPayload.builder()
                 .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
-//                .scheme(EXACT_SCHEME.name())
-//                .network(BASE_SEPOLIA.name())
                 .payload(ExactSchemePayload.builder()
                         .signature("0xde533856d81c76984a8dbc8d563bbb6d6d4ca36ce6c4d6e8cf315de3bfc14ab26d6bcdc37549aeed78bf92e39d5180268f8f399a4ffb816cfbf500823882b6001c")
                         .authorization(ExactSchemePayload.Authorization.builder()
@@ -59,7 +56,6 @@ public class UserBalanceVerifierTest {
 
         assertThat(userBalanceVerifier.verify(
                 VerificationRequest.builder()
-//                        .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
                         .paymentPayload(paymentPayload)
                         .paymentRequirements(paymentRequirements)
                         .build()))
@@ -76,7 +72,7 @@ public class UserBalanceVerifierTest {
     public void userBalanceSufficient() {
         var paymentRequirements = PaymentRequirements.builder()
                 .scheme(EXACT_SCHEME.name())
-                .network(BASE_SEPOLIA.name())
+                .network(BASE_SEPOLIA.networkId())
                 .amount("10000")
                 .payTo(TEST_SERVER_WALLET_ADDRESS_1)
                 .asset("0x036CbD53842c5426634e7929541eC2318f3dCF7e")
@@ -85,8 +81,6 @@ public class UserBalanceVerifierTest {
                 .build();
         var paymentPayload = PaymentPayload.builder()
                 .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
-//                .scheme(EXACT_SCHEME.name())
-//                .network(BASE_SEPOLIA.name())
                 .payload(ExactSchemePayload.builder()
                         .signature("0xde533856d81c76984a8dbc8d563bbb6d6d4ca36ce6c4d6e8cf315de3bfc14ab26d6bcdc37549aeed78bf92e39d5180268f8f399a4ffb816cfbf500823882b6001c")
                         .authorization(ExactSchemePayload.Authorization.builder()
@@ -102,7 +96,6 @@ public class UserBalanceVerifierTest {
 
         assertThat(userBalanceVerifier.verify(
                 VerificationRequest.builder()
-//                        .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
                         .paymentPayload(paymentPayload)
                         .paymentRequirements(paymentRequirements)
                         .build()))

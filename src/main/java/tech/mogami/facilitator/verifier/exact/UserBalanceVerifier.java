@@ -39,7 +39,7 @@ public class UserBalanceVerifier implements VerifierForExactScheme {
 
     @Override
     public VerificationResult verify(final VerificationRequest verifyRequest) {
-        Network network = Networks.findByName(verifyRequest.paymentRequirements().network())
+        Network network = Networks.findByNetworkId(verifyRequest.paymentRequirements().network())
                 .orElseThrow(() -> new IllegalArgumentException("Unsupported network: " + verifyRequest.paymentRequirements().network()));
 
         try {
