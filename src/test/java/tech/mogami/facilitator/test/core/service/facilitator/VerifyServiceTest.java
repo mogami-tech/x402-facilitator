@@ -1,0 +1,268 @@
+package tech.mogami.facilitator.test.core.service.facilitator;
+
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.web3j.crypto.Credentials;
+import tech.mogami.commons.api.facilitator.verify.VerificationRequest;
+import tech.mogami.commons.payment.PaymentPayload;
+import tech.mogami.commons.payment.PaymentRequired;
+import tech.mogami.commons.payment.PaymentRequirements;
+import tech.mogami.commons.payment.PaymentResource;
+import tech.mogami.commons.payment.schemes.exact.ExactSchemePayload;
+import tech.mogami.facilitator.service.facilitator.VerifyService;
+import tech.mogami.java.client.X402V2Client;
+
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static tech.mogami.commons.constant.X402Error.INSUFFICIENT_FUNDS;
+import static tech.mogami.commons.constant.X402Error.INVALID_EXACT_EVM_PAYLOAD_AUTHORIZATION_VALID_BEFORE;
+import static tech.mogami.commons.constant.X402Error.INVALID_EXACT_EVM_PAYLOAD_AUTHORIZATION_VALUE;
+import static tech.mogami.commons.constant.X402Error.INVALID_EXACT_EVM_PAYLOAD_RECIPIENT_MISMATCH;
+import static tech.mogami.commons.constant.X402Error.INVALID_EXACT_EVM_PAYLOAD_SIGNATURE;
+import static tech.mogami.commons.constant.X402Error.UNKNOWN;
+import static tech.mogami.commons.constant.network.Networks.BASE_SEPOLIA;
+import static tech.mogami.commons.constant.version.X402Versions.X402_SUPPORTED_VERSION_BY_MOGAMI;
+import static tech.mogami.commons.payment.schemes.Schemes.EXACT_SCHEME;
+import static tech.mogami.commons.payment.schemes.exact.ExactSchemeConstants.EXACT_SCHEME_PARAMETER_NAME;
+import static tech.mogami.commons.payment.schemes.exact.ExactSchemeConstants.EXACT_SCHEME_PARAMETER_VERSION;
+import static tech.mogami.commons.test.BaseMogamiTestData.TEST_CLIENT_WALLET_ADDRESS_1;
+import static tech.mogami.commons.test.BaseMogamiTestData.TEST_SERVER_WALLET_ADDRESS_1;
+import static tech.mogami.commons.test.BaseMogamiTestData.TEST_SERVER_WALLET_ADDRESS_2;
+
+@SpringBootTest
+@DisplayName("Verify service tests")
+public class VerifyServiceTest {
+
+    @Autowired
+    private VerifyService verifyService;
+
+    @Test
+    @DisplayName("Empty request")
+    public void emptyRequest() {
+        assertThat(verifyService.verify(null))
+                .isNotNull()
+                .satisfies(result -> {
+                    assertThat(result.isValid()).isFalse();
+                    assertThat(result.verificationError()).isEqualTo(UNKNOWN);
+                });
+    }
+
+    @Test
+    @DisplayName("Invalid signature")
+    public void invalidSignature() {
+        var paymentRequirements = PaymentRequirements.builder()
+                .scheme(EXACT_SCHEME.name())
+                .network(BASE_SEPOLIA.networkId())
+                .amount("10000")
+                .payTo(TEST_SERVER_WALLET_ADDRESS_1)
+                .maxTimeoutSeconds(60)
+                .asset("0x036CbD53842c5426634e7929541eC2318f3dCF7e")
+                .extra(EXACT_SCHEME_PARAMETER_NAME, "USDC")
+                .extra(EXACT_SCHEME_PARAMETER_VERSION, "2")
+                .build();
+        var paymentPayload = PaymentPayload.builder()
+                .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
+                .resource(PaymentResource.builder()
+                        .url("https://example.com/resource")
+                        .build())
+                .accepted(paymentRequirements)
+                .payload(ExactSchemePayload.builder()
+                        .signature("0xde533856d81c76984a8dbc8d563bbb6d6d4ca36ce6c4d6e8cf315de3bfc14ab26d6bcdc37549aeed78bf92e39d5180268f8f399a4ffb816cfbf500823882b6001c")
+                        .authorization(ExactSchemePayload.Authorization.builder()
+                                .from(TEST_CLIENT_WALLET_ADDRESS_1)
+                                .to(TEST_SERVER_WALLET_ADDRESS_1)
+                                .value("10000")
+                                .validAfter("1748534647")
+                                .validBefore("1748534768")
+                                .nonce("0x9b750f5097972d82c02ac371278b83ecf3ca3be8387db59e664eb38c98f97a3d")
+                                .build())
+                        .build())
+                .build();
+
+        assertThat(verifyService.verify(
+                VerificationRequest.builder()
+                        .paymentPayload(paymentPayload)
+                        .paymentRequirements(paymentRequirements)
+                        .build()))
+                .isNotNull()
+                .satisfies(result -> {
+                    assertThat(result.isValid()).isFalse();
+                    assertThat(result.verificationError()).isEqualTo(INVALID_EXACT_EVM_PAYLOAD_SIGNATURE);
+                });
+    }
+
+    @Test
+    @DisplayName("Payment address mismatch")
+    public void paymentAddressMismatch() {
+        var paymentRequirements = PaymentRequirements.builder()
+                .scheme(EXACT_SCHEME.name())
+                .network(BASE_SEPOLIA.networkId())
+                .amount("10000")
+                .payTo(TEST_SERVER_WALLET_ADDRESS_2)
+                .maxTimeoutSeconds(60)
+                .asset("0x036CbD53842c5426634e7929541eC2318f3dCF7e")
+                .extra(EXACT_SCHEME_PARAMETER_NAME, "USDC")
+                .extra(EXACT_SCHEME_PARAMETER_VERSION, "2")
+                .build();
+        var paymentPayload = PaymentPayload.builder()
+                .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
+                .resource(PaymentResource.builder()
+                        .url("https://example.com/resource")
+                        .build())
+                .accepted(paymentRequirements)
+                .payload(ExactSchemePayload.builder()
+                        .signature("0x7d9463e2c7c98e33c08747882521be88cc02443a8c46f3a1f5b51ae8d1bdd9581fa41ab35c1cebfe70a79471640a1bde9ffadd377e38d708b5ca6a38b30300f61b")
+                        .authorization(ExactSchemePayload.Authorization.builder()
+                                .from(TEST_CLIENT_WALLET_ADDRESS_1)
+                                .to(TEST_SERVER_WALLET_ADDRESS_1)
+                                .value("10000")
+                                .validAfter("1748534647")
+                                .validBefore("1748534767")
+                                .nonce("0x9b750f5097972d82c02ac371278b83ecf3ca3be8387db59e664eb38c98f97a3d")
+                                .build())
+                        .build())
+                .build();
+
+        assertThat(verifyService.verify(
+                VerificationRequest.builder()
+                        .paymentPayload(paymentPayload)
+                        .paymentRequirements(paymentRequirements)
+                        .build()))
+                .isNotNull()
+                .satisfies(result -> {
+                    assertThat(result.isValid()).isFalse();
+                    assertThat(result.verificationError()).isEqualTo(INVALID_EXACT_EVM_PAYLOAD_RECIPIENT_MISMATCH);
+                });
+    }
+
+    @Test
+    @DisplayName("Invalid validBefore")
+    public void invalidValidBefore() {
+        var paymentRequirements = PaymentRequirements.builder()
+                .scheme(EXACT_SCHEME.name())
+                .network(BASE_SEPOLIA.networkId())
+                .amount("10000")
+                .payTo(TEST_SERVER_WALLET_ADDRESS_1)
+                .maxTimeoutSeconds(60)
+                .asset("0x036CbD53842c5426634e7929541eC2318f3dCF7e")
+                .extra(EXACT_SCHEME_PARAMETER_NAME, "USDC")
+                .extra(EXACT_SCHEME_PARAMETER_VERSION, "2")
+                .build();
+        var paymentPayload = PaymentPayload.builder()
+                .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
+                .resource(PaymentResource.builder()
+                        .url("https://example.com/resource")
+                        .build())
+                .accepted(paymentRequirements)
+                .payload(ExactSchemePayload.builder()
+                        .signature("0x7d9463e2c7c98e33c08747882521be88cc02443a8c46f3a1f5b51ae8d1bdd9581fa41ab35c1cebfe70a79471640a1bde9ffadd377e38d708b5ca6a38b30300f61b")
+                        .authorization(ExactSchemePayload.Authorization.builder()
+                                .from(TEST_CLIENT_WALLET_ADDRESS_1)
+                                .to(TEST_SERVER_WALLET_ADDRESS_1)
+                                .value("10000")
+                                .validAfter("1748534647")
+                                .validBefore("1748534767") // This is valid
+                                .nonce("0x9b750f5097972d82c02ac371278b83ecf3ca3be8387db59e664eb38c98f97a3d")
+                                .build())
+                        .build())
+                .build();
+
+        assertThat(verifyService.verify(
+                VerificationRequest.builder()
+                        .paymentPayload(paymentPayload)
+                        .paymentRequirements(paymentRequirements)
+                        .build()))
+                .isNotNull()
+                .satisfies(result -> {
+                    assertThat(result.isValid()).isFalse();
+                    assertThat(result.verificationError()).isEqualTo(INVALID_EXACT_EVM_PAYLOAD_AUTHORIZATION_VALID_BEFORE);
+                });
+    }
+
+    @Test
+    @DisplayName("Insufficient funds")
+    public void insufficientFunds() {
+        var now = System.currentTimeMillis() / 1000;
+        PaymentRequirements paymentRequirements = PaymentRequirements.builder()
+                .scheme(EXACT_SCHEME.name())
+                .network(BASE_SEPOLIA.networkId())
+                .amount("10000")
+                .payTo(TEST_SERVER_WALLET_ADDRESS_1)
+                .maxTimeoutSeconds(60)
+                .asset("0x036CbD53842c5426634e7929541eC2318f3dCF7e")
+                .extra(EXACT_SCHEME_PARAMETER_NAME, "USDC")
+                .extra(EXACT_SCHEME_PARAMETER_VERSION, "2")
+                .build();
+
+        // We use Mogami client SDK to create a payment payload with insufficient funds.
+        var signedPayload = X402V2Client.buildPaymentPayload(
+                PaymentRequired.builder()
+                        .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
+                        .resource(PaymentResource.builder()
+                                .url("https://example.com/resource")
+                                .build())
+                        .accepts(List.of(paymentRequirements))
+                        .build(),
+                paymentRequirements,
+                Credentials.create("e81051db96bded9453d3a262ff90aa6d3c85d91a4aa3e0c0bdcc98aab49735ce")
+        );
+
+        // We make the verification
+        assertThat(verifyService.verify(
+                VerificationRequest.builder()
+                        .paymentPayload(signedPayload)
+                        .paymentRequirements(paymentRequirements)
+                        .build()))
+                .isNotNull()
+                .satisfies(result -> {
+                    assertThat(result.isValid()).isFalse();
+                    assertThat(result.verificationError()).isEqualTo(INSUFFICIENT_FUNDS);
+                });
+    }
+
+    @Test
+    @Disabled("Mogami client doesn't allow to create payloads with insufficient value")
+    @DisplayName("Insufficient payment value")
+    public void InsufficientPaymentValue() {
+        var paymentRequirements = PaymentRequirements.builder()
+                .scheme(EXACT_SCHEME.name())
+                .network(BASE_SEPOLIA.networkId())
+                .amount("10000")
+                .payTo(TEST_SERVER_WALLET_ADDRESS_1)
+                .maxTimeoutSeconds(60)
+                .asset("0x036CbD53842c5426634e7929541eC2318f3dCF7e")
+                .extra(EXACT_SCHEME_PARAMETER_NAME, "USDC")
+                .extra(EXACT_SCHEME_PARAMETER_VERSION, "2")
+                .build();
+
+        // We use Mogami client SDK to create a payment payload with insufficient funds.
+        var signedPayload = X402V2Client.buildPaymentPayload(
+                PaymentRequired.builder()
+                        .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
+                        .resource(PaymentResource.builder()
+                                .url("https://example.com/resource")
+                                .build())
+                        .accepts(List.of(paymentRequirements))
+                        .build(),
+                paymentRequirements,
+                Credentials.create("e81051db96bded9453d3a262ff90aa6d3c85d91a4aa3e0c0bdcc98aab49735ce")
+        );
+
+        // We make the verification
+        assertThat(verifyService.verify(
+                VerificationRequest.builder()
+                        .paymentPayload(signedPayload)
+                        .paymentRequirements(paymentRequirements)
+                        .build()))
+                .isNotNull()
+                .satisfies(result -> {
+                    assertThat(result.isValid()).isFalse();
+                    assertThat(result.verificationError()).isEqualTo(INVALID_EXACT_EVM_PAYLOAD_AUTHORIZATION_VALUE);
+                });
+    }
+
+}
