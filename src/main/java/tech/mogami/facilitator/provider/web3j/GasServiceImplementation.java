@@ -62,7 +62,6 @@ public class GasServiceImplementation implements GasService {
      */
     @Scheduled(fixedRateString = GAS_FEES_REFRESH_INTERVAL)
     public void refreshGasFees() {
-        // TODO Only search for supported networks
         ALL_NETWORKS.stream()
                 .filter(Network::isEvm)
                 .forEach(network -> {

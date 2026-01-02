@@ -32,7 +32,6 @@ public class Web3jConfiguration {
      */
     @Bean
     public Map<Network, Web3j> web3jClients() {
-        // TODO Don't use ALL_NETWORKS_BY_NAME but use the supported service.
         return ALL_NETWORKS.stream()
                 .filter(Network::isEvm)
                 .peek(network -> log.info("[Configuration] Network {} uses {} as rpc server", network.name(), network.rpcUrl()))
