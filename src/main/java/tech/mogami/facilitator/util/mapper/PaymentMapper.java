@@ -31,6 +31,7 @@ public interface PaymentMapper {
     @Mapping(target = "fromAddress", source = "from")
     @Mapping(target = "toAddress", source = "to")
     @Mapping(target = "network", source = "networkName", qualifiedByName = "networkFromName")
+    @Mapping(target = "steps", source = "steps")
     PaymentDto toDto(Payment payment);
 
     @Mapping(target = "createdAt", source = "createdAt")

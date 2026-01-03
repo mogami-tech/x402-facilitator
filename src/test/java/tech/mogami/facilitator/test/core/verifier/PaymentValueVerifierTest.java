@@ -38,7 +38,10 @@ public class PaymentValueVerifierTest {
                                                         .build())
                                         .build())
                                 .build())
-
+                        .paymentRequirements(PaymentRequirements.builder()
+                                .scheme(EXACT_SCHEME.name())
+                                .amount("110")
+                                .build())
                         .build()))
                 .isNotNull()
                 .satisfies(result -> {
@@ -65,6 +68,10 @@ public class PaymentValueVerifierTest {
                                                         .build())
                                         .build())
                                 .build())
+                        .paymentRequirements(PaymentRequirements.builder()
+                                .scheme(EXACT_SCHEME.name())
+                                .amount("110")
+                                .build())
                         .build()))
                 .isNotNull()
                 .satisfies(result -> {
@@ -90,6 +97,10 @@ public class PaymentValueVerifierTest {
                                                         .value("120") // Value is superior to required
                                                         .build())
                                         .build())
+                                .build())
+                        .paymentRequirements(PaymentRequirements.builder()
+                                .scheme(EXACT_SCHEME.name())
+                                .amount("110")
                                 .build())
                         .build()))
                 .isNotNull()

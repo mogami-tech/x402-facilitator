@@ -22,6 +22,7 @@ import static tech.mogami.commons.constant.X402Error.INVALID_EXACT_EVM_PAYLOAD_A
 import static tech.mogami.commons.constant.X402Error.INVALID_EXACT_EVM_PAYLOAD_AUTHORIZATION_VALUE;
 import static tech.mogami.commons.constant.X402Error.INVALID_EXACT_EVM_PAYLOAD_RECIPIENT_MISMATCH;
 import static tech.mogami.commons.constant.X402Error.INVALID_EXACT_EVM_PAYLOAD_SIGNATURE;
+import static tech.mogami.commons.constant.X402Error.INVALID_PAYMENT_REQUIREMENTS;
 import static tech.mogami.commons.constant.X402Error.UNKNOWN;
 import static tech.mogami.commons.constant.network.Networks.BASE_SEPOLIA;
 import static tech.mogami.commons.constant.version.X402Versions.X402_SUPPORTED_VERSION_BY_MOGAMI;
@@ -30,6 +31,7 @@ import static tech.mogami.commons.payment.schemes.exact.ExactSchemeConstants.EXA
 import static tech.mogami.commons.payment.schemes.exact.ExactSchemeConstants.EXACT_SCHEME_PARAMETER_VERSION;
 import static tech.mogami.commons.test.BaseMogamiTestData.TEST_CLIENT_WALLET_ADDRESS_1;
 import static tech.mogami.commons.test.BaseMogamiTestData.TEST_CLIENT_WALLET_ADDRESS_1_PRIVATE_KEY;
+import static tech.mogami.commons.test.BaseMogamiTestData.TEST_CLIENT_WALLET_ADDRESS_2;
 import static tech.mogami.commons.test.BaseMogamiTestData.TEST_SERVER_WALLET_ADDRESS_1;
 import static tech.mogami.commons.test.BaseMogamiTestData.TEST_SERVER_WALLET_ADDRESS_2;
 
@@ -186,7 +188,6 @@ public class VerifyServiceTest {
     @Test
     @DisplayName("Insufficient funds")
     public void insufficientFunds() {
-        var now = System.currentTimeMillis() / 1000;
         PaymentRequirements paymentRequirements = PaymentRequirements.builder()
                 .scheme(EXACT_SCHEME.name())
                 .network(BASE_SEPOLIA.networkId())
@@ -221,6 +222,54 @@ public class VerifyServiceTest {
                 .satisfies(result -> {
                     assertThat(result.isValid()).isFalse();
                     assertThat(result.verificationError()).isEqualTo(INSUFFICIENT_FUNDS);
+                });
+    }
+
+    @Test
+    @DisplayName("payment requirements doesn't match with accepts")
+    public void paymentRequirementsDoesntMatchWithAccepts() {
+        var paymentRequirements = PaymentRequirements.builder()
+                .scheme(EXACT_SCHEME.name())
+                .network(BASE_SEPOLIA.networkId())
+                .amount("10000")
+                .payTo(TEST_CLIENT_WALLET_ADDRESS_2)
+                .maxTimeoutSeconds(60)
+                .asset("0x036CbD53842c5426634e7929541eC2318f3dCF7e")
+                .extra(EXACT_SCHEME_PARAMETER_NAME, "USDC")
+                .extra(EXACT_SCHEME_PARAMETER_VERSION, "2")
+                .build();
+
+        var acceptedPaymentRequirements = PaymentRequirements.builder()
+                .scheme(EXACT_SCHEME.name())
+                .network(BASE_SEPOLIA.networkId())
+                .amount("20000")
+                .payTo(TEST_CLIENT_WALLET_ADDRESS_2)
+                .maxTimeoutSeconds(60)
+                .asset("0x036CbD53842c5426634e7929541eC2318f3dCF7e")
+                .extra(EXACT_SCHEME_PARAMETER_NAME, "USDC")
+                .extra(EXACT_SCHEME_PARAMETER_VERSION, "2")
+                .build();
+
+        // We give a different PaymentRequirements to accepted and payload.
+        PaymentPayload paymentPayload = PaymentPayload.builder()
+                .x402Version(X402_SUPPORTED_VERSION_BY_MOGAMI.version())
+                .resource(PaymentResource.builder()
+                        .url("https://example.com/resource/12345")
+                        .build())
+                .accepted(acceptedPaymentRequirements)
+                .payload(paymentRequirements)
+                .build();
+
+        // We make the verification
+        assertThat(verifyService.verify(
+                VerificationRequest.builder()
+                        .paymentPayload(paymentPayload)
+                        .paymentRequirements(paymentRequirements)
+                        .build()))
+                .isNotNull()
+                .satisfies(result -> {
+                    assertThat(result.isValid()).isFalse();
+                    assertThat(result.verificationError()).isEqualTo(INVALID_PAYMENT_REQUIREMENTS);
                 });
     }
 
@@ -261,6 +310,7 @@ public class VerifyServiceTest {
                 .extra(EXACT_SCHEME_PARAMETER_NAME, "USDC")
                 .extra(EXACT_SCHEME_PARAMETER_VERSION, "2")
                 .build();
+        signedPayload = signedPayload.toBuilder().accepted(moreExpensivePaymentRequirements).build();
 
         // We make the verification
         assertThat(verifyService.verify(
