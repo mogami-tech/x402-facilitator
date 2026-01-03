@@ -90,7 +90,6 @@ public class VerifyControllerTest {
     @Test
     @DisplayName("Calling /verify without error")
     void verifyWithoutError() throws Exception {
-        var now = System.currentTimeMillis() / 1000;
         var paymentRequirements = PaymentRequirements.builder()
                 .scheme(EXACT_SCHEME.name())
                 .network(BASE_SEPOLIA.networkId())

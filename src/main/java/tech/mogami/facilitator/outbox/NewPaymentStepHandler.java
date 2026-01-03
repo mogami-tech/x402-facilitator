@@ -138,7 +138,7 @@ public class NewPaymentStepHandler implements OutboxEventHandler<NewPaymentStepM
                                 participantService.getOrCreateAddress(addressAsString);
                                 addressRepository.findByAddress(addressAsString).ifPresent(payment::setAssetContract);
                             });
-                            request.getNetwork().ifPresent(networkValue -> payment.setNetworkName(networkValue.name()));
+                            request.getNetwork().ifPresent(networkValue -> payment.setNetworkId(networkValue.networkId()));
                         }
                         if (settleResponse != null) {
                             if (settleResponse.success()) {

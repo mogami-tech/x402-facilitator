@@ -65,9 +65,9 @@ public class Payment extends BaseTenantEntity {
     @JoinColumn(name = "FK_CONTRACT_ADDRESS_ID", nullable = false)
     private Address assetContract;
 
-    /** Network name. TODO Change to NETWORK_ID */
-    @Column(name = "NETWORK_NAME", nullable = false)
-    private String networkName;
+    /** Network ID. */
+    @Column(name = "NETWORK_ID", nullable = false)
+    private String networkId;
 
     /** Payment status. */
     @Builder.Default
