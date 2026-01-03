@@ -1,6 +1,5 @@
 package tech.mogami.facilitator.test.core.service.facilitator;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +29,7 @@ import static tech.mogami.commons.payment.schemes.Schemes.EXACT_SCHEME;
 import static tech.mogami.commons.payment.schemes.exact.ExactSchemeConstants.EXACT_SCHEME_PARAMETER_NAME;
 import static tech.mogami.commons.payment.schemes.exact.ExactSchemeConstants.EXACT_SCHEME_PARAMETER_VERSION;
 import static tech.mogami.commons.test.BaseMogamiTestData.TEST_CLIENT_WALLET_ADDRESS_1;
+import static tech.mogami.commons.test.BaseMogamiTestData.TEST_CLIENT_WALLET_ADDRESS_1_PRIVATE_KEY;
 import static tech.mogami.commons.test.BaseMogamiTestData.TEST_SERVER_WALLET_ADDRESS_1;
 import static tech.mogami.commons.test.BaseMogamiTestData.TEST_SERVER_WALLET_ADDRESS_2;
 
@@ -225,7 +225,6 @@ public class VerifyServiceTest {
     }
 
     @Test
-    @Disabled("Mogami client doesn't allow to create payloads with insufficient value")
     @DisplayName("Insufficient payment value")
     public void InsufficientPaymentValue() {
         var paymentRequirements = PaymentRequirements.builder()
@@ -249,14 +248,25 @@ public class VerifyServiceTest {
                         .accepts(List.of(paymentRequirements))
                         .build(),
                 paymentRequirements,
-                Credentials.create("e81051db96bded9453d3a262ff90aa6d3c85d91a4aa3e0c0bdcc98aab49735ce")
+                Credentials.create(TEST_CLIENT_WALLET_ADDRESS_1_PRIVATE_KEY)
         );
+
+        var moreExpensivePaymentRequirements = PaymentRequirements.builder()
+                .scheme(EXACT_SCHEME.name())
+                .network(BASE_SEPOLIA.networkId())
+                .amount("20000")
+                .payTo(TEST_SERVER_WALLET_ADDRESS_1)
+                .maxTimeoutSeconds(60)
+                .asset("0x036CbD53842c5426634e7929541eC2318f3dCF7e")
+                .extra(EXACT_SCHEME_PARAMETER_NAME, "USDC")
+                .extra(EXACT_SCHEME_PARAMETER_VERSION, "2")
+                .build();
 
         // We make the verification
         assertThat(verifyService.verify(
                 VerificationRequest.builder()
                         .paymentPayload(signedPayload)
-                        .paymentRequirements(paymentRequirements)
+                        .paymentRequirements(moreExpensivePaymentRequirements)
                         .build()))
                 .isNotNull()
                 .satisfies(result -> {
