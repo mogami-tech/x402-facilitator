@@ -12,6 +12,8 @@ import tech.mogami.facilitator.repository.PaymentRepository;
 import tech.mogami.facilitator.service.data.PaymentService;
 import tech.mogami.facilitator.test.core.util.BaseTest;
 
+import java.util.Comparator;
+
 import static java.util.Locale.ENGLISH;
 import static java.util.Locale.FRENCH;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -523,7 +525,7 @@ public class NewPaymentStepEventTest extends BaseTest {
     private OutboxEvent getLastEvent() {
         return outboxEventRepository.findAll()
                 .stream()
-                .max((e1, e2) -> e1.getCreatedAt().compareTo(e2.getCreatedAt()))
+                .max(Comparator.comparing(OutboxEvent::getCreatedAt))
                 .orElseThrow();
     }
 

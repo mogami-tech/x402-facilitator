@@ -122,9 +122,7 @@ public class NewPaymentStepHandler implements OutboxEventHandler<NewPaymentStepM
 
                         // We update the payment =======================================================================
                         if (request != null) {
-                            request.getVersion().ifPresent(x402Version -> {
-                                payment.setX402Version(x402Version.canonical());
-                            });
+                            request.getVersion().ifPresent(x402Version -> payment.setX402Version(x402Version.canonical()));
                             request.getFrom().ifPresent(addressAsString -> {
                                 participantService.getOrCreateAddress(addressAsString);
                                 addressRepository.findByAddress(addressAsString).ifPresent(payment::setFrom);

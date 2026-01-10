@@ -28,7 +28,6 @@ import static tech.mogami.facilitator.domain.payment.PaymentStepType.SETTLE;
 
 /**
  * /settle endpoint - Settle a payment.
- * TODO Create a service to handle the settlement logic.
  */
 @Slf4j
 @RestController

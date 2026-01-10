@@ -11,7 +11,7 @@ public enum VerificationStep {
     /** Verify if the x402 version is supported. */
     X402_VERSION_SUPPORTED,
 
-    /** Verify that the payment requirements are the same than in the accepts field. */
+    /** Verify that the payment requirements are the same as in the accepts field. */
     PAYMENT_REQUIREMENTS_MATCH,
 
     /** Scheme exists. */

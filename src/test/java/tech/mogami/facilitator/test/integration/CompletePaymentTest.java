@@ -216,7 +216,7 @@ public class CompletePaymentTest extends BaseWebTest {
         paymentRequirements = PaymentRequirements.builder()
                 .scheme(EXACT_SCHEME.name())
                 .network(BASE_SEPOLIA.networkId())
-                .amount("200")
+                .amount("20000")
                 .maxTimeoutSeconds(60)
                 .payTo(TEST_SERVER_WALLET_ADDRESS_1)
                 .asset("0x036CbD53842c5426634e7929541eC2318f3dCF7e")
@@ -268,8 +268,7 @@ public class CompletePaymentTest extends BaseWebTest {
         assertElementValue(page, "payment-network-name", "Base Sepolia Testnet");
         assertElementValue(page, "payment-from-address", TEST_CLIENT_WALLET_ADDRESS_1);
         assertElementValue(page, "payment-to-address", TEST_SERVER_WALLET_ADDRESS_1);
-        // TODO Fix the error in here.
-        // assertElementValue(page, "payment-amount", "0,02 USDC");
+        assertElementValue(page, "payment-amount", "0,02 USDC");
         assertElementValue(page, "payment-version", X402_SUPPORTED_VERSION_BY_MOGAMI.canonical());
 
         // First verify step (error).

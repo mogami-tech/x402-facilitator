@@ -38,7 +38,7 @@ public class ContractServiceImplementation implements ContractService {
     private final GasService gasService;
 
     @Override
-    public ContractCallResult transferWithAuthorization(@NonNull final SettlementRequest settlementRequest) {
+    public ContractCallResult transferWithAuthorization(final @NonNull SettlementRequest settlementRequest) {
         final Network network = settlementRequest.getNetwork().orElseThrow(() -> new IllegalArgumentException("Network is required"));
         final String asset = settlementRequest.getAssetContract().orElseThrow(() -> new IllegalArgumentException("Asset contract is required"));
         final String from = settlementRequest.getFrom().orElseThrow(() -> new IllegalArgumentException("From address is required"));

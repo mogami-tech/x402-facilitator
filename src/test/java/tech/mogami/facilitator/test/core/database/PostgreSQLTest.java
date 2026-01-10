@@ -3,8 +3,12 @@ package tech.mogami.facilitator.test.core.database;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import tech.mogami.facilitator.repository.PaymentRepository;
+
+import static org.assertj.core.api.Assertions.assertThatCode;
 
 @Testcontainers
 @SpringBootTest(properties = {
@@ -14,10 +18,14 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @DisplayName("PostgresSQL database tests")
 public class PostgreSQLTest {
 
+    @Autowired
+    PaymentRepository paymentRepository;
+
     @Test
     @DisplayName("Database schema initialization")
     void databaseSchemaInitialization() {
-        // If the context loads successfully, the schema has been initialized correctly.
+        assertThatCode(() -> paymentRepository.count())
+                .doesNotThrowAnyException();
     }
 
 }
