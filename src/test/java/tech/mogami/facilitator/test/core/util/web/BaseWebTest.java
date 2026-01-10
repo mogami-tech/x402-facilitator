@@ -90,6 +90,30 @@ public class BaseWebTest {
     }
 
     /**
+     * Asserts that the element with the given ID exists in the page and contains one of the expected values.
+     *
+     * @param page                the page to check
+     * @param elementId           the ID of the element to check
+     * @param firstExpectedValue  the first expected value of the element
+     * @param secondExpectedValue the second expected value of the element
+     */
+    public void assertElementValue(
+            final Document page,
+            final String elementId,
+            final String firstExpectedValue,
+            final String secondExpectedValue) {
+        assertThat(page.getElementById(elementId))
+                .as("checking that element with ID '%s' exists with value '%s' or '%s'", elementId, firstExpectedValue, secondExpectedValue)
+                .isNotNull()
+                .extracting(Element::text)
+                .asString()
+                .satisfiesAnyOf(
+                        value -> assertThat(value).containsIgnoringCase(firstExpectedValue),
+                        value -> assertThat(value).containsIgnoringCase(secondExpectedValue)
+                );
+    }
+
+    /**
      * Returns the message for the given key.
      *
      * @param messageSource message source
