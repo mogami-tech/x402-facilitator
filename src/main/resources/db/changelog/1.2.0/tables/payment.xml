@@ -41,7 +41,8 @@
                              referencedTableName="ADDRESS"
                              referencedColumnNames="ID"/>
             </column>
-            <column name="NETWORK_NAME" type="varchar(50)" remarks="Network name (ex: base-sepolia)"/>
+            <column name="NETWORK_ID" type="varchar(50)"
+                    remarks="Blockchain network identifier in CAIP-2 format (ex: eip155:84532)"/>
             <column name="STATUS" type="VARCHAR(50)" remarks="Payment status" defaultValue="PENDING">
                 <constraints nullable="false"/>
             </column>

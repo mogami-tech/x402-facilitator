@@ -20,6 +20,7 @@ public enum OutboxEventType {
      *
      * @param newPayloadType the class type of the event payload
      */
+    @SuppressWarnings("SameParameterValue")
     OutboxEventType(final Class<? extends OutboxEventMessage<?>> newPayloadType) {
         this.payloadType = newPayloadType;
     }

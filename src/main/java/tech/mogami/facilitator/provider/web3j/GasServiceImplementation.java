@@ -62,17 +62,19 @@ public class GasServiceImplementation implements GasService {
      */
     @Scheduled(fixedRateString = GAS_FEES_REFRESH_INTERVAL)
     public void refreshGasFees() {
-        ALL_NETWORKS.forEach(network -> {
-            try {
-                // Getting the latest block to fetch base fee ==========================================================
-                DynamicEIP1559GasProvider provider = new DynamicEIP1559GasProvider(web3jClients.get(network), network.chainId());
-                GasFees newFees = new GasFees(provider.getMaxFeePerGas(), provider.getMaxPriorityFeePerGas());
-                cache.put(network.name(), newFees);
-                log.debug("[GasService] Fetched gas fees for network {}: {}", network.name(), newFees);
-            } catch (Exception e) {
-                log.error("[GasService] Failed to fetch gas fees for network {}: {}", network.name(), e.getMessage());
-            }
-        });
+        ALL_NETWORKS.stream()
+                .filter(Network::isEvm)
+                .forEach(network -> {
+                    try {
+                        // Getting the latest block to fetch base fee ==========================================================
+                        DynamicEIP1559GasProvider provider = new DynamicEIP1559GasProvider(web3jClients.get(network), network.chainId());
+                        GasFees newFees = new GasFees(provider.getMaxFeePerGas(), provider.getMaxPriorityFeePerGas());
+                        cache.put(network.name(), newFees);
+                        log.debug("[GasService] Fetched gas fees for network {}: {}", network.name(), newFees);
+                    } catch (Exception e) {
+                        log.error("[GasService] Failed to fetch gas fees for network {}: {}", network.name(), e.getMessage());
+                    }
+                });
     }
 
 }

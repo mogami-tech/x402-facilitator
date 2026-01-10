@@ -16,8 +16,7 @@ public abstract class VerifierUtil {
      */
     protected String getErrorMessage(final ConstraintViolation<?> constraintViolation) {
         if (constraintViolation.getInvalidValue() != null) {
-            return constraintViolation.getMessage()
-                    + " (Your value: " + constraintViolation.getInvalidValue() + ")";
+            return constraintViolation.getMessage() + " (Your value: " + constraintViolation.getInvalidValue() + ")";
         } else {
             return constraintViolation.getMessage();
         }

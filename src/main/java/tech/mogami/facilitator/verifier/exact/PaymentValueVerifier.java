@@ -3,7 +3,7 @@ package tech.mogami.facilitator.verifier.exact;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
-import tech.mogami.commons.api.facilitator.verify.VerifyRequest;
+import tech.mogami.commons.api.facilitator.verify.VerificationRequest;
 import tech.mogami.commons.payment.schemes.exact.ExactSchemePayload;
 import tech.mogami.facilitator.verifier.VerificationResult;
 import tech.mogami.facilitator.verifier.VerificationStep;
@@ -17,27 +17,27 @@ import static tech.mogami.commons.constant.X402Error.INVALID_EXACT_EVM_PAYLOAD_A
  * Payment value verifier.
  * Verify value in payload is enough to cover paymentRequirements.maxAmountRequired
  */
-@Order(14)
+@Order(13)
 @Component
 @RequiredArgsConstructor
 @SuppressWarnings({"checkstyle:DesignForExtension", "unused", "checkstyle:MagicNumber"})
 public class PaymentValueVerifier implements VerifierForExactScheme {
 
     @Override
-    public VerificationResult verify(final VerifyRequest verifyRequest) {
+    public VerificationResult verify(final VerificationRequest verifyRequest) {
         // Verify that payment was made to the correct address
-        ExactSchemePayload payload = (ExactSchemePayload) verifyRequest.paymentPayload().payload();
+        ExactSchemePayload payload = (ExactSchemePayload) verifyRequest.paymentPayload().getTypedPayload();
 
         // Check if the payment value is enough.
         BigDecimal payloadValue = new BigDecimal(payload.authorization().value());
-        BigDecimal maxAmountRequired = new BigDecimal(verifyRequest.paymentRequirements().maxAmountRequired());
-        if (payloadValue.compareTo(maxAmountRequired) < 0) {
-            return VerificationResult.fail(
+        BigDecimal amount = new BigDecimal(verifyRequest.paymentPayload().accepted().amount());
+        if (payloadValue.compareTo(amount) < 0) {
+            return VerificationResult.failure(
                     INVALID_EXACT_EVM_PAYLOAD_AUTHORIZATION_VALUE,
-                    "Payment value is less than the required maximum amount (" + payloadValue + " < " + maxAmountRequired + ")"
+                    "Payment value is less than the required maximum amount (" + payloadValue + " < " + amount + ")"
             );
         }
-        return VerificationResult.ok();
+        return VerificationResult.success();
     }
 
     @Override

@@ -3,9 +3,11 @@ package tech.mogami.facilitator.verifier.general;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
-import tech.mogami.commons.api.facilitator.verify.VerifyRequest;
+import tech.mogami.commons.api.facilitator.verify.VerificationRequest;
+import tech.mogami.commons.constant.X402Error;
 import tech.mogami.facilitator.verifier.VerificationResult;
 import tech.mogami.facilitator.verifier.VerificationStep;
 import tech.mogami.facilitator.verifier.Verifier;
@@ -14,6 +16,7 @@ import tech.mogami.facilitator.verifier.VerifierUtil;
 import java.util.Comparator;
 
 import static tech.mogami.commons.constant.X402Error.INVALID_PAYLOAD;
+import static tech.mogami.commons.constant.X402Error.INVALID_PAYMENT_REQUIREMENTS;
 import static tech.mogami.commons.constant.X402Error.UNKNOWN;
 import static tech.mogami.facilitator.verifier.VerificationStep.GLOBAL_VERIFIER;
 
@@ -29,30 +32,39 @@ public class GlobalVerifier extends VerifierUtil implements Verifier {
     /** Comparator to sort constraint violations by declaration order. */
     private static final Comparator<ConstraintViolation<?>> VIOLATION_COMPARATOR = Comparator.comparingInt(
             constraintViolation -> switch (constraintViolation.getPropertyPath().toString()) {
-                case "x402Version" -> 100;
                 // PaymentPayload fields
-                case "paymentPayload" -> 200;
-                case "paymentPayload.x402Version" -> 201;
-                case "paymentPayload.scheme" -> 202;
-                case "paymentPayload.network" -> 203;
-                case "paymentPayload.payload" -> 204;
-                case "paymentPayload.payload.signature" -> 205;
-                case "paymentPayload.payload.authorization" -> 206;
-                case "paymentPayload.payload.authorization.from" -> 207;
-                case "paymentPayload.payload.authorization.to" -> 208;
-                case "paymentPayload.payload.authorization.value" -> 209;
-                case "paymentPayload.payload.authorization.validAfter" -> 210;
-                case "paymentPayload.payload.authorization.validBefore" -> 211;
-                case "paymentPayload.payload.authorization.nonce" -> 212;
+                case "paymentPayload" -> 100;
+                // PaymentPayload - version field
+                case "paymentPayload.x402Version" -> 200;
+                // PaymentPayload - PaymentResource fields
+                case "paymentPayload.resource" -> 300;
+                case "paymentPayload.resource.url" -> 301;
+                // PaymentPayload - PaymentRequirements fields
+                case "paymentPayload.accepted" -> 400;
+                case "paymentPayload.accepted.scheme" -> 401;
+                case "paymentPayload.accepted.network" -> 402;
+                case "paymentPayload.accepted.amount" -> 403;
+                case "paymentPayload.accepted.asset" -> 404;
+                case "paymentPayload.accepted.payTo" -> 405;
+                case "paymentPayload.accepted.maxTimeoutSeconds" -> 406;
+                // PaymentPayload - Payload fields
+                case "paymentPayload.payload" -> 500;
+                case "paymentPayload.payload.signature" -> 501;
+                case "paymentPayload.payload.authorization" -> 502;
+                case "paymentPayload.payload.authorization.from" -> 503;
+                case "paymentPayload.payload.authorization.to" -> 504;
+                case "paymentPayload.payload.authorization.value" -> 505;
+                case "paymentPayload.payload.authorization.validAfter" -> 506;
+                case "paymentPayload.payload.authorization.validBefore" -> 507;
+                case "paymentPayload.payload.authorization.nonce" -> 508;
                 // PaymentRequirements fields
-                case "paymentRequirements" -> 300;
-                case "paymentRequirements.scheme" -> 301;
-                case "paymentRequirements.network" -> 302;
-                case "paymentRequirements.maxAmountRequired" -> 303;
-                case "paymentRequirements.resource" -> 304;
-                case "paymentRequirements.payTo" -> 305;
-                case "paymentRequirements.maxTimeoutSeconds" -> 306;
-                case "paymentRequirements.asset" -> 307;
+                case "paymentRequirements" -> 600;
+                case "paymentRequirements.scheme" -> 601;
+                case "paymentRequirements.network" -> 602;
+                case "paymentRequirements.amount" -> 603;
+                case "paymentRequirements.asset" -> 604;
+                case "paymentRequirements.payTo" -> 605;
+                case "paymentRequirements.maxTimeoutSeconds" -> 606;
                 default -> 999;
             }
     );
@@ -61,9 +73,9 @@ public class GlobalVerifier extends VerifierUtil implements Verifier {
     private final Validator validator;
 
     @Override
-    public VerificationResult verify(final VerifyRequest verifyRequest) {
+    public VerificationResult verify(final VerificationRequest verifyRequest) {
         if (verifyRequest == null) {
-            return VerificationResult.fail(
+            return VerificationResult.failure(
                     UNKNOWN,
                     "The request object received is null");
         }
@@ -71,10 +83,28 @@ public class GlobalVerifier extends VerifierUtil implements Verifier {
         // Return the first violation found, sorted by property path.
         return validator.validate(verifyRequest).stream()
                 .min(VIOLATION_COMPARATOR)
-                .map(violation -> VerificationResult.fail(
-                        INVALID_PAYLOAD,
-                        getErrorMessage(violation)))
-                .orElseGet(VerificationResult::ok);
+                .map(violation -> {
+
+                    X402Error error = INVALID_PAYLOAD;
+                    final String path = violation.getPropertyPath().toString();
+
+                    if (StringUtils.startsWith(path, "paymentPayload.x402Version")) {
+                        error = X402Error.INVALID_X402_VERSION;
+                    } else if (StringUtils.endsWith(path, ".scheme")) {
+                        error = X402Error.INVALID_SCHEME;
+                    } else if (StringUtils.endsWith(path, ".network")) {
+                        error = X402Error.INVALID_NETWORK;
+                    } else if (StringUtils.startsWith(path, "paymentPayload.accepted")) {
+                        error = INVALID_PAYMENT_REQUIREMENTS;
+                    } else if (StringUtils.startsWith(path, "paymentRequirements")) {
+                        error = INVALID_PAYMENT_REQUIREMENTS;
+                    }
+
+                    return VerificationResult.failure(
+                            error,
+                            getErrorMessage(violation));
+                })
+                .orElseGet(VerificationResult::success);
     }
 
     @Override

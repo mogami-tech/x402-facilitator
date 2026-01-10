@@ -5,7 +5,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.web3j.protocol.Web3j;
 import org.web3j.tx.ClientTransactionManager;
-import tech.mogami.commons.api.facilitator.verify.VerifyRequest;
+import tech.mogami.commons.api.facilitator.verify.VerificationRequest;
 import tech.mogami.commons.constant.network.Network;
 import tech.mogami.commons.constant.network.Networks;
 import tech.mogami.commons.crypto.contract.ERC20;
@@ -38,14 +38,14 @@ public class UserBalanceVerifier implements VerifierForExactScheme {
     private final GasService gasService;
 
     @Override
-    public VerificationResult verify(final VerifyRequest verifyRequest) {
-        Network network = Networks.findByName(verifyRequest.paymentRequirements().network())
+    public VerificationResult verify(final VerificationRequest verifyRequest) {
+        Network network = Networks.findByNetworkId(verifyRequest.paymentRequirements().network())
                 .orElseThrow(() -> new IllegalArgumentException("Unsupported network: " + verifyRequest.paymentRequirements().network()));
 
         try {
             final Web3j web3j = web3jClients.get(network);
             // Retrieve the balance of the user.
-            ExactSchemePayload payload = (ExactSchemePayload) verifyRequest.paymentPayload().payload();
+            ExactSchemePayload payload = (ExactSchemePayload) verifyRequest.paymentPayload().getTypedPayload();
             ERC20 token = ERC20.load(
                     verifyRequest.paymentRequirements().asset(),
                     web3j,
@@ -54,17 +54,17 @@ public class UserBalanceVerifier implements VerifierForExactScheme {
             );
             // Compare the balance with the required amount.
             BigInteger rawBalance = token.balanceOf(payload.authorization().from()).send();
-            if (rawBalance.compareTo(new BigInteger(verifyRequest.paymentRequirements().maxAmountRequired())) < 0) {
-                return VerificationResult.fail(
+            if (rawBalance.compareTo(new BigInteger(verifyRequest.paymentRequirements().amount())) < 0) {
+                return VerificationResult.failure(
                         INSUFFICIENT_FUNDS,
                         "Insufficient funds: " + rawBalance + " available");
             }
         } catch (Exception e) {
-            return VerificationResult.fail(
+            return VerificationResult.failure(
                     INSUFFICIENT_FUNDS,
                     "Error getting balance: " + e.getMessage());
         }
-        return VerificationResult.ok();
+        return VerificationResult.success();
     }
 
     @Override

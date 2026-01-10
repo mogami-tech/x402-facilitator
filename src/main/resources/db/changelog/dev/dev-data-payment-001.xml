@@ -14,7 +14,7 @@
             <column name="FK_TO_ADDRESS_ID"/>
             <column name="ASSET_AMOUNT"/>
             <column name="FK_CONTRACT_ADDRESS_ID"/>
-            <column name="NETWORK_NAME"/>
+            <column name="NETWORK_ID"/>
             <column name="STATUS" value="PENDING"/>
             <column name="CREATED_AT" valueDate="2025-01-01T00:00:00"/>
             <column name="UPDATED_AT"/>

@@ -3,7 +3,7 @@ package tech.mogami.facilitator.verifier.exact;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
-import tech.mogami.commons.api.facilitator.verify.VerifyRequest;
+import tech.mogami.commons.api.facilitator.verify.VerificationRequest;
 import tech.mogami.commons.crypto.signature.EIP712Helper;
 import tech.mogami.commons.payment.schemes.exact.ExactSchemePayload;
 import tech.mogami.facilitator.verifier.VerificationResult;
@@ -16,30 +16,30 @@ import static tech.mogami.facilitator.verifier.VerificationStep.SIGNATURE_FOR_EX
 /**
  * Signature verifier.
  */
-@Order(11)
+@Order(10)
 @Component
 @RequiredArgsConstructor
 @SuppressWarnings({"checkstyle:DesignForExtension", "unused", "checkstyle:MagicNumber"})
 public class SignatureVerifier implements VerifierForExactScheme {
 
     @Override
-    public VerificationResult verify(final VerifyRequest verifyRequest) {
+    public VerificationResult verify(final VerificationRequest verifyRequest) {
         try {
             // We retrieve the payload and signature from the request
-            ExactSchemePayload payload = (ExactSchemePayload) verifyRequest.paymentPayload().payload();
+            ExactSchemePayload payload = (ExactSchemePayload) verifyRequest.paymentPayload().getTypedPayload();
             if (EIP712Helper.verify(
                     payload.signature(),
                     verifyRequest.paymentRequirements(),
-                    verifyRequest.paymentPayload(),
+                    payload.authorization(),
                     payload.authorization().from())) {
-                return VerificationResult.ok();
+                return VerificationResult.success();
             } else {
-                return VerificationResult.fail(
+                return VerificationResult.failure(
                         INVALID_EXACT_EVM_PAYLOAD_SIGNATURE,
                         "Signature verification failed for exact scheme");
             }
         } catch (Exception e) {
-            return VerificationResult.fail(
+            return VerificationResult.failure(
                     INVALID_EXACT_EVM_PAYLOAD_SIGNATURE,
                     "Signature verification exception: " + e.getMessage());
         }

@@ -49,5 +49,5 @@ jobs:
 
       - name: Tag and push docker image to DigitalOcean registry
         run: |
-          docker tag mogamitech/facilitator:latest registry.digitalocean.com/mogamitech/facilitator:production_v1
-          docker push registry.digitalocean.com/mogamitech/facilitator:production_v1
+          docker tag mogamitech/facilitator:latest registry.digitalocean.com/mogamitech/facilitator:production_v2
+          docker push registry.digitalocean.com/mogamitech/facilitator:production_v2

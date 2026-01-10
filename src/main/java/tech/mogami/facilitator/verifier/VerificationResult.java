@@ -20,7 +20,7 @@ public record VerificationResult(
      *
      * @return a VerificationResult indicating success
      */
-    public static VerificationResult ok() {
+    public static VerificationResult success() {
         return new VerificationResult(true, null, null);
     }
 
@@ -30,7 +30,7 @@ public record VerificationResult(
      * @param verificationError the error that caused the failure
      * @return a VerificationResult indicating failure with the specified error
      */
-    public static VerificationResult fail(final X402Error verificationError, final String errorMessage) {
+    public static VerificationResult failure(final X402Error verificationError, final String errorMessage) {
         return new VerificationResult(false, verificationError, errorMessage);
     }
 
