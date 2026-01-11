@@ -1,5 +1,5 @@
 {
-  "name": "mogami-x402-console-web",
+  "name": "mogami-x402-facilitator",
   "scripts": {
     "build": "npm-run-all --parallel build:*",
     "build:html": "node copy-files.js .*\\.html$",

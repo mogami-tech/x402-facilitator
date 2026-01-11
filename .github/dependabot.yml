@@ -18,3 +18,12 @@ updates:
       time: "20:30"
       timezone: "Europe/Paris"
     target-branch: development
+
+  - package-ecosystem: npm
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "sunday"
+      time: "20:30"
+      timezone: "Europe/Paris"
+    target-branch: development

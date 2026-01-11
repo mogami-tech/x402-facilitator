@@ -23,7 +23,6 @@ jobs:
 
       - name: Build image and run tests
         run: |
-          just run_install
           just build_docker_image
 
       # Deploy to Docker Hub ===========================================================================================

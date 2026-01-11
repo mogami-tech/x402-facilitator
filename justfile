@@ -8,9 +8,6 @@ run_tests:
 run_integration_tests:
     mvn verify -Pintegration-tests
 
-run_application:
-    mvn spring-boot:run -Dspring-boot.run.profiles=dev
-
 run_web_backend:
     mvn clean spring-boot:run -Dspring-boot.run.profiles=dev
 
