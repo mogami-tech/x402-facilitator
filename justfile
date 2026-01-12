@@ -5,8 +5,8 @@ run_install:
 run_tests:
     mvn clean install
 
-run_application:
-    mvn spring-boot:run -Dspring-boot.run.profiles=dev
+run_integration_tests:
+    mvn verify -Pintegration-tests
 
 run_web_backend:
     mvn clean spring-boot:run -Dspring-boot.run.profiles=dev

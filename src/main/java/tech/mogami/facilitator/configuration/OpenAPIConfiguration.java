@@ -7,6 +7,8 @@ import io.swagger.v3.oas.models.info.License;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import static tech.mogami.commons.constant.version.X402Versions.X402_SUPPORTED_VERSION_BY_MOGAMI;
+
 /**
  * OpenAPI configuration.
  */
@@ -22,14 +24,11 @@ public class OpenAPIConfiguration {
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
                 .info(new Info()
-                        .title("Mogami x402 Facilitator API")
+                        .title("Mogami x402 Facilitator API - X402 " + X402_SUPPORTED_VERSION_BY_MOGAMI.label())
                         .description("""
-                                Verify and settle x402 stablecoin payments instantly.
-                                The Mogami Facilitator powers seamless monetization for APIs, apps, and AI agents —
-                                enabling instant, frictionless payments over HTTP 402.
-                                
-                                Built on the open x402 protocol — no accounts, no cards, no subscriptions.
-                                Just seamless value exchange for humans and machines.
+                                The Mogami Facilitator Server acts as your payment gateway for x402.
+                                You can run it as a Docker image within your own infrastructure, or use our always-on hosted facilitator online.
+                                It verifies, authorizes, and settles x402 transactions in real time, connecting your services to the blockchain securely while keeping private keys safe.
                                 """)
                         .license(new License()
                                 .name("AGPL-3.0 license")

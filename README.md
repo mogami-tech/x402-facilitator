@@ -22,4 +22,5 @@
     You can run it as a Docker image within your own infrastructure, or use our hosted facilitator online.
     It verifies, authorizes, and settles x402 transactions in real time,
     connecting your services to the blockchain securely while keeping private keys safe.
+    x402 V1 and V2 are supported.
 </p>

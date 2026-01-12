@@ -17,9 +17,9 @@ import static org.mapstruct.NullValuePropertyMappingStrategy.IGNORE;
 @Mapper(nullValuePropertyMappingStrategy = IGNORE, uses = {AddressMapper.class})
 public interface PaymentMapper {
 
-    @Named("networkFromName")
-    static Network mapNetworkFromName(final String name) {
-        return Networks.findByName(name).orElse(null);
+    @Named("networkFromNetworkId")
+    static Network networkFromNetworkId(final String networkId) {
+        return Networks.findByNetworkId(networkId).orElse(null);
     }
 
     @Named("x402VersionFromString")
@@ -30,7 +30,8 @@ public interface PaymentMapper {
     @Mapping(target = "version", source = "x402Version", qualifiedByName = "x402VersionFromString")
     @Mapping(target = "fromAddress", source = "from")
     @Mapping(target = "toAddress", source = "to")
-    @Mapping(target = "network", source = "networkName", qualifiedByName = "networkFromName")
+    @Mapping(target = "network", source = "networkId", qualifiedByName = "networkFromNetworkId")
+    @Mapping(target = "step", ignore = true)
     PaymentDto toDto(Payment payment);
 
     @Mapping(target = "createdAt", source = "createdAt")

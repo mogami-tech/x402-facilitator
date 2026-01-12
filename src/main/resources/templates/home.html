@@ -69,7 +69,13 @@
                 mt-12   :   Use mt-12 to add a margin-top.
                 text-sm :   Use text-sm to set the font-size to 0.875rem.
             */-->
-            <div class="flex items-center justify-center mx-auto mt-12 text-sm" th:utext="#{home.message}"></div>
+            <div class="flex items-center justify-center mx-auto mt-12 text-sm"
+                 th:if="${!#strings.isEmpty(exampleNonce)}">
+                <span th:text="#{home.message}"></span>&nbsp;
+                <a class="link"
+                   th:href="@{/search(query=${exampleNonce})}"
+                   th:text="${shortenExampleNonce}"></a>
+            </div>
 
             <!--/* Error management ============================================================================== */-->
             <div th:if="${errorMessage}"

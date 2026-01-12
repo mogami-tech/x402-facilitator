@@ -56,7 +56,7 @@
     <div class="stat w-full sm:w-64 sm:flex-grow-0">
         <div class="stat-title" th:text="#{generic.amount}"></div>
         <div class="stat-value truncate max-w-[400px]" id="payment-amount"
-             th:text="${result.formattedAmount()}"></div>
+             th:text="${result.formattedAmount(#locale)}"></div>
     </div>
 
     <!--/* Displaying "Version" */-->

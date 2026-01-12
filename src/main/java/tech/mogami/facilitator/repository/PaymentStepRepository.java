@@ -9,4 +9,5 @@ import tech.mogami.facilitator.domain.payment.PaymentStep;
  */
 @Repository
 public interface PaymentStepRepository extends JpaRepository<PaymentStep, Long> {
+
 }

@@ -1,5 +1,5 @@
 {
-  "name": "mogami-x402-console-web",
+  "name": "mogami-x402-facilitator",
   "scripts": {
     "build": "npm-run-all --parallel build:*",
     "build:html": "node copy-files.js .*\\.html$",
@@ -15,19 +15,19 @@
   "devDependencies": {
     "@iconify-json/mdi": "^1.2.3",
     "@iconify/tailwind": "^1.2.0",
-    "@tailwindcss/postcss": "^4.1.14",
-    "autoprefixer": "^10.4.21",
+    "@tailwindcss/postcss": "^4.1.18",
+    "autoprefixer": "^10.4.23",
     "browser-sync": "^3.0.4",
-    "daisyui": "^5.3.3",
+    "daisyui": "^5.5.14",
     "mkdirp": "^3.0.1",
     "ncp": "^2.0.0",
     "npm-run-all": "^4.1.5",
     "onchange": "^7.1.0",
     "postcss": "^8.5.3",
     "postcss-cli": "^11.0.1",
-    "tailwindcss": "^4.1.14"
+    "tailwindcss": "^4.1.18"
   },
   "dependencies": {
-    "@tailwindcss/cli": "^4.1.14"
+    "@tailwindcss/cli": "^4.1.18"
   }
 }

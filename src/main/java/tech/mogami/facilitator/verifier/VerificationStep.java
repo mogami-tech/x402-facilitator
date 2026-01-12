@@ -8,7 +8,13 @@ public enum VerificationStep {
     /** Verify that the request is globally valid (most fields). */
     GLOBAL_VERIFIER,
 
-    /** Verify the scheme. */
+    /** Verify if the x402 version is supported. */
+    X402_VERSION_SUPPORTED,
+
+    /** Verify that the payment requirements are the same as in the accepts field. */
+    PAYMENT_REQUIREMENTS_MATCH,
+
+    /** Scheme exists. */
     SCHEME_EXISTS,
 
     /** Payment context verification step for the exact scheme. */
