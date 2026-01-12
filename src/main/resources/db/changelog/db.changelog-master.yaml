@@ -1,32 +1,32 @@
 databaseChangeLog:
 
-  # 1.2.0 Table definition =============================================================================================
+  # 2.0.0 Table definition =============================================================================================
   - include:
       file:
-        db/changelog/1.2.0/tables/participant.xml
+        db/changelog/2.0.0/tables/participant.xml
   - include:
       file:
-        db/changelog/1.2.0/tables/address.xml
+        db/changelog/2.0.0/tables/address.xml
   - include:
       file:
-        db/changelog/1.2.0/tables/tenant.xml
+        db/changelog/2.0.0/tables/tenant.xml
   - include:
       file:
-        db/changelog/1.2.0/tables/tenant_api_key.xml
+        db/changelog/2.0.0/tables/tenant_api_key.xml
   - include:
       file:
-        db/changelog/1.2.0/tables/payment.xml
+        db/changelog/2.0.0/tables/payment.xml
   - include:
       file:
-        db/changelog/1.2.0/tables/payment_step.xml
+        db/changelog/2.0.0/tables/payment_step.xml
   - include:
       file:
-        db/changelog/1.2.0/tables/outbox_event.xml
+        db/changelog/2.0.0/tables/outbox_event.xml
 
-  # 1.2.0 Data =========================================================================================================
+  # 2.0.0 Data =========================================================================================================
   - include:
       file:
-        db/changelog/1.2.0/data/participant.xml
+        db/changelog/2.0.0/data/participant.xml
   - include:
       file:
-        db/changelog/1.2.0/data/tenant.xml
+        db/changelog/2.0.0/data/tenant.xml

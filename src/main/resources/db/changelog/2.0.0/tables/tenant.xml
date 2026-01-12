@@ -2,7 +2,7 @@
 <databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.4.xsd">
-    <changeSet author="straumat" id="1.2.0-table-tenant">
+    <changeSet author="straumat" id="2.0.0-table-tenant">
 
         <createTable tableName="TENANT"
                      remarks="Table containing tenant information">
