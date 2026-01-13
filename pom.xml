@@ -7,7 +7,7 @@
     <!-- Project information ======================================================================================= -->
     <groupId>tech.mogami.facilitator</groupId>
     <artifactId>mogami-x402-facilitator</artifactId>
-    <version>1.2.1</version>
+    <version>1.2.2-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>Mogami x402 facilitator</name>
     <description>Gateway server to verify and settle x402 transactions instantly</description>
