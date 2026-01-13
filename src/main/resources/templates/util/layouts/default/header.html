@@ -25,7 +25,7 @@
     */-->
     <div class="hidden md:flex gap-2 items-center">
 
-        <!-- Use our facilitator -->
+        <!-- Use our facilitator =================================================================================== -->
         <a class="button-header"
            onclick="use_facilitator_modal.showModal()"
            rel="noopener">
@@ -35,11 +35,20 @@
         <dialog class="modal modal-bottom sm:modal-middle" id="use_facilitator_modal">
             <div class="modal-box">
                 <h3 class="text-lg font-bold" th:text="#{home.use.modal.title}"></h3>
-                <p>
-                    <span th:text="#{home.use.modal.description.line1}"></span><br>
-                    <span th:text="#{home.use.modal.description.line2}"></span><br>
-                    <a class="link" href="https://v1.facilitator.mogami.tech">https://v1.facilitator.mogami.tech</a>
-                </p>
+                <span th:text="#{home.use.modal.description.line1}"></span><br>
+                <span th:text="#{home.use.modal.description.line2}"></span>
+                <div>
+                    <span class="font-semibold">x402 v2 -></span>
+                    <a class="link ml-2" href="https://v2.facilitator.mogami.tech">
+                        https://v2.facilitator.mogami.tech
+                    </a>
+                </div>
+                <div>
+                    <span class="font-semibold">x402 v1 -></span>
+                    <a class="link ml-2" href="https://v1.facilitator.mogami.tech">
+                        https://v1.facilitator.mogami.tech
+                    </a>
+                </div>
                 <div class="modal-action">
                     <form method="dialog">
                         <button class="btn" th:text="#{generic.close}"></button>
@@ -48,16 +57,41 @@
             </div>
         </dialog>
 
-        <!-- Run your facilitator -->
+        <!-- Run your facilitator ================================================================================== -->
         <a class="button-header"
-           href="https://mogami.gitbook.io/mogami/faciliator-server/getting-started"
-           rel="noopener"
-           target="_blank">
+           onclick="run_facilitator_modal.showModal()"
+           rel="noopener">
             <span class="icon-[mdi--server] inline-block h-5 w-5"></span>
             <span th:text="#{home.run.button}"></span>
         </a>
+        <dialog class="modal modal-bottom sm:modal-middle" id="run_facilitator_modal">
+            <div class="modal-box">
+                <h3 class="text-lg font-bold" th:text="#{home.run.modal.title}"></h3>
+                <span th:text="#{home.run.modal.description.line1}"></span><br>
+                <span th:text="#{home.run.modal.description.line2}"></span>
+                <div>
+                    <span class="font-semibold">x402 v2 -></span>
+                    <a class="link ml-2"
+                       href="https://mogami.gitbook.io/mogami/faciliator-server/getting-started-x402-v2">
+                        Run your own x402 v2 facilitator
+                    </a>
+                </div>
+                <div>
+                    <span class="font-semibold">x402 v1 -></span>
+                    <a class="link ml-2"
+                       href="https://mogami.gitbook.io/mogami/faciliator-server/getting-started-x402-v1">
+                        Run your own x402 v1 facilitator
+                    </a>
+                </div>
+                <div class="modal-action">
+                    <form method="dialog">
+                        <button class="btn" th:text="#{generic.close}"></button>
+                    </form>
+                </div>
+            </div>
+        </dialog>
 
-        <!-- API (Swagger) -->
+        <!-- API (Swagger) ========================================================================================= -->
         <a class="button-header"
            rel="noopener"
            target="_blank"
@@ -66,7 +100,7 @@
             <span th:text="#{home.documentation.button}"></span>
         </a>
 
-        <!-- Sources (GitHub) -->
+        <!-- Sources (GitHub) ====================================================================================== -->
         <a class="button-header"
            href="https://github.com/mogami-tech/x402-facilitator"
            rel="noopener"
@@ -75,7 +109,7 @@
             <span th:text="#{home.github.button}"></span>
         </a>
 
-        <!-- Contact (email) -->
+        <!-- Contact (email) ======================================================================================= -->
         <a class="button-header"
            href="mailto:contact@mogami.tech"
            rel="noopener">

@@ -10,6 +10,7 @@ import org.springframework.validation.annotation.Validated;
  * X402 Parameters.
  *
  * @param facilitator facilitator parameters
+ * @param examples    non-functional example values used for documentation and UI
  */
 @Validated
 @SuppressWarnings("unused")
@@ -18,7 +19,9 @@ public record X402Parameters(
 
         @Valid
         @NotNull
-        Facilitator facilitator
+        Facilitator facilitator,
+
+        Examples examples
 
 ) {
 
@@ -35,5 +38,16 @@ public record X402Parameters(
     ) {
     }
 
-}
+    /**
+     * Non-functional example values used for documentation and UI.
+     *
+     * @param nonce an existing payment nonce
+     */
+    public record Examples(
 
+            String nonce
+
+    ) {
+    }
+
+}

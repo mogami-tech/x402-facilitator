@@ -15,7 +15,6 @@
      layout:fragment="content"
      th:fragment="home-fragment">
 
-
     <!--/* Search field ========================================================================================== */-->
     <form class="w-full"
           hx-params="*"
@@ -69,7 +68,18 @@
                 mt-12   :   Use mt-12 to add a margin-top.
                 text-sm :   Use text-sm to set the font-size to 0.875rem.
             */-->
-            <div class="flex items-center justify-center mx-auto mt-12 text-sm" th:utext="#{home.message}"></div>
+            <div class="flex items-center justify-center mx-auto mt-18   text-sm"
+                 th:if="${!#strings.isEmpty(exampleNonce)}">
+                <span th:text="#{home.message}"></span>&nbsp;
+                <a class="link"
+                   th:href="@{/search(query=${exampleNonce})}"
+                   th:text="${shortenExampleNonce}"></a>
+            </div>
+
+            <a class="block w-full bg-pink-600 text-white text-center py-2 text-sm font-medium hover:bg-pink-700 mt-8"
+               href="https://v2.facilitator.mogami.tech">
+                🚀 Mogami facilitator now supports x402 v2 → Try it now
+            </a>
 
             <!--/* Error management ============================================================================== */-->
             <div th:if="${errorMessage}"
