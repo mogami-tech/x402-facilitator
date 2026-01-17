@@ -22,6 +22,9 @@ databaseChangeLog:
   - include:
       file:
         db/changelog/2.0.0/tables/outbox_event.xml
+  - include:
+      file:
+        db/changelog/2.0.0/tables/shedlock.xml
 
   # 2.0.0 Data =========================================================================================================
   - include:

@@ -1,5 +1,6 @@
 package tech.mogami.facilitator.provider.outbox.repository;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -11,6 +12,7 @@ import tech.mogami.facilitator.provider.outbox.domain.OutboxEventStatus;
 import tech.mogami.facilitator.provider.outbox.domain.OutboxEventType;
 
 import java.time.Instant;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -105,6 +107,20 @@ public interface OutboxEventRepository extends JpaRepository<OutboxEvent, Long> 
             @Param("status") OutboxEventStatus status,
             @Param("errorMessage") String errorMessage,
             @Param("processedAt") Instant processedAt
+    );
+
+    /**
+     * Finds outbox events by their statuses and a processed timestamp before a given threshold.
+     *
+     * @param statuses  Collection of outbox event statuses to filter by.
+     * @param threshold Instant indicating the cutoff time for processed timestamps.
+     * @param pageable  Pageable object for pagination.
+     * @return List of outbox events matching the criteria.
+     */
+    Page<OutboxEvent> findByStatusInAndProcessedAtBefore(
+            Collection<OutboxEventStatus> statuses,
+            Instant threshold,
+            Pageable pageable
     );
 
 }

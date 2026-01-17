@@ -51,7 +51,7 @@ public class OutboxTest extends BaseTest {
         final int EVENTS_PER_THREAD = 4;
         final int TOTAL_EVENTS_EXPECTED = THREADS * EVENTS_PER_THREAD;
 
-        // Setup ========================================================================================================
+        // Setup =======================================================================================================
         ExecutorService pool = Executors.newFixedThreadPool(THREADS);
         CountDownLatch latch = new CountDownLatch(THREADS);
 

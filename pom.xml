@@ -69,6 +69,7 @@
         <spring-boot.version>3.5.9</spring-boot.version>
         <springdoc.version>2.8.15</springdoc.version>
         <caffeine.version>3.2.3</caffeine.version>
+        <shedlock.version>7.5.0</shedlock.version>
 
         <!-- Database -->
         <liquibase.version>5.0.1</liquibase.version>
@@ -142,6 +143,16 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-cache</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>net.javacrumbs.shedlock</groupId>
+            <artifactId>shedlock-spring</artifactId>
+            <version>${shedlock.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>net.javacrumbs.shedlock</groupId>
+            <artifactId>shedlock-provider-jdbc-template</artifactId>
+            <version>${shedlock.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springdoc</groupId>
