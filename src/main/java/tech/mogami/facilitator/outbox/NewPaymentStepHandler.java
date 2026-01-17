@@ -187,7 +187,7 @@ public class NewPaymentStepHandler implements OutboxEventHandler<NewPaymentStepM
     private List<PaymentStep> getStepsToProcess(final List<PaymentStep> steps) {
         // Avoid errors ================================================================================================
         if (steps == null || steps.isEmpty()) {
-            log.error("No steps to process - Abnormal situation");
+            log.warn("No steps to process - Abnormal situation");
             return List.of();
         }
 

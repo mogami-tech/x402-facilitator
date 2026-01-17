@@ -19,15 +19,4 @@ public interface OutboxEventMessage<T> {
     @SuppressWarnings("SameReturnValue")
     OutboxEventType type();
 
-    /**
-     * Returns the class type of the event payload.
-     *
-     * @return the Class of the payload type
-     */
-    @JsonIgnore
-    @SuppressWarnings({"SameReturnValue", "unchecked"})
-    default Class<T> payloadType() {
-        return (Class<T>) this.getClass();
-    }
-
 }

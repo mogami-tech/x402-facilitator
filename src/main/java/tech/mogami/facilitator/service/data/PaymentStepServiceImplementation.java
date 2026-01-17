@@ -51,9 +51,6 @@ public class PaymentStepServiceImplementation implements PaymentStepService {
                 .errorMessage(paymentStep.errorMessage())
                 .build());
         log.info("Payment step persisted for payment wit paymentStepId {}", paymentStepId);
-
-        // Add to queue if no error.
-        // paymentQueueRepository.enqueuePayment(paymentId, Instant.now());
     }
 
 }

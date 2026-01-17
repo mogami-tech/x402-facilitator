@@ -69,7 +69,7 @@ public abstract class OutboxBatch {
                     log.info("Outbox event {} processed successfully", event.getEventId());
                     outboxService.markDone(event.getEventId());
                 } else {
-                    log.info("Outbox event {} processing failed", event.getEventId());
+                    log.warn("Outbox event {} processing failed", event.getEventId());
                     outboxService.markError(event.getEventId(), callResult.errorMessage());
                 }
 

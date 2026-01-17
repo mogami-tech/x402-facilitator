@@ -43,7 +43,7 @@ public class SupportedServiceImplementation implements SupportedService {
                         .build())
                 .signer("eip155:*", List.of(facilitatorAddress))
                 .build();
-        log.info("SupportedService initialized with supported response: {}", cachedSupportedResponse);
+        log.info("[Configuration] SupportedService initialized with supported response: {}", cachedSupportedResponse);
     }
 
     /**

@@ -35,7 +35,7 @@ public class OutboxConfiguration {
     @Bean
     public Worker worker() {
         final String workerId = UUID.randomUUID().toString();
-        log.info("Server worker id is {}", workerId);
+        log.info("[Configuration] Server worker id is {}", workerId);
         return new Worker(workerId);
     }
 
@@ -48,7 +48,7 @@ public class OutboxConfiguration {
     @Bean
     public Map<OutboxEventType, OutboxEventHandler<?>> outboxEventHandlers(final List<OutboxEventHandler<?>> newDiscoveredHandlers) {
         return newDiscoveredHandlers.stream()
-                .peek(outboxEventHandler -> log.info("registering handler for {}", outboxEventHandler.getClass()))
+                .peek(outboxEventHandler -> log.info("Registering handler for {}", outboxEventHandler.getClass()))
                 .collect(Collectors.toMap(
                         OutboxEventHandler::supports,
                         Function.identity()
