@@ -57,8 +57,8 @@
         <skip.integration.tests>true</skip.integration.tests>
 
         <!-- Mogami -->
-        <mogami.commons.version>2.0.0</mogami.commons.version>
-        <mogami.java-client.version>2.0.0</mogami.java-client.version>
+        <mogami.commons.version>2.0.1-SNAPSHOT</mogami.commons.version>
+        <mogami.java-client.version>2.0.1-SNAPSHOT</mogami.java-client.version>
 
         <!-- Boilerplate & Utils -->
         <lombok.version>1.18.42</lombok.version>
@@ -321,6 +321,16 @@
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
                 <version>2.0.17</version> <!-- Aligned with Spring boot -->
+            </dependency>
+            <dependency>
+                <groupId>software.amazon.awssdk</groupId>
+                <artifactId>apache-client</artifactId>
+                <exclusions>
+                    <exclusion>
+                        <groupId>commons-logging</groupId>
+                        <artifactId>commons-logging</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
         </dependencies>
     </dependencyManagement>
