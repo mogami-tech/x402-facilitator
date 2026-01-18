@@ -52,28 +52,30 @@ public class OutboxPurgeBatch {
     )
     public void purge() {
         // Purge DONE events older than retention period ===============================================================
-        int totalDeleted = purgeEvents(DONE, RETENTION_FOR_DONE_STATUS);
-        log.info("Purged {} DONE outbox events older than {} days", totalDeleted, RETENTION_FOR_DONE_STATUS.toDays());
+        log.info("Purged {} DONE outbox events older than {} days",
+                purgeEvents(DONE, RETENTION_FOR_DONE_STATUS),
+                RETENTION_FOR_DONE_STATUS.toDays());
 
         // Purge ERROR events older than retention period ==============================================================
-        totalDeleted = purgeEvents(ERROR, RETENTION_FOR_ERROR_STATUS);
-        log.info("Purged {} ERROR outbox events older than {} days", totalDeleted, RETENTION_FOR_ERROR_STATUS.toDays());
+        log.info("Purged {} ERROR outbox events older than {} days",
+                purgeEvents(ERROR, RETENTION_FOR_ERROR_STATUS),
+                RETENTION_FOR_ERROR_STATUS.toDays());
     }
 
     /**
      * Purges outbox events with the specified status that are older than the given retention duration.
      *
-     * @param outboxEventStatus      the status of the outbox events to purge
-     * @param retentionForDoneStatus the retention duration
+     * @param outboxEventStatus the status of the outbox events to purge
+     * @param retentionDuration the retention duration
      * @return the total number of deleted events
      */
     private int purgeEvents(final OutboxEventStatus outboxEventStatus,
-                            final Duration retentionForDoneStatus) {
+                            final Duration retentionDuration) {
         int totalDeleted = 0;
         while (true) {
             Page<OutboxEvent> page = outboxEventRepository.findByStatusInAndProcessedAtBefore(
                     Set.of(outboxEventStatus),
-                    Instant.now().minus(retentionForDoneStatus),
+                    Instant.now().minus(retentionDuration),
                     PageRequest.of(0, BATCH_SIZE));
             if (page.isEmpty()) {
                 // We are done.
