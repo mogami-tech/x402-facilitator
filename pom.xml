@@ -83,7 +83,7 @@
         <htmx-spring-boot-thymeleaf.version>4.0.2</htmx-spring-boot-thymeleaf.version>
         <webjars-locator.version>0.52</webjars-locator.version>
         <htmx.version>2.0.8</htmx.version>
-        <alpinejs.version>3.15.3</alpinejs.version>
+        <alpinejs.version>3.15.4</alpinejs.version>
         <prismjs.version>1.30.0</prismjs.version>
 
         <!-- Tests -->
