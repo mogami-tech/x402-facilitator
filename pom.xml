@@ -87,7 +87,7 @@
         <prismjs.version>1.30.0</prismjs.version>
 
         <!-- Tests -->
-        <assertj.version>3.27.6</assertj.version>
+        <assertj.version>3.27.7</assertj.version>
         <awaitility.version>4.3.0</awaitility.version>
         <testcontainers.version>2.0.3</testcontainers.version>
         <jsoup.version>1.22.1</jsoup.version>
