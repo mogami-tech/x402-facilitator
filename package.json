@@ -15,19 +15,19 @@
   "devDependencies": {
     "@iconify-json/mdi": "^1.2.3",
     "@iconify/tailwind": "^1.2.0",
-    "@tailwindcss/postcss": "^4.2.0",
-    "autoprefixer": "^10.4.24",
+    "@tailwindcss/postcss": "^4.2.1",
+    "autoprefixer": "^10.4.27",
     "browser-sync": "^3.0.4",
     "daisyui": "^5.5.19",
     "mkdirp": "^3.0.1",
     "ncp": "^2.0.0",
     "npm-run-all": "^4.1.5",
     "onchange": "^7.1.0",
-    "postcss": "^8.5.3",
+    "postcss": "^8.5.8",
     "postcss-cli": "^11.0.1",
-    "tailwindcss": "^4.2.0"
+    "tailwindcss": "^4.2.1"
   },
   "dependencies": {
-    "@tailwindcss/cli": "^4.2.0"
+    "@tailwindcss/cli": "^4.2.1"
   }
 }
