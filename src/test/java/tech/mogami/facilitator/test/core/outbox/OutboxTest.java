@@ -1,6 +1,7 @@
 package tech.mogami.facilitator.test.core.outbox;
 
 import org.apache.commons.lang3.StringUtils;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +42,11 @@ public class OutboxTest extends BaseTest {
 
     @Autowired
     private OutboxService outboxService;
+
+    @BeforeEach
+    void cleanup() {
+        outboxEventRepository.deleteAll();
+    }
 
     @Test
     @DisplayName("Multithread outbox event processing")
