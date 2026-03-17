@@ -54,6 +54,8 @@ public class OutboxTest extends BaseTest {
         // Setup =======================================================================================================
         ExecutorService pool = Executors.newFixedThreadPool(THREADS);
         CountDownLatch latch = new CountDownLatch(THREADS);
+        final long initialDoneCount = outboxEventRepository.findAll().stream()
+                .filter(event -> event.getStatus() == DONE).count();
 
         // Run threads to publish outbox events ========================================================================
         for (int i = 0; i < THREADS; i++) {
@@ -61,7 +63,6 @@ public class OutboxTest extends BaseTest {
             pool.submit(() -> {
                 try {
                     for (int j = 0; j < EVENTS_PER_THREAD; j++) {
-
                         outboxService.publish(
                                 NewPaymentStepMessage.builder()
                                         .paymentId(nonce)
@@ -99,7 +100,7 @@ public class OutboxTest extends BaseTest {
         // Verify results ==============================================================================================
         // All events are treated as done
         var eventsDone = outboxEventRepository.findAll().stream().filter(event -> event.getStatus() == DONE).count();
-        assertThat(eventsDone).isEqualTo(TOTAL_EVENTS_EXPECTED);
+        assertThat(eventsDone - initialDoneCount).isEqualTo(TOTAL_EVENTS_EXPECTED);
 
         // All payments and payment steps have been created
         assertThat(paymentRepository.findAll()
