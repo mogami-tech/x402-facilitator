@@ -30,7 +30,6 @@ import static tech.mogami.facilitator.domain.payment.PaymentStepType.VERIFY;
 import static tech.mogami.facilitator.provider.outbox.domain.OutboxEventStatus.DONE;
 
 @SpringBootTest
-@Transactional
 @DisplayName("Outbox behavior tests")
 public class OutboxTest extends BaseTest {
 
