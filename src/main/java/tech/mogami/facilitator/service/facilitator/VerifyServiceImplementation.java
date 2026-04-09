@@ -26,7 +26,7 @@ public class VerifyServiceImplementation implements VerifyService {
      */
     public VerifyServiceImplementation(final List<Verifier> newVerifiers) {
         verifiers = newVerifiers;
-        log.info("Verify service initialized with {} verifiers", verifiers.size());
+        log.info("[Configuration] Verify service initialized with {} verifiers", verifiers.size());
     }
 
     /**
@@ -39,10 +39,10 @@ public class VerifyServiceImplementation implements VerifyService {
     public VerificationResult verify(final VerificationRequest verificationRequest) {
         // We run all verifiers in order, and return the first failure if any (Using @Order annotation).
         for (Verifier v : verifiers) {
-            log.info("Running verification with {}: {}", v.type(), verificationRequest);
+            log.debug("Running verification with {}: {}", v.type(), verificationRequest);
             VerificationResult result = v.verify(verificationRequest);
             if (!result.isValid()) {
-                log.info("Verification error {} : {}", v.type(), result.errorMessage());
+                log.warn("Verification error {} : {}", v.type(), result.errorMessage());
                 return result;
             } else {
                 log.debug("Verification successful with {}", v.type());

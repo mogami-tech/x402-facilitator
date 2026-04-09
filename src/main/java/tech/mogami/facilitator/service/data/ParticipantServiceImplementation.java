@@ -27,7 +27,6 @@ public class ParticipantServiceImplementation extends Base implements Participan
 
     @Override
     public AddressDto getOrCreateAddress(final String address) {
-        log.info("Creating or retrieving address: {}", address);
         // We try to find the address.
         Address addressRetrieved = addressRepository.findByAddress(address)
                 // If not found, we create it.

@@ -2,6 +2,7 @@ package tech.mogami.facilitator.configuration;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.javacrumbs.shedlock.spring.annotation.EnableSchedulerLock;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -16,6 +17,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 @Profile("!scheduler-disabled")
 @Configuration
 @EnableScheduling
+@EnableSchedulerLock(defaultLockAtMostFor = "PT30M")
 @RequiredArgsConstructor
 public class SchedulerConfiguration {
 

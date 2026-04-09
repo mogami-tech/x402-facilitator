@@ -1,9 +1,8 @@
 package tech.mogami.facilitator.dto.payment;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
+import tech.mogami.commons.util.JsonUtil;
 import tech.mogami.facilitator.domain.payment.PaymentStepType;
 
 import java.time.Instant;
@@ -36,15 +35,7 @@ public record PaymentStepDto(
      * @return the formatted request payload
      */
     public String formattedRequestPayload() {
-        try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            JsonNode node = objectMapper.readTree(requestPayload);
-            return objectMapper
-                    .writerWithDefaultPrettyPrinter()
-                    .writeValueAsString(node);
-        } catch (Exception e) {
-            return requestPayload;
-        }
+        return JsonUtil.toPrettyJson(requestPayload);
     }
 
     /**
@@ -53,15 +44,7 @@ public record PaymentStepDto(
      * @return the formatted response payload
      */
     public String formattedResponsePayload() {
-        try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            JsonNode node = objectMapper.readTree(responsePayload);
-            return objectMapper
-                    .writerWithDefaultPrettyPrinter()
-                    .writeValueAsString(node);
-        } catch (Exception e) {
-            return responsePayload;
-        }
+        return JsonUtil.toPrettyJson(responsePayload);
     }
 
     /**
