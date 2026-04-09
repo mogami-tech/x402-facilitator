@@ -6,7 +6,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
 import tech.mogami.facilitator.outbox.NewPaymentStepMessage;
 import tech.mogami.facilitator.provider.outbox.repository.OutboxEventRepository;
 import tech.mogami.facilitator.provider.outbox.service.OutboxService;
@@ -57,66 +56,66 @@ public class OutboxTest extends BaseTest {
         final int TOTAL_EVENTS_EXPECTED = THREADS * EVENTS_PER_THREAD;
 
         // Setup =======================================================================================================
-        ExecutorService pool = Executors.newFixedThreadPool(THREADS);
-        CountDownLatch latch = new CountDownLatch(THREADS);
-        final long initialDoneCount = outboxEventRepository.findAll().stream()
-                .filter(event -> event.getStatus() == DONE).count();
+        try (ExecutorService pool = Executors.newFixedThreadPool(THREADS)) {
+            CountDownLatch latch = new CountDownLatch(THREADS);
+            final long initialDoneCount = outboxEventRepository.findAll().stream()
+                    .filter(event -> event.getStatus() == DONE).count();
 
-        // Run threads to publish outbox events ========================================================================
-        for (int i = 0; i < THREADS; i++) {
-            final String nonce = "outbox-event-nonce-" + i;
-            pool.submit(() -> {
-                try {
-                    for (int j = 0; j < EVENTS_PER_THREAD; j++) {
-                        outboxService.publish(
-                                NewPaymentStepMessage.builder()
-                                        .paymentId(nonce)
-                                        .paymentStepType(VERIFY)
-                                        .requestPayload(getVerificationRequest(
-                                                V1,
-                                                BASE_SEPOLIA,
-                                                TEST_CLIENT_WALLET_ADDRESS_1,
-                                                TEST_CLIENT_WALLET_ADDRESS_2,
-                                                BASE_SEPOLIA_USDC_CONTRACT,
-                                                "10000",
-                                                nonce))
-                                        .responsePayload(getVerifyResponse(
-                                                false,
-                                                INVALID_EXACT_EVM_PAYLOAD_SIGNATURE,
-                                                TEST_CLIENT_WALLET_ADDRESS_1
-                                        ))
-                                        .build()
-                        );
+            // Run threads to publish outbox events ====================================================================
+            for (int i = 0; i < THREADS; i++) {
+                final String nonce = "outbox-event-nonce-" + i;
+                pool.submit(() -> {
+                    try {
+                        for (int j = 0; j < EVENTS_PER_THREAD; j++) {
+                            outboxService.publish(
+                                    NewPaymentStepMessage.builder()
+                                            .paymentId(nonce)
+                                            .paymentStepType(VERIFY)
+                                            .requestPayload(getVerificationRequest(
+                                                    V1,
+                                                    BASE_SEPOLIA,
+                                                    TEST_CLIENT_WALLET_ADDRESS_1,
+                                                    TEST_CLIENT_WALLET_ADDRESS_2,
+                                                    BASE_SEPOLIA_USDC_CONTRACT,
+                                                    "10000",
+                                                    nonce))
+                                            .responsePayload(getVerifyResponse(
+                                                    false,
+                                                    INVALID_EXACT_EVM_PAYLOAD_SIGNATURE,
+                                                    TEST_CLIENT_WALLET_ADDRESS_1
+                                            ))
+                                            .build()
+                            );
+                        }
+                    } finally {
+                        latch.countDown();
                     }
-                } finally {
-                    latch.countDown();
-                }
-            });
+                });
+            }
+
+            // Wait for all threads to finish ==========================================================================
+            latch.await();
+            await().atMost(Duration.ofMinutes(2))
+                    .until(() -> outboxEventRepository.findAll()
+                            .stream()
+                            .allMatch(event -> event.getStatus().isFinal()));
+
+            // Verify results ==========================================================================================
+            // All events are treated as done
+            var eventsDone = outboxEventRepository.findAll().stream().filter(event -> event.getStatus() == DONE).count();
+            assertThat(eventsDone - initialDoneCount).isEqualTo(TOTAL_EVENTS_EXPECTED);
+
+            // All payments and payment steps have been created
+            assertThat(paymentRepository.findAll()
+                    .stream()
+                    .filter(payment -> StringUtils.startsWith(payment.getPaymentId(), "outbox-event-nonce-"))
+                    .count()).isEqualTo(THREADS);
+            assertThat(paymentRepository.findAll()
+                    .stream()
+                    .filter(payment -> StringUtils.startsWith(payment.getPaymentId(), "outbox-event-nonce-"))
+                    .filter(payment -> payment.getSteps().size() != EVENTS_PER_THREAD)
+                    .findAny()).isEmpty();
         }
-
-        // Wait for all threads to finish ==============================================================================
-        latch.await();
-        pool.shutdown();
-        await().atMost(Duration.ofMinutes(2))
-                .until(() -> outboxEventRepository.findAll()
-                        .stream()
-                        .allMatch(event -> event.getStatus().isFinal()));
-
-        // Verify results ==============================================================================================
-        // All events are treated as done
-        var eventsDone = outboxEventRepository.findAll().stream().filter(event -> event.getStatus() == DONE).count();
-        assertThat(eventsDone - initialDoneCount).isEqualTo(TOTAL_EVENTS_EXPECTED);
-
-        // All payments and payment steps have been created
-        assertThat(paymentRepository.findAll()
-                .stream()
-                .filter(payment -> StringUtils.startsWith(payment.getPaymentId(), "outbox-event-nonce-"))
-                .count()).isEqualTo(THREADS);
-        assertThat(paymentRepository.findAll()
-                .stream()
-                .filter(payment -> StringUtils.startsWith(payment.getPaymentId(), "outbox-event-nonce-"))
-                .filter(payment -> payment.getSteps().size() != EVENTS_PER_THREAD)
-                .findAny()).isEmpty();
 
     }
 
