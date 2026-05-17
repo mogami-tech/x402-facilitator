@@ -72,7 +72,7 @@
         <shedlock.version>7.7.0</shedlock.version>
 
         <!-- Database -->
-        <liquibase.version>5.0.2</liquibase.version>
+        <liquibase.version>5.0.3</liquibase.version>
         <jdbc.driver.hsqldb.version>2.7.4</jdbc.driver.hsqldb.version>
         <jdbc.driver.postgresql.version>42.7.11</jdbc.driver.postgresql.version>
 
