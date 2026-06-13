@@ -25,7 +25,7 @@
     "onchange": "^7.1.0",
     "postcss": "^8.5.13",
     "postcss-cli": "^11.0.1",
-    "tailwindcss": "^4.2.4"
+    "tailwindcss": "^4.3.0"
   },
   "dependencies": {
     "@tailwindcss/cli": "^4.2.4"
